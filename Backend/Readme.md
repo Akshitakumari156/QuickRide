@@ -59,26 +59,200 @@ API Endpoints
 "user": {
 "id": "user_id",
 "firstname": "John",
-"email": "john.doe@example.com"
-}
-}
+# Backend — User Authentication
 
-2. Login User
-   Endpoint: POST /api/login
-   Description: Authenticates a user and returns a JWT token.
-   Request Body:
+This document describes the authentication module used by the UrbanMove backend.
+It explains how to set up, run, and use the user authentication API, plus important implementation notes for developers.
+
+---
+
+## Quick summary
+
+- Tech: Node.js, Express, MongoDB (Mongoose), bcryptjs, jsonwebtoken (JWT)
+- Responsibilities: register users, login, protect routes via JWT, logout (blacklist token)
+
+---
+
+## Files of interest
+
+- `controllers/user.controllers.js` — register/login/logout/profile logic
+- `models/user.model.js` — Mongoose schema, password hashing, JWT generation, password compare
+- `routes/user.routes.js` — Express routes: `/register`, `/login`, `/profile`, `/logout`
+- `middlewares/auth.middleware.js` — JWT validation middleware; attaches `req.user`
+
+---
+
+## Environment
+
+Required environment variables (create `.env` in `Backend`):
+
+```
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+PORT=5000
+```
+
+Use a strong, unpredictable value for `JWT_SECRET` in production.
+
+---
+
+## Installation & run (Backend)
+
+1. From the `Backend` directory install deps:
+
+```bash
+npm install
+```
+
+2. Start the server (development):
+
+```bash
+npm start
+```
+
+The server listens on `process.env.PORT` (default 5000).
+
+---
+
+## Authentication flow (overview)
+
+1. Registration (`POST /api/register`) — client submits `firstname`, `lastname`, `email`, `password`.
+   - Controller validates input, ensures email uniqueness, creates a user.
+   - Password is hashed in `user.model` using a `pre('save')` hook with `bcrypt`.
+   - Controller returns a signed JWT (via `user.generateAuthToken()`), user summary, and 201 status.
+
+2. Login (`POST /api/login`) — client submits `email` and `password`.
+   - Controller loads user with `+password`, compares using `user.comparePassword()`.
+   - On success returns JWT and user summary with 200 status.
+
+3. Protecting routes — middleware `auth` reads `Authorization: Bearer <token>` header, verifies JWT, loads user and attaches it to `req.user`.
+
+4. Logout (`POST /api/logout`) — protected route that blacklists the token (stored in `Blacklisttoken.modle.js`) to prevent reuse.
+
+---
+
+## API: Endpoints (examples)
+
+Base path (example): `http://localhost:5000/api`
+
+1) Register user
+
+```
+POST /api/register
+Content-Type: application/json
 
 {
-"email": "john.doe@example.com",
-"password": "password123"
+  "firstname": "John",
+  "lastname": "Doe",
+  "email": "john.doe@example.com",
+  "password": "password123"
 }
-Response:
+```
+
+Response (201):
+
+```json
 {
-"message": "Login successful",
-"token": "jwt_token_here",
-"user": {
-"id": "user_id",
-"firstname": "John",
-"email": "john.doe@example.com"
+  "message": "User registered successfully",
+  "token": "<jwt>",
+  "user": { "id": "<id>", "firstname": "John", "email": "john.doe@example.com" }
 }
+```
+
+2) Login
+
+```
+POST /api/login
+Content-Type: application/json
+
+{
+  "email": "john.doe@example.com",
+  "password": "password123"
 }
+```
+
+Response (200):
+
+```json
+{
+  "message": "Login successful",
+  "token": "<jwt>",
+  "user": { "id": "<id>", "firstname": "John", "email": "john.doe@example.com" }
+}
+```
+
+3) Get profile (protected)
+
+```
+GET /api/profile
+Authorization: Bearer <jwt>
+```
+
+Response (200): user object attached by middleware.
+
+4) Logout (protected)
+
+```
+POST /api/logout
+Authorization: Bearer <jwt>
+```
+
+Response (200): confirmation; server stores the token in a blacklist collection.
+
+---
+
+## Implementation notes (developer-focused)
+
+- Password hashing: `user.model.js` uses a `pre('save')` hook to hash `this.password` with `bcrypt.hash(..., 10)` when modified.
+- JWT creation: `user.generateAuthToken()` signs `{ _id: this._id }` with `process.env.JWT_SECRET` and `expiresIn: '1d'`.
+- Password compare: `user.comparePassword(password)` delegates to `bcrypt.compare` and returns a Promise.
+- Token blacklist: `Blacklisttoken.modle.js` stores invalidated tokens — middleware or route handlers should check this to block logged-out tokens.
+
+Common pitfalls seen in this codebase:
+- Ensure middleware functions are declared correctly as `async function auth(req, res, next) { ... }` and return/next appropriately.
+- When reading `req.headers.authorization`, guard for missing headers before splitting.
+- When calling `userModel.findOne(...).select('+password')` ensure the model exports are correct and `select: false` exists on the `password` field.
+
+---
+
+## Error handling & status codes
+
+- 400: Bad request / validation errors (missing fields, invalid input)
+- 401: Unauthorized (invalid/missing token)
+- 404: Not found (user not found during login)
+- 409: Conflict (email already registered)
+- 500: Server error (database or unexpected errors)
+
+Controllers should return consistent JSON shapes for easier client handling.
+
+---
+
+## Security recommendations
+
+- Use HTTPS in production.
+- Store `JWT_SECRET` in a secrets manager (not in plain `.env` in source control).
+- Consider using short-lived access tokens with refresh tokens for better security.
+- Rate-limit login endpoints to mitigate brute-force attacks.
+- Validate and sanitize inputs.
+
+---
+
+## Testing tips
+
+- Use Postman or curl to exercise endpoints.
+- For automated tests, mock `process.env.JWT_SECRET` and use an in-memory MongoDB (e.g., `mongodb-memory-server`) for unit tests.
+
+---
+
+## Useful commands
+
+```bash
+# start server (dev)
+npm start
+
+# run linter / tests (if configured)
+npm test
+```
+
+---
+

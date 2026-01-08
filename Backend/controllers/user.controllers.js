@@ -1,3 +1,4 @@
+const BlackListTokenModel = require('../models/Blacklisttoken.modle');
 const userModel=require('../models/user.model')
 exports.registeruser=async(req,res)=>{
     const{email,password,firstname,lastname}=req.body;
@@ -64,4 +65,18 @@ exports.loginuser=async (req,res)=>{
     }
 
 }
+exports.getprofile=async(req,res,next)=>{
+    return res.status(200).json(req.user);
 
+}
+
+
+exports.logoutuser=async(req,res,next)=>{
+    const token=req.headers.authorization.split(" ")[1]||req.cookies.token;
+    res.clearCookie("token");
+    await BlackListTokenModel.create({token});
+    return res.status(200).json({
+        message:"user logged out successfully"
+    });
+
+}

@@ -37,8 +37,7 @@ userSchema.pre("save",  function(){
 })
 userSchema.methods.generateAuthToken=function(){
    const token=jwt.sign({
-        id:this._id,
-        email:this.email
+        _id:this._id
     },process.env.JWT_SECRET,{
         expiresIn:"1d"
     })
