@@ -27,7 +27,7 @@ const userSchema=new mongoose.Schema({
     }
 
 });
-userSchema.pre("save",  function(){
+userSchema.pre("save",function(){
     if(!this.isModified("password")){
         return ;
     }

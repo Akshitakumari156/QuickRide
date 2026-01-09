@@ -1,4 +1,5 @@
 const captainModel = require('../models/captain.model');
+const userModel = require('../models/user.model');
 const captainservice = require('../services/captain.service');
 exports.registerCaptain=async(req,res)=>{
     const{email,password,firstname,lastname,vehicle}=req.body;
@@ -37,5 +38,42 @@ exports.registerCaptain=async(req,res)=>{
         
     } catch (error) {
         console.log("error in registering captain",error)
+    }
+}
+
+exports.logincaptain=async (req,res)=>{
+    const {email,password}=req.body;
+    try {
+        const captain=captainModel.findOne({email}).select("+password");
+        if(!captain){
+            return res.status(404).json({
+                message:"captain not found"
+            })
+                }
+      else {
+        const isMatch=await captain.comparePassword(password);
+        if(!isMatch){
+           return res.status(400).json({    
+                message:"invalid password"
+              })
+        }
+        else {
+            const token=captain.generateAuthToken();
+            res.status(200).json({
+                message:"captain login successful",
+                token,
+                captain:{
+                    id:captain._id,
+                    firstname:captain.firstname,
+                    email:captain.email
+                }
+            })
+        }
+        
+      }
+
+
+    } catch (error) {
+        console.log("error in captain login",error)
     }
 }

@@ -45,8 +45,8 @@ exports.loginuser=async (req,res)=>{
        const isMatch=await user.comparePassword(password);
        if(!isMatch){
         console.log("error here ")
-        res.status(400).json({
-            message:"invalid password"
+       return  res.status(400).json({
+             message:"invalid password"
         })
        }
        else {
