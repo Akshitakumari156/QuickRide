@@ -1,6 +1,8 @@
+const BlackListTokenModel = require('../models/Blacklisttoken.modle');
 const captainModel = require('../models/captain.model');
 const userModel = require('../models/user.model');
 const captainservice = require('../services/captain.service');
+const jwt=require('jsonwebtoken')
 exports.registerCaptain=async(req,res)=>{
     const{email,password,firstname,lastname,vehicle}=req.body;
     try {
@@ -44,13 +46,14 @@ exports.registerCaptain=async(req,res)=>{
 exports.logincaptain=async (req,res)=>{
     const {email,password}=req.body;
     try {
-        const captain=captainModel.findOne({email}).select("+password");
+        const captain= await captainModel.findOne({email}).select("+password");
         if(!captain){
             return res.status(404).json({
                 message:"captain not found"
             })
                 }
       else {
+        
         const isMatch=await captain.comparePassword(password);
         if(!isMatch){
            return res.status(400).json({    
@@ -76,4 +79,15 @@ exports.logincaptain=async (req,res)=>{
     } catch (error) {
         console.log("error in captain login",error)
     }
+}
+exports.captainProfile=async(req,res,next)=>{
+   return res.status(200).json(req.captain);
+}
+exports.logoutCaptain=async(req,res)=>{
+    const token=req.headers.authorization?.split(" ")[1]||req.cookies?.token;
+    res.clearCookie('token');
+    await BlackListTokenModel.create({ token });
+    return res.status(200).json({
+        message:"captain logged out successfully"
+    })
 }
