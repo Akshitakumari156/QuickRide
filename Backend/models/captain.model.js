@@ -27,7 +27,6 @@ const captainSchema=new mongoose.Schema({
     },
     status:{
         type:String,
-        required:true,
         enum:["active","inactive"],
         default:"inactive"
     },

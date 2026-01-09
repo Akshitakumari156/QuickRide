@@ -15,11 +15,11 @@ module.exports.createcaptain=async({
         lastname,
         email,
         password,
-        vechile:{
+        vehicle:{
             color:vehicle.color,
             plateNumber:vehicle.plateNumber,
             capacity:vehicle.capacity,
-            vehicleType:vehicle.vehicle
+            vehicleType:vehicle.vehicleType
         }
     })
     return captain ;

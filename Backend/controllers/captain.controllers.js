@@ -9,12 +9,12 @@ exports.registerCaptain=async(req,res)=>{
                 message:"captain already exists"
             })
         }
-        const hashedpaasword=await captainModel.hashPassword(password);
+        const hashedPassword=await captainModel.hashPassword(password);
         const captain=await captainservice.createcaptain({
             firstname,
             lastname,
             email,
-            password:hashedpaasword,
+           password:hashedPassword,
             vehicle:{
                 color:vehicle.color,
                 plateNumber:vehicle.plateNumber,
