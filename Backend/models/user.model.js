@@ -27,11 +27,12 @@ const userSchema=new mongoose.Schema({
     }
 
 });
-userSchema.pre("save",function(){
+userSchema.pre("save",async function(next){
     if(!this.isModified("password")){
-        return ;
+        return  ;
     }
-    this.password=  bcrypt.hash(this.password,10)
+    this.password=await bcrypt.hash(this.password,10);
+    
    
  
 })

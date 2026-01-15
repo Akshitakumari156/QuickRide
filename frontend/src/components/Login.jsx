@@ -1,11 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from './Button';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const navigate=useNavigate();
+  const[email,setEmail]=useState("");
+  const[password,setPassword]=useState("");
   const Signupfn=()=>{
     navigate('/signup')
+  }
+  const handleBtn=async(data)=>{
+      const response=await fetch("http://localhost:5000/api/user/login",{
+        method:"POST",
+        headers:{
+            'Content-Type': 'application/json',
+        },
+           body:JSON.stringify({email,password})
+
+      });
+       if(response.status==200){
+      alert("logged in success");
+      console.log(response)
+    }
+         else  alert("failed in logged in ")
+
   }
   return (
     <div className="w-full h-[100vh] flex items-center justify-center bg-[#F2F4F5]">
@@ -27,11 +45,19 @@ const Login = () => {
           <input
             type="email"
             placeholder="Email"
+            value={email}
+            onChange={(e)=>{
+              setEmail(e.target.value)}
+            }
             className="w-full h-12 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3ABEFF]"
           />
 
           <input
             type="password"
+            value={password}
+            onChange={(e)=>{
+              setPassword(e.target.value)
+            }}
             placeholder="Password"
             className="w-full h-12 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3ABEFF]"
           />
@@ -40,6 +66,7 @@ const Login = () => {
         {/* ACTIONS */}
         <div className="flex flex-col gap-3">
           <Button
+          onClick={handleBtn}
             label="Login"
             bg="#2ECC71"
             textColor="#0F2C46"
