@@ -21,7 +21,13 @@ const RideLocationForm = () => {
       alert("Please select pickup and drop location");
       return;
     }
+ console.log("SRC Address:", pickup.display_name);
+  console.log("SRC Lat:", pickup.lat);
+  console.log("SRC Lon:", pickup.lon);
 
+  console.log("DST Address:", drop.display_name);
+  console.log("DST Lat:", drop.lat);
+  console.log("DST Lon:", drop.lon);
     if (token) {
       console.log("Pickup:", pickup);
       console.log("Drop:", drop);

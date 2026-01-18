@@ -3,17 +3,25 @@ import Home from './pages/Home'
 import Login from './components/Login'
 import Layout from './Layout'
 import UserRegister from './components/UserRegister'
-
+import { useEffect, useState } from 'react'
+import { useAuth } from './context/AuthContext'
+import PrivateHome from './components/PrivateHome'
+import Publicroutes from './routes/Publicroutes'
+import Privateroutes from './routes/Privateroutes'
 function App() {
   return (
     <>
     <Routes>
       <Route element={<Layout/>}>
-    
-    <Route path='/' element={<Home/>}/>
+      <Route path='/' element={<Home/>}/>
+      <Route element={<Publicroutes/>}>
       <Route path='/login' element={<Login/>}/>
-        <Route path='/signup' element={<UserRegister/>}/>
-          </Route>
+      <Route path='/register' element={<UserRegister/>}/>
+      </Route>
+      <Route element={<Privateroutes/>}>
+      <Route path='/dashboard' element={<PrivateHome/>}/>
+      </Route>
+    </Route>
     </Routes>
     </>
   )

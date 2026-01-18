@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import Button from './Button';
 import { useNavigate } from 'react-router-dom';
-
+import { useAuth } from "../context/AuthContext";
 const Login = () => {
+  const {login}=useAuth();
   const navigate=useNavigate();
   const[email,setEmail]=useState("");
   const[password,setPassword]=useState("");
@@ -18,9 +19,14 @@ const Login = () => {
            body:JSON.stringify({email,password})
 
       });
+      const res=await response.json();
        if(response.status==200){
+      login(res.token);
       alert("logged in success");
+      setEmail("");
+      setPassword("")
       console.log(response)
+      navigate('/dashboard')
     }
          else  alert("failed in logged in ")
 
