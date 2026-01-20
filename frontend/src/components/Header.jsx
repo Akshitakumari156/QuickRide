@@ -1,35 +1,80 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Navigate, NavLink, useNavigate } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
 import Button from "../components/Button";
+import { useAuth } from "../context/AuthContext";
+
+const navLinkClass = ({ isActive }) =>
+  `relative text-[#F2F4F5] text-lg font-medium transition-all
+   after:absolute after:left-0 after:-bottom-1 after:h-[2px]
+   after:bg-white after:transition-all
+   ${isActive ? "after:w-full text-white" : "after:w-0 hover:after:w-full"}`;
 
 const Header = () => {
   const [open, setOpen] = useState(false);
+const navigate=useNavigate();
+const {isAuth,logout}=useAuth();
+
 
   return (
-    <header className="w-full bg-[#0F2C46]">
-      <div className="max-w-full mx-auto flex items-center justify-between px-4 md:px-8 py-3">
-        
-        {/* Logo */}
-        <div className="flex items-center gap-3">
-          <img src="/logo.png" alt="logo" className="h-10 w-10 object-contain" />
-          <p className="text-2xl md:text-4xl text-[#F2F4F5] font-semibold">
-            UrbanMove
-          </p>
-        </div>
+    <header className="w-full bg-[#0F2C46] sticky top-0 z-50 shadow-md">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-8 py-4">
 
-        {/* Desktop Nav */}
+        {/* Logo */}
+         <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold">
+                            U
+                        </div>
+                        <span className="text-xl font-semibold text-white">
+                            Urban<span className="text-blue-600">Move</span>
+                        </span>
+                    </div>
+
+                   
+                </div>
+
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
-          <Link to="/Pricing"><Button label="Pricing" hoverbg="#1A3B5D" hovertextcolor="#FFFFFF" /></Link>
-          <Link to="/Safety"><Button label="Safety" hoverbg="#1A3B5D" hovertextcolor="#FFFFFF" /></Link>
-          <Link to="/home"><Button label="Service" hoverbg="#1A3B5D" hovertextcolor="#FFFFFF" /></Link>
-          <Link to="/Support"><Button label="Support" hoverbg="#1A3B5D" hovertextcolor="#FFFFFF" /></Link>
+          <NavLink to="/pricing" className={navLinkClass}>Pricing</NavLink>
+          <NavLink to="/safety" className={navLinkClass}>Safety</NavLink>
+          <NavLink to="/home" className={navLinkClass}>Service</NavLink>
+          <NavLink to="/support" className={navLinkClass}>Support</NavLink>
         </nav>
 
-        {/* Desktop Auth */}
+        {/* Desktop Auth Buttons */}
         <div className="hidden md:flex items-center gap-4">
-          <Button label="Login" bg="#6C7A89" hoverbg="#5A6672" textColor="#F2F4F5" className="rounded-[55px]" />
-          <Button label="Register" bg="#6C7A89" hoverbg="#5A6672" textColor="#F2F4F5" className="rounded-[55px]" />
+          <Button
+          onClick={()=>{
+          if(isAuth){
+            logout();
+            navigate('/');
+          }
+          else {
+            navigate('/login');
+          }
+          }}
+            label={isAuth?"Logout":"Login"}
+            bg="#6C7A89"
+            hoverbg="#5A6672"
+            textColor="#F2F4F5"
+            className="rounded-full px-6"
+          />
+          <Button
+           onClick={()=>{
+          if(isAuth){
+            navigate('/dashboard');
+          }
+          else {
+            navigate('/register');
+          }
+          }}
+            label={isAuth?"Profile":"Register"}
+            bg="#FFFFFF"
+            textColor="#0F2C46"
+            hoverbg="#E6E8EA"
+            className="rounded-full px-6"
+          />
         </div>
 
         {/* Mobile Toggle */}
@@ -43,27 +88,31 @@ const Header = () => {
       </div>
 
       {/* Mobile Menu */}
-      {open && (
-        <div className="md:hidden bg-[#0F2C46] px-4 py-4 space-y-3 border-2 rounded-md">
-          <Link to="/Pricing" onClick={() => setOpen(false)}>
-            <Button label="Pricing" className="w-full my-2" hoverbg="#1A3B5D" hovertextcolor="#FFFFFF" />
-          </Link>
-          <Link to="/Safety" onClick={() => setOpen(false)}>
-            <Button label="Safety" className="w-full my-2" hoverbg="#1A3B5D" hovertextcolor="#FFFFFF" />
-          </Link>
-          <Link to="/home" onClick={() => setOpen(false)}>
-            <Button label="Service" className="w-full my-2" hoverbg="#1A3B5D" hovertextcolor="#FFFFFF" />
-          </Link>
-          <Link to="/Support" onClick={() => setOpen(false)}>
-            <Button label="Support" className="w-full my-2" hoverbg="#1A3B5D" hovertextcolor="#FFFFFF" />
-          </Link>
+      <div
+        className={`md:hidden bg-[#0F2C46] px-6 overflow-hidden transition-all duration-300 ${
+          open ? "max-h-screen py-6" : "max-h-0"
+        }`}
+      >
+        <div className="flex flex-col gap-4">
+          <NavLink onClick={() => setOpen(false)} to="/pricing" className={navLinkClass}>Pricing</NavLink>
+          <NavLink onClick={() => setOpen(false)} to="/safety" className={navLinkClass}>Safety</NavLink>
+          <NavLink onClick={() => setOpen(false)} to="/home" className={navLinkClass}>Service</NavLink>
+          <NavLink onClick={() => setOpen(false)} to="/support" className={navLinkClass}>Support</NavLink>
 
-          <div className="pt-2 border-t border-[#1A3B5D]">
-            <Button label="Login" className="w-full mb-2" bg="#6C7A89" hoverbg="#5A6672" textColor="#F2F4F5" />
-            <Button label="Register" className="w-full" bg="#6C7A89" hoverbg="#5A6672" textColor="#F2F4F5" />
+          <div className="pt-4 border-t border-[#1A3B5D] flex flex-col gap-3">
+            <Button
+            onClick={()=>{
+              navigate('/login');
+            }}
+             label="Login" bg="#6C7A89" hoverbg="#5A6672" textColor="#F2F4F5" />
+            <Button
+             onClick={()=>{
+            navigate('/register')
+          }}
+             label="Register" bg="#FFFFFF" textColor="#0F2C46" hoverbg="#E6E8EA" />
           </div>
         </div>
-      )}
+      </div>
     </header>
   );
 };
