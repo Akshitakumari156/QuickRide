@@ -5,17 +5,22 @@ import MapView from "./MapView";
 const PrivateHome = () => {
     const [pickup, setPickup] = useState(null);
     const [dropoff, setDropoff] = useState(null);
-
-    const handleCheckPrice = (schedule) => {
+    const[fare,setFare]=useState(null);
+    const handleCheckPrice = async(schedule) => {
         console.log({ pickup, dropoff, schedule });
+            const resp = await fetch(
+      `http://localhost:5000/api/route/fare?` +
+        `srcLat=${pickup.lat}&srcLon=${pickup.lon}` +
+        `&dstLat=${dropoff.lat}&dstLon=${dropoff.lon}`
+    );
+     const data = await resp.json();
+     console.log("fare data:", data);
+    setFare(data);
+
     };
 
     return (
-        // Page uses layout height (do NOT use h-screen here)
         <div className="w-full h-full flex flex-col overflow-hidden bg-gray-100">
-
-           
-
             {/* MAIN CONTENT */}
             <div className="flex-1 overflow-hidden">
                 <div className="flex h-full gap-4 px-4 md:px-6 pb-4">
@@ -33,6 +38,7 @@ const PrivateHome = () => {
                                 onPickupSelect={setPickup}
                                 onDropoffSelect={setDropoff}
                                 onCheckPrice={handleCheckPrice}
+                                fareData={fare}
                             />
                         </div>
                     </div>

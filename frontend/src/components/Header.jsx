@@ -17,7 +17,7 @@ const {isAuth,logout}=useAuth();
 
 
   return (
-    <header className="w-full bg-[#0F2C46] sticky top-0 z-50 shadow-md">
+    <header className="w-full bg-[#0F2C46]  top-0 z-50 shadow-md">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-8 py-4">
 
         {/* Logo */}

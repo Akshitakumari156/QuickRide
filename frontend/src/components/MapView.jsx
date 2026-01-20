@@ -8,23 +8,22 @@ import {
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import userIconImg from "../assets/user-marker.png";
 import driverIconImg from "../assets/driver-marker.png";
 
-// Dummy Source & Destination
-const SRC_LOCATION = {
-  lat: 31.7685759,
-  lon: 74.8315603,
-};
+/* =========================
+   CONFIG
+========================= */
 
-const DST_LOCATION = {
-  lat: 25.1737019,
-  lon: 75.8574194,
-};
+const DEFAULT_CENTER = [22.9734, 78.6569]; // India
+const DEFAULT_ZOOM = 5;
 
-// Source marker
+/* =========================
+   ICONS
+========================= */
+
 const srcIcon = new L.Icon({
   iconUrl: userIconImg,
   iconSize: [40, 40],
@@ -32,7 +31,6 @@ const srcIcon = new L.Icon({
   popupAnchor: [0, -40],
 });
 
-// Destination marker
 const dstIcon = new L.Icon({
   iconUrl: driverIconImg,
   iconSize: [40, 40],
@@ -40,50 +38,102 @@ const dstIcon = new L.Icon({
   popupAnchor: [0, -40],
 });
 
-// Auto-fit bounds
+/* =========================
+   AUTO FIT BOUNDS
+========================= */
+
 const FitBounds = ({ positions }) => {
   const map = useMap();
 
   useEffect(() => {
-    map.fitBounds(positions, {
-      padding: [50, 50],
-      maxZoom: 15,
-    });
+    if (positions.length > 0) {
+      map.fitBounds(positions, {
+        padding: [50, 50],
+        maxZoom: 15,
+      });
+    }
   }, [map, positions]);
 
   return null;
 };
 
-const MapView = () => {
-  const src = [SRC_LOCATION.lat, SRC_LOCATION.lon];
-  const dst = [DST_LOCATION.lat, DST_LOCATION.lon];
-  const positions = [src, dst];
+/* =========================
+   MAP VIEW
+========================= */
+
+const MapView = ({ pickup, dropoff }) => {
+  const [userLocation, setUserLocation] = useState(null);
+
+  /* Get user's current location */
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setUserLocation([
+          position.coords.latitude,
+          position.coords.longitude,
+        ]);
+      },
+      () => {
+        setUserLocation(null);
+      },
+      { enableHighAccuracy: true }
+    );
+  }, []);
+
+  /* Positions for route */
+  const positions = [];
+
+  if (pickup) positions.push([pickup.lat, pickup.lon]);
+  if (dropoff) positions.push([dropoff.lat, dropoff.lon]);
+
+  /* Map center & zoom logic */
+  const mapCenter =
+    positions.length > 0
+      ? positions[0]
+      : userLocation || DEFAULT_CENTER;
+
+  const mapZoom =
+    positions.length > 0 ? 13 : userLocation ? 14 : DEFAULT_ZOOM;
 
   return (
     <MapContainer
       style={{ height: "100%", width: "100%" }}
-      center={src}   // initial center (will be overridden by fitBounds)
-      zoom={5}
+      center={mapCenter}
+      zoom={mapZoom}
     >
       <TileLayer
-        attribution="© OpenStreetMap contributors"
+        attribution="UrbanMove Map"
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      {/* Line between src & dst */}
-      <Polyline positions={positions} />
+      {/* User current location marker */}
+      {userLocation && !pickup && (
+        <Marker position={userLocation} icon={srcIcon}>
+          <Popup>You are here</Popup>
+        </Marker>
+      )}
 
-      {/* Source Marker */}
-      <Marker position={src} icon={srcIcon}>
-        <Popup>Source</Popup>
-      </Marker>
+      {/* Route line */}
+      {pickup && dropoff && <Polyline positions={positions} />}
 
-      {/* Destination Marker */}
-      <Marker position={dst} icon={dstIcon}>
-        <Popup>Destination</Popup>
-      </Marker>
+      {/* Pickup marker */}
+      {pickup && (
+        <Marker position={[pickup.lat, pickup.lon]} icon={srcIcon}>
+          <Popup>{pickup.name}</Popup>
+        </Marker>
+      )}
 
-      <FitBounds positions={positions} />
+      {/* Dropoff marker */}
+      {dropoff && (
+        <Marker position={[dropoff.lat, dropoff.lon]} icon={dstIcon}>
+          <Popup>{dropoff.name}</Popup>
+        </Marker>
+      )}
+
+      {/* Auto zoom */}
+      {positions.length > 0 && <FitBounds positions={positions} />}
     </MapContainer>
   );
 };
