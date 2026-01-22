@@ -1,4 +1,5 @@
 const captainModel = require('../models/captain.model');
+const redis=require('../config/redis.config');
 module.exports.createcaptain=async({
     firstname,
     lastname,
@@ -25,3 +26,23 @@ module.exports.createcaptain=async({
     return captain ;
 
 }
+
+
+
+exports.findNearbyCaptains = async (lat, lng) => {
+  const results = await redis.geosearch(
+    "captains:geo",
+    "FROMLONLAT",
+    lng,
+    lat,
+    "BYRADIUS",
+    5,
+    "km",
+    "WITHDIST"
+  );
+
+  return results.map(([captainId, distance]) => ({
+    captainId,
+    distanceKm: Number(distance),
+  }));
+};

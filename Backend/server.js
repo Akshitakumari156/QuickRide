@@ -2,6 +2,8 @@ const dotenv=require('dotenv');
 dotenv.config();
 const express=require('express');
 const cors=require('cors')
+const http=require('http');
+const initsocket=require('./sockets')
 const userrouter=require('./routes/user.routes');
 const captainrouter=require('./routes/captain.routes');
 const locationRoutes=require('./routes/location.routes')
@@ -13,6 +15,8 @@ const corsOptions={
     methods:["GET","POST"]
 }
 const app=express();
+const server=http.createServer(app);
+initsocket(server);
 app.use(cors(corsOptions))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -24,6 +28,6 @@ app.use('/api/captain',captainrouter)
 app.use('/api/location',locationRoutes)
 app.use('/api/route',distanceRoutes)
 app.use('/api/route',fareRoutes)
-app.listen(PORT,()=>{
+server.listen(PORT,()=>{
     console.log(`Server is running on port ${PORT}`);
 })

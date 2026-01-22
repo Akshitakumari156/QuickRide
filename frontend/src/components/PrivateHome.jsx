@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import HomeSidebar from "./HomeSidebar";
 import MapView from "./MapView";
 
@@ -45,16 +45,7 @@ const PrivateHome = () => {
 
                     {/* MAP */}
                     <div className="flex-1 relative overflow-hidden rounded-xl border shadow">
-                        <MapView pickup={pickup} dropoff={dropoff} />
-
-                        {/* Bottom action */}
-                        {pickup && dropoff && (
-                            <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-10">
-                                <button className="px-6 py-3 bg-blue-600 text-white rounded-xl shadow-md font-medium">
-                                    Confirm Ride
-                                </button>
-                            </div>
-                        )}
+                        <MapView pickup={pickup} dropoff={dropoff} />    
                     </div>
 
                 </div>
