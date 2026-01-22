@@ -1,26 +1,41 @@
-import { createContext,useContext, useEffect, useState } from "react";
-const AuthContext=createContext();
-export const AuthProvider=({children})=>{
-        const [isAuth, setIsAuth] = useState(() => {
-    const token = localStorage.getItem("token");
-    return !!token && token !== "undefined" && token !== "null";
+import { createContext, useContext, useMemo, useState } from "react";
+
+const AuthContext = createContext(null);
+
+export const AuthProvider = ({ children }) => {
+  const [authState, setAuthState] = useState(() => {
+    const userToken = localStorage.getItem("userToken");
+    const captainToken = localStorage.getItem("captainToken");
+
+    if (userToken) return { isAuth: true, role: "user" };
+    if (captainToken) return { isAuth: true, role: "captain" };
+
+    return { isAuth: false, role: "" };
   });
-        const logout=()=>{
-            localStorage.removeItem("token");
-            setIsAuth(false);
-        }
-        const login=(token)=>{
-            localStorage.setItem("token",token);
-            setIsAuth(true);
-        }
-        return (
-            <AuthContext.Provider
-            value={{login,isAuth,logout}}
-            >
-                {children}
-            </AuthContext.Provider>
-            )
-}
-export const useAuth=()=>{
-    return useContext(AuthContext);
-}
+
+  const login = (token, role) => {
+    localStorage.removeItem(role === "user" ? "captainToken" : "userToken");
+    localStorage.setItem(`${role}Token`, token);
+
+    setAuthState({ isAuth: true, role });
+  };
+
+  const logout = () => {
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("captainToken");
+    setAuthState({ isAuth: false, role: "" });
+  };
+
+  const value = useMemo(
+    () => ({ ...authState, login, logout }),
+    [authState]
+  );
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => useContext(AuthContext);

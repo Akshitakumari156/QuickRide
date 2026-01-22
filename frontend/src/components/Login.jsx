@@ -21,7 +21,8 @@ const Login = () => {
       });
       const res=await response.json();
        if(response.status==200){
-      login(res.token);
+      login(res.token,"user");
+     
       alert("logged in success");
       setEmail("");
       setPassword("")

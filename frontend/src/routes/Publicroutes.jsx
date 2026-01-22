@@ -1,12 +1,18 @@
-import React from 'react'
-import { Outlet,Navigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { Outlet, Navigate } from "react-router-dom"
+import { useAuth } from "../context/AuthContext"
 
 const Publicroutes = () => {
-    const {isAuth}=useAuth();
-  return (
-  isAuth?<Navigate to="/dashboard"/>:<Outlet/>
-  )
+  const { isAuth, role } = useAuth()
+
+  if (isAuth && role === "user") {
+    return <Navigate to="/dashboard" replace />
+  }
+
+  if (isAuth && role === "captain") {
+    return <Navigate to="/captain/dashboard" replace />
+  }
+
+  return <Outlet />
 }
 
 export default Publicroutes
