@@ -1,5 +1,6 @@
 const express=require('express');
 const router=express.Router();
+const reversegeocode=require('../controllers/reversegeolocation.controllers');
 router.get('/search',async(req,res)=>{
   try {
       const {q}=req.query;
@@ -18,4 +19,5 @@ return res.json(data);
   }
 
 })
+router.get('/reverse',reversegeocode.getAddressFromCoordinates);
 module.exports=router
