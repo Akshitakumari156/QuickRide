@@ -29,7 +29,7 @@ const Login = () => {
       console.log(response)
       navigate('/dashboard')
     }
-         else  alert("failed in logged in ")
+    else  alert("failed in logged in ")
 
   }
   return (

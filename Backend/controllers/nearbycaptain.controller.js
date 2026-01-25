@@ -1,3 +1,4 @@
+const captainService=require('../services/captain.service');
 exports.nearbycaptain=async(req,res)=>{
     const {lat,lng}=req.query;
     try {
