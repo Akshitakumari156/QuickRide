@@ -1,7 +1,8 @@
 const {Server}=require("socket.io");
 const captainSocket=require("../services/sockets/captain.sockets");
+let io;
 module.exports=(httpServer)=>{
-const io=new Server(httpServer,{
+  io=new Server(httpServer,{
     cors:{
         origin:"*",
     },
@@ -14,3 +15,4 @@ io.on("connection",(socket)=>{
     })
 })
 }
+module.exports.io=()=>io;

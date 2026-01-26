@@ -9,6 +9,7 @@ const captainrouter=require('./routes/captain.routes');
 const locationRoutes=require('./routes/location.routes')
 const distanceRoutes=require('./routes/distance.routes')
 const fareRoutes=require('./routes/fare.route')
+const rideRequestRoutes=require('./routes/ride.request.routes')
 const corsOptions={
     origin:"http://localhost:5173",
     //credentials:true,
@@ -28,6 +29,7 @@ app.use('/api/captain',captainrouter)
 app.use('/api/location',locationRoutes)
 app.use('/api/route',distanceRoutes)
 app.use('/api/route',fareRoutes)
+app.use('/api/ride',rideRequestRoutes)
 server.listen(PORT,()=>{
     console.log(`Server is running on port ${PORT}`);
 })

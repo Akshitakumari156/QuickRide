@@ -29,7 +29,7 @@ module.exports.createcaptain=async({
 
 
 
-exports.findNearbyCaptains = async (lat, lng) => {
+exports.findNearbyCaptains=async (lat, lng) => {
   console.log("Finding nearby captains for:", lat, lng);
   const results = await redis.geosearch(
     "captains:location",
