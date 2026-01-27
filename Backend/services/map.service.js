@@ -1,6 +1,6 @@
  exports.getDistanceAndETA=async(src,dst)=>{
-    const{lat:srcLat,lon:srcLon}=src;
-    const{lat:dstLat,lon:dstLon}=dst;
+    const{lat:srcLat,lng:srcLon}=src;
+    const{lat:dstLat,lng:dstLon}=dst;
     const url= `https://router.project-osrm.org/route/v1/driving/${srcLon},${srcLat};${dstLon},${dstLat}?overview=false`;
     const response=await fetch(url);
     const data=await response.json();

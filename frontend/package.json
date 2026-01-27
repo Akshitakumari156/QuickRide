@@ -22,6 +22,7 @@
     "react-icons": "^5.5.0",
     "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.11.0",
+    "socket.io-client": "^4.8.3",
     "zod": "^4.3.5"
   },
   "devDependencies": {

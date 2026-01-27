@@ -31,8 +31,12 @@ exports.rideRequest=async(req,res)=>{
    
 
     }
-    catch (error) {
-        console.log("error in ride request controller");
-    }
+   catch (error) {
+  console.error(" error in ride request controller:", error);
+  return res.status(500).json({
+    message: "Ride request failed",
+  });
+}
+
 }
 

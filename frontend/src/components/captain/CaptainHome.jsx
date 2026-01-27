@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../Sidebar";
-import Dashboard from "../Dashboard";
+import Dashboard from "./Dashboard";
 import RideHistory from "../RideHistory";
 import Reviews from "../Reviews";
 import ProfileSettings from "../ProfileSettings";

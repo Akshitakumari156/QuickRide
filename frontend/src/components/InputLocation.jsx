@@ -9,12 +9,12 @@ const InputLocation = ({ icon, description, callback }) => {
   const [query, setQuery] = useState("");
   const [suggestion, setSuggestion] = useState([]);
   const [isFocused, setIsFocused] = useState(false);
-  const wrapedref = useRef(null);
+  const wrappedRef = useRef(null);
 
   /* Close dropdown on outside click */
   useEffect(() => {
     const clickOutside = (e) => {
-      if (wrapedref.current && !wrapedref.current.contains(e.target)) {
+      if (wrappedRef.current && !wrappedRef.current.contains(e.target)) {
         setSuggestion([]);
         setIsFocused(false);
       }
@@ -24,7 +24,7 @@ const InputLocation = ({ icon, description, callback }) => {
   }, []);
 
   /* Fetch suggestions */
-  const fetchsuggestion = async (text) => {
+  const fetchSuggestion = async (text) => {
     setQuery(text);
 
     if (text.length < 3) {
@@ -39,7 +39,7 @@ const InputLocation = ({ icon, description, callback }) => {
       const data = await resp.json();
       setSuggestion(data);
     } catch (error) {
-      console.log("error in fetching location");
+      console.error("❌ error fetching location suggestions", error);
     }
   };
 
@@ -51,7 +51,7 @@ const InputLocation = ({ icon, description, callback }) => {
 
     callback({
       lat: Number(item.lat),
-      lon: Number(item.lon),
+      lng: Number(item.lon), // ✅ FIXED
       name: item.display_name,
     });
   };
@@ -71,7 +71,7 @@ const InputLocation = ({ icon, description, callback }) => {
 
         callback({
           lat: position.coords.latitude,
-          lon: position.coords.longitude,
+          lng: position.coords.longitude, // ✅ FIXED
           name: "Current location",
         });
       },
@@ -86,7 +86,7 @@ const InputLocation = ({ icon, description, callback }) => {
   return (
     <div className="w-full flex justify-center">
       <div
-        ref={wrapedref}
+        ref={wrappedRef}
         className="w-full relative max-w-3xl px-4 sm:px-6 py-4"
       >
         <FontAwesomeIcon
@@ -99,7 +99,7 @@ const InputLocation = ({ icon, description, callback }) => {
           placeholder={description || "Enter pickup location"}
           value={query}
           onFocus={() => setIsFocused(true)}
-          onChange={(e) => fetchsuggestion(e.target.value)}
+          onChange={(e) => fetchSuggestion(e.target.value)}
           className="w-full pl-10 py-3 sm:py-4 rounded-lg border-2 border-gray-300 text-base sm:text-lg placeholder-gray-500"
         />
 

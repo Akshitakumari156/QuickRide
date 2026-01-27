@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 
-const LOCATION_INTERVAL = 10000; // 10 seconds
+const LOCATION_INTERVAL = 10000;
 
-const useCaptainLocation = (captainId) => {
+const useCaptainLocation = (enabled) => {
   const [coords, setCoords] = useState(null);
   const [address, setAddress] = useState("Fetching location...");
   const lastCallRef = useRef(0);
 
   useEffect(() => {
+    if (!enabled) return;
     if (!navigator.geolocation) {
       setAddress("Location not supported");
       return;
@@ -18,29 +19,18 @@ const useCaptainLocation = (captainId) => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
 
-        setCoords([lat, lng]);
+        // ✅ OBJECT — NOT ARRAY
+        setCoords({ lat, lng });
 
         const now = Date.now();
-        if (now - lastCallRef.current < LOCATION_INTERVAL) {
-          return; // ⛔ throttle backend calls
-        }
+        if (now - lastCallRef.current < LOCATION_INTERVAL) return;
         lastCallRef.current = now;
 
         try {
           const res = await fetch(
-            `http://localhost:5000/api/location/reverse?lat=${lat}&lng=${lng}&captainId=${captainId}`
+            `http://localhost:5000/api/location/reverse?lat=${lat}&lng=${lng}`
           );
-
-          console.log("Frontend status:", res.status);
-
           const data = await res.json();
-          console.log("Frontend data:", data);
-
-          setAddress(data.place || "Unknown location");
-
-
-
-
           setAddress(data.place || "Unknown location");
         } catch {
           setAddress("Unable to fetch location");
@@ -51,7 +41,7 @@ const useCaptainLocation = (captainId) => {
     );
 
     return () => navigator.geolocation.clearWatch(watchId);
-  }, [captainId]);
+  }, [enabled]);
 
   return { coords, address };
 };

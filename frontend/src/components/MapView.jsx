@@ -75,20 +75,23 @@ const MapView = ({ pickup, dropoff }) => {
           position.coords.longitude,
         ]);
       },
-      () => {
-        setUserLocation(null);
-      },
+      () => setUserLocation(null),
       { enableHighAccuracy: true }
     );
   }, []);
 
-  /* Positions for route */
+  /* Build positions safely */
   const positions = [];
 
-  if (pickup) positions.push([pickup.lat, pickup.lon]);
-  if (dropoff) positions.push([dropoff.lat, dropoff.lon]);
+  if (pickup?.lat && pickup?.lng) {
+    positions.push([pickup.lat, pickup.lng]);
+  }
 
-  /* Map center & zoom logic */
+  if (dropoff?.lat && dropoff?.lng) {
+    positions.push([dropoff.lat, dropoff.lng]);
+  }
+
+  /* Map center & zoom */
   const mapCenter =
     positions.length > 0
       ? positions[0]
@@ -108,32 +111,36 @@ const MapView = ({ pickup, dropoff }) => {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      {/* User current location marker */}
+      {/* User current location */}
       {userLocation && !pickup && (
         <Marker position={userLocation} icon={srcIcon}>
           <Popup>You are here</Popup>
         </Marker>
       )}
 
-      {/* Route line */}
-      {pickup && dropoff && <Polyline positions={positions} />}
+      {/* Route */}
+      {positions.length === 2 && (
+        <Polyline positions={positions} />
+      )}
 
       {/* Pickup marker */}
-      {pickup && (
-        <Marker position={[pickup.lat, pickup.lon]} icon={srcIcon}>
+      {pickup?.lat && pickup?.lng && (
+        <Marker position={[pickup.lat, pickup.lng]} icon={srcIcon}>
           <Popup>{pickup.name}</Popup>
         </Marker>
       )}
 
       {/* Dropoff marker */}
-      {dropoff && (
-        <Marker position={[dropoff.lat, dropoff.lon]} icon={dstIcon}>
+      {dropoff?.lat && dropoff?.lng && (
+        <Marker position={[dropoff.lat, dropoff.lng]} icon={dstIcon}>
           <Popup>{dropoff.name}</Popup>
         </Marker>
       )}
 
       {/* Auto zoom */}
-      {positions.length > 0 && <FitBounds positions={positions} />}
+      {positions.length > 0 && (
+        <FitBounds positions={positions} />
+      )}
     </MapContainer>
   );
 };
