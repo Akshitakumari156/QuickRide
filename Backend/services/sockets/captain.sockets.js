@@ -38,6 +38,50 @@ module.exports = (socket) => {
   }
 });
 
+socket.on("ride:accept", async ({ rideId }) => {
+  try {
+    const captainId = socket.captainId;
+    if (!rideId || !captainId) return;
+
+    const status = await redis.hget(`ride:${rideId}`, "status");
+
+    if (status !== "requested") {
+      return socket.emit("ride:rejected", {
+        rideId,
+        reason: "Ride already taken"
+      });
+    }
+
+    const lockKey = `ride:${rideId}:lock`;
+    const lock = await redis.set(lockKey, captainId, "NX", "EX", 30);
+
+    if (!lock) {
+      return socket.emit("ride:rejected", {
+        rideId,
+        reason: "Ride already accepted by another captain"
+      });
+    }
+
+    await redis.hset(`ride:${rideId}`, {
+      status: "accepted",
+      captainId
+    });
+
+    socket.emit("ride:confirmed", {
+      rideId,
+      message: "Ride successfully assigned to you"
+    });
+
+    console.log(`✅ Ride ${rideId} accepted by captain ${captainId}`);
+
+  } catch (err) {
+    console.error("ride:accept error", err);
+    socket.emit("ride:error", {
+      message: "Ride accept failed"
+    });
+  }
+});
+
 
   socket.on("disconnect", async () => {
     try {
