@@ -1,5 +1,5 @@
 import CaptainCTASection from '../components/captain/CaptainCTASection'
-import Header from '../components/Header'
+import Header from '../components/Header/PublicHeader'
 import HomeHeroSection from '../components/HomeHeroSection'
 
 const Home = () => {

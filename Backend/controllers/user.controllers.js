@@ -67,7 +67,6 @@ exports.loginuser=async (req,res)=>{
 }
 exports.getprofile=async(req,res,next)=>{
     return res.status(200).json(req.user);
-
 }
 
 

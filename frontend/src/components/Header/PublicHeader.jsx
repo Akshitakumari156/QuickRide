@@ -1,8 +1,8 @@
 import { useState } from "react"
 import { NavLink, useLocation, useNavigate } from "react-router-dom"
 import { FiMenu, FiX } from "react-icons/fi"
-import Button from "../components/Button"
-import { useAuth } from "../context/AuthContext"
+import Button from "../Button"
+import { useAuth } from "../../context/AuthContext"
 
 const navLinkClass = ({ isActive }) =>
   `relative text-[#F2F4F5] text-lg font-medium transition-all
@@ -37,7 +37,7 @@ const location = useLocation()
       navigate("/captain/register")
     }
     else {
-      navigate("/signup")
+      navigate("/register")
     }
     setOpen(false)
   }
@@ -70,16 +70,16 @@ const location = useLocation()
         {/* Desktop Auth Buttons */}
         <div className="hidden md:flex items-center gap-4">
           <Button
-            onClick={handleAuthClick}
-            label={isAuth ? "Logout" : "Login"}
+            onClick={()=>{navigate('/login')}}
+            label="Login"
             bg="#6C7A89"
             hoverbg="#5A6672"
             textColor="#F2F4F5"
             className="rounded-full px-6"
           />
           <Button
-            onClick={handleSecondaryClick}
-            label={isAuth ? "Dashboard" : "Register"}
+            onClick={() => navigate('/register')}
+            label="Register"
             bg="#FFFFFF"
             textColor="#0F2C46"
             hoverbg="#E6E8EA"
@@ -112,14 +112,14 @@ const location = useLocation()
           <div className="pt-4 border-t border-[#1A3B5D] flex flex-col gap-3">
             <Button
               onClick={handleAuthClick}
-              label={isAuth ? "Logout" : "Login"}
+            label="Login"
               bg="#6C7A89"
               hoverbg="#5A6672"
               textColor="#F2F4F5"
             />
             <Button
               onClick={handleSecondaryClick}
-              label={isAuth ? "Dashboard" : "Register"}
+              label="Register"
               bg="#FFFFFF"
               textColor="#0F2C46"
               hoverbg="#E6E8EA"

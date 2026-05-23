@@ -9,9 +9,10 @@ const PrivateHome = () => {
 
   const handleCheckPrice = async (schedule) => {
     if (!pickup || !dropoff) {
-      console.warn("❌ Pickup or dropoff missing");
+      console.warn("Pickup or dropoff missing");
       return;
     }
+
 
     console.log({ pickup, dropoff, schedule });
 

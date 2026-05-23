@@ -22,7 +22,7 @@ function App() {
       <Route path='/login' element={<Login/>}/>
       <Route path='/register' element={<UserRegister/>}/>
        <Route path='/captain/register' element={<CaptainRegisterForm/>}/>
-         <Route path='/captain/login' element={<CaptainLogin/>}/>
+      <Route path='/captain/login' element={<CaptainLogin/>}/>
       
       </Route>
       <Route element={<Privateroutes/>}>

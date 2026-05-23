@@ -8,7 +8,7 @@ const Login = () => {
   const[email,setEmail]=useState("");
   const[password,setPassword]=useState("");
   const Signupfn=()=>{
-    navigate('/signup')
+    navigate('/register')
   }
   const handleBtn=async(data)=>{
       const response=await fetch("http://localhost:5000/api/user/login",{

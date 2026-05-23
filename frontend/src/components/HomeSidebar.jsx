@@ -154,7 +154,7 @@ const HomeSidebar = ({
           {loading
             ? "Requesting Ride..."
             : fareData
-            ? "Confirm Ride"
+            ? "Search Rider"
             : "Check Price"}
         </button>
       </div>
