@@ -48,8 +48,9 @@ const FitBounds = ({ positions }) => {
   useEffect(() => {
     if (positions.length > 0) {
       map.fitBounds(positions, {
-        padding: [50, 50],
-        maxZoom: 15,
+        padding: [80, 80],
+        maxZoom: 14,
+        animate: true,
       });
     }
   }, [map, positions]);
@@ -76,11 +77,14 @@ const MapView = ({ pickup, dropoff }) => {
         ]);
       },
       () => setUserLocation(null),
-      { enableHighAccuracy: true }
+      {
+        enableHighAccuracy: true,
+      }
     );
   }, []);
 
-  /* Build positions safely */
+  /* Route positions */
+
   const positions = [];
 
   if (pickup?.lat && pickup?.lng) {
@@ -91,53 +95,88 @@ const MapView = ({ pickup, dropoff }) => {
     positions.push([dropoff.lat, dropoff.lng]);
   }
 
-  /* Map center & zoom */
+  /* Initial center */
+
   const mapCenter =
     positions.length > 0
       ? positions[0]
       : userLocation || DEFAULT_CENTER;
 
   const mapZoom =
-    positions.length > 0 ? 13 : userLocation ? 14 : DEFAULT_ZOOM;
+    positions.length > 0
+      ? 13
+      : userLocation
+      ? 14
+      : DEFAULT_ZOOM;
 
   return (
     <MapContainer
-      style={{ height: "100%", width: "100%" }}
       center={mapCenter}
       zoom={mapZoom}
+      minZoom={5}
+      maxZoom={18}
+      zoomControl={true}
+      scrollWheelZoom={true}
+      style={{
+        height: "100%",
+        width: "100%",
+      }}
+      maxBounds={[
+        [-90, -180],
+        [90, 180],
+      ]}
+      maxBoundsViscosity={1.0}
     >
       <TileLayer
         attribution="UrbanMove Map"
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      {/* User current location */}
+      {/* Current Location */}
+
       {userLocation && !pickup && (
         <Marker position={userLocation} icon={srcIcon}>
           <Popup>You are here</Popup>
         </Marker>
       )}
 
-      {/* Route */}
+      {/* Route Line */}
+
       {positions.length === 2 && (
-        <Polyline positions={positions} />
+        <Polyline
+          positions={positions}
+          pathOptions={{
+            color: "#111827",
+            weight: 5,
+            opacity: 0.8,
+          }}
+        />
       )}
 
-      {/* Pickup marker */}
+      {/* Pickup Marker */}
+
       {pickup?.lat && pickup?.lng && (
-        <Marker position={[pickup.lat, pickup.lng]} icon={srcIcon}>
+        <Marker
+          position={[pickup.lat, pickup.lng]}
+          icon={srcIcon}
+        >
           <Popup>{pickup.name}</Popup>
         </Marker>
       )}
 
-      {/* Dropoff marker */}
+      {/* Dropoff Marker */}
+
       {dropoff?.lat && dropoff?.lng && (
-        <Marker position={[dropoff.lat, dropoff.lng]} icon={dstIcon}>
+        <Marker
+          position={[dropoff.lat, dropoff.lng]}
+          icon={dstIcon}
+        >
           <Popup>{dropoff.name}</Popup>
         </Marker>
       )}
 
-      {/* Auto zoom */}
+      {/* Auto Fit Route */}
+
       {positions.length > 0 && (
         <FitBounds positions={positions} />
       )}

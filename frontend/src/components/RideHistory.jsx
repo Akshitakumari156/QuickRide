@@ -32,6 +32,7 @@ const RideHistory = () => {
           </tr>
         </tbody>
       </table>
+      
     </div>
   );
 };

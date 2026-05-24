@@ -6,12 +6,15 @@ const PrivateHome = () => {
   const [pickup, setPickup] = useState(null);
   const [dropoff, setDropoff] = useState(null);
   const [fare, setFare] = useState(null);
+  const [error, setError] = useState(null);
 
   const handleCheckPrice = async (schedule) => {
     if (!pickup || !dropoff) {
       console.warn("Pickup or dropoff missing");
+      setError("Please select both pickup and dropoff locations");
       return;
     }
+    setError(null);
 
 
     console.log({ pickup, dropoff, schedule });
@@ -28,7 +31,7 @@ const PrivateHome = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col overflow-hidden bg-gray-100">
+    <div className="w-full h-screen flex flex-col overflow-hidden bg-gray-100">
       <div className="flex-1 overflow-hidden">
         <div className="flex h-full gap-4 px-4 md:px-6 pb-4">
 
@@ -45,14 +48,15 @@ const PrivateHome = () => {
                 onPickupSelect={setPickup}
                 onDropoffSelect={setDropoff}
                 onCheckPrice={handleCheckPrice}
-                fareData={fare}      
-                pickupCoords={pickup} 
+                fareData={fare}
+                pickupCoords={pickup}
+                error={error}
               />
             </div>
           </div>
 
           {/* MAP */}
-          <div className="flex-1 relative overflow-hidden rounded-xl border shadow">
+          <div className="flex-1 h-full min-h-0 relative overflow-hidden rounded-xl border shadow">
             <MapView pickup={pickup} dropoff={dropoff} />
           </div>
 
