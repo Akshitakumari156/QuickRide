@@ -1,11 +1,11 @@
+import React, { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faLocationDot,
   faCrosshairs,
 } from "@fortawesome/free-solid-svg-icons";
-import { useEffect, useRef, useState } from "react";
 
-const InputLocation = ({ icon, description, callback }) => {
+const InputLocation = ({ icon, description, callback, onInputChange }) => {
   const [query, setQuery] = useState("");
   const [suggestion, setSuggestion] = useState([]);
   const [isFocused, setIsFocused] = useState(false);
@@ -26,6 +26,9 @@ const InputLocation = ({ icon, description, callback }) => {
   /* Fetch suggestions */
   const fetchSuggestion = async (text) => {
     setQuery(text);
+
+    // Alert layout that an edit transaction is actively occurring
+    if (onInputChange) onInputChange();
 
     if (text.length < 3) {
       setSuggestion([]);
@@ -49,9 +52,11 @@ const InputLocation = ({ icon, description, callback }) => {
     setSuggestion([]);
     setIsFocused(false);
 
+    if (onInputChange) onInputChange();
+
     callback({
       lat: Number(item.lat),
-      lng: Number(item.lon), // ✅ FIXED
+      lng: Number(item.lon), 
       name: item.display_name,
     });
   };
@@ -69,9 +74,11 @@ const InputLocation = ({ icon, description, callback }) => {
         setSuggestion([]);
         setIsFocused(false);
 
+        if (onInputChange) onInputChange();
+
         callback({
           lat: position.coords.latitude,
-          lng: position.coords.longitude, // ✅ FIXED
+          lng: position.coords.longitude, 
           name: "Current location",
         });
       },
