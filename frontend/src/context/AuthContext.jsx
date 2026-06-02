@@ -4,6 +4,7 @@ import {
   useMemo,
   useState,
   useEffect,
+  useCallback,
 } from "react";
 import axios from "axios";
 
@@ -40,11 +41,11 @@ export const AuthProvider = ({ children }) => {
     };
   });
 
-  const getProfile = async () => {
+  // Wrapped in useCallback to safely include it as a hook dependency
+  const getProfile = useCallback(async () => {
     try {
       const userToken = localStorage.getItem("userToken");
       const captainToken = localStorage.getItem("captainToken");
-
       const token = userToken || captainToken;
 
       if (!token) {
@@ -55,9 +56,11 @@ export const AuthProvider = ({ children }) => {
         return;
       }
 
+      // Replaced hardcoded localhost endpoints with the environment variable configuration
+      const baseUrl = import.meta.env.VITE_API_URL || '';
       const endpoint = userToken
-        ? "http://localhost:5000/api/user/profile"
-        : "http://localhost:5000/api/captain/profile";
+        ? `${baseUrl}/api/user/profile`
+        : `${baseUrl}/api/captain/profile`;
 
       const response = await axios.get(endpoint, {
         headers: {
@@ -71,7 +74,7 @@ export const AuthProvider = ({ children }) => {
         loading: false,
       }));
     } catch (error) {
-      console.log(error);
+      console.error("❌ Profile retrieval failed:", error);
 
       localStorage.removeItem("userToken");
       localStorage.removeItem("captainToken");
@@ -83,13 +86,14 @@ export const AuthProvider = ({ children }) => {
         loading: false,
       });
     }
-  };
+  }, []);
 
+  // Tracks authorization status across both mount and state change events safely
   useEffect(() => {
-    if (authState.isAuth) {
+    if (authState.isAuth && !authState.user) {
       getProfile();
     }
-  }, []);
+  }, [authState.isAuth, authState.user, getProfile]);
 
   const login = (token, role) => {
     localStorage.removeItem(
@@ -104,8 +108,6 @@ export const AuthProvider = ({ children }) => {
       user: null,
       loading: true,
     });
-
-    getProfile();
   };
 
   const logout = () => {
@@ -127,7 +129,7 @@ export const AuthProvider = ({ children }) => {
       logout,
       getProfile,
     }),
-    [authState]
+    [authState, getProfile]
   );
 
   return (

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 
 const CaptainRegisterForm = () => {
-    const navigate=useNavigate();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstname: '',
     lastname: '',
@@ -13,45 +13,49 @@ const CaptainRegisterForm = () => {
     capacity: '',
     vehicleType: 'car'
   })
-const handleChange = (e) => {
+
+  const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
-}
-  const handleSubmit= async (e) => {
-    e.preventDefault();
-     const payload = {
-    firstname: formData.firstname,
-    lastname: formData.lastname,
-    email: formData.email,
-    password: formData.password,
-    vehicle: {
-      color: formData.vehicleColor,
-      plateNumber: formData.plateNumber,
-      capacity: Number(formData.capacity),
-      vehicleType: formData.vehicleType
-    }
-  }
-    try {
-        const response=await fetch('http://localhost:5000/api/captain/register',{
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json'
-            },
-            body:JSON.stringify(payload)
-        })
-        const data=await response.json();
-        console.log("Captain Registration Response:",data);
-        if(data.token){
-            alert("Captain registered successfully!");
-            navigate('/captain/login');
-            
-        }
-        
-    } catch (error) {
-        console.error("Error in captain registration:", error);
-    }
   }
 
-  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const payload = {
+      firstname: formData.firstname,
+      lastname: formData.lastname,
+      email: formData.email,
+      password: formData.password,
+      vehicle: {
+        color: formData.vehicleColor,
+        plateNumber: formData.plateNumber,
+        capacity: Number(formData.capacity),
+        vehicleType: formData.vehicleType
+      }
+    }
+
+    try {
+      // Dynamic API URL fetched from your environment variables
+      const baseUrl = import.meta.meta.env?.VITE_API_URL || import.meta.env.VITE_API_URL;
+      const response = await fetch(`${baseUrl}/api/captain/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+      
+      const data = await response.json();
+      console.log("Captain Registration Response:", data);
+      
+      if (data.token) {
+        alert("Captain registered successfully!");
+        navigate('/captain/login');
+      }
+      
+    } catch (error) {
+      console.error("Error in captain registration:", error);
+    }
+  }
 
   return (
     <div className="min-h-screen flex items-center mt-4 justify-center bg-gradient-to-br from-gray-100 to-gray-200 px-4">
@@ -174,4 +178,4 @@ const handleChange = (e) => {
   )
 }
 
-export default CaptainRegisterForm
+export default CaptainRegisterForm;

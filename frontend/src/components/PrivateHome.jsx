@@ -29,7 +29,7 @@ const PrivateHome = () => {
     };
   }, []);
 
-  const handleCheckPrice = async (schedule) => {
+  const handleCheckPrice = async () => {
     if (!pickup || !dropoff) {
       setError("Please select both pickup and dropoff locations");
       return;
@@ -37,8 +37,10 @@ const PrivateHome = () => {
     setError(null);
 
     try {
+      // Replaced hardcoded localhost URL string with the environment variable configuration
+      const baseUrl = import.meta.env.VITE_API_URL || '';
       const resp = await fetch(
-        `http://localhost:5000/api/route/fare?` +
+        `${baseUrl}/api/route/fare?` +
         `srcLat=${pickup.lat}&srcLng=${pickup.lng}` +
         `&dstLat=${dropoff.lat}&dstLng=${dropoff.lng}`
       );
@@ -63,7 +65,7 @@ const PrivateHome = () => {
         <div className="flex flex-col md:flex-row h-full gap-4 px-4 md:px-6 pb-4 relative">
 
           {/* RESPONSIVE PANEL OVERLAY BLOCK */}
-          <div className="w-full md:w-[380px] h-auto md:h-full flex-shrink-0 absolute bottom-4 left-0 right-0 px-4 md:static md:px-0 z-50 pointer-events-none">
+          <div className="w-full md:w-[380px] h-auto md:h-full flex-shrink-0 absolute bottom-4 left-0 right-0 px-4 md:static md:px-0 z-[50] pointer-events-none">
             <div className="w-full h-full pointer-events-auto bg-white md:bg-transparent rounded-2xl shadow-xl md:shadow-none">
               {!activeRide ? (
                 <HomeSidebar
@@ -86,7 +88,7 @@ const PrivateHome = () => {
           </div>
 
           {/* MAP CANVAS GRID */}
-          <div className="flex-1 h-full min-h-0 relative overflow-hidden rounded-2xl border border-slate-200 shadow-md z-10">
+          <div className="flex-1 h-full min-h-[50vh] md:min-h-0 relative overflow-hidden rounded-2xl border border-slate-200 shadow-md z-10">
             <MapView pickup={pickup} dropoff={dropoff} activeRide={activeRide} />
           </div>
 

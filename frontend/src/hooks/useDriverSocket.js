@@ -6,10 +6,14 @@ export const useDriverSocket = (token, coords) => {
   const [isOnlineState, setIsOnlineState] = useState(false);
   const [incomingRide, setIncomingRide] = useState(null);
 
+  // Effect A: Manages the lifetime connection and event listeners of the socket instance
   useEffect(() => {
     if (!token) return;
 
-    socketRef.current = io("http://localhost:5000", {
+    // Replaced hardcoded localhost connection with environment variable configuration
+    const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    
+    socketRef.current = io(baseUrl, {
       auth: { token },
       autoConnect: false, 
     });
@@ -18,16 +22,14 @@ export const useDriverSocket = (token, coords) => {
 
     socketInstance.on("connect", () => {
       console.log("🟢 Connected securely to real-time hub:", socketInstance.id);
-      if (coords?.lat && coords?.lng) {
-        socketInstance.emit("driver:online", { lat: coords.lat, lng: coords.lng });
-      }
+      // Fallback fallback emission handled dynamically inside Effect B to ensure accuracy
     });
 
     socketInstance.on("driver:status:updated", (data) => {
       if (data.status === "AVAILABLE") setIsOnlineState(true);
     });
 
-    // 🚕 FIX: Change "ride:request" to match the backend event key name "new-ride-request"
+    // 🚕 Catch backend event broadcasts
     socketInstance.on("new-ride-request", (ride) => {
       console.log("🎯 Hook caught new ride broadcast:", ride);
       setIncomingRide(ride);
@@ -42,11 +44,18 @@ export const useDriverSocket = (token, coords) => {
     return () => {
       socketInstance.disconnect();
     };
-  }, [token, coords]);
+  }, [token]); // Isolated from coords changes to prevent continuous teardown/reconnect cycles
 
-  // 📡 High-Frequency Telemetry Heartbeat Controller
+  // Effect B: High-Frequency Telemetry Heartbeat Controller
   useEffect(() => {
-    if (!isOnlineState || !coords?.lat || !coords?.lng || !socketRef.current?.connected) return;
+    if (!socketRef.current) return;
+
+    // Send a single inline setup sync if the driver switches state or changes location 
+    if (isOnlineState && coords?.lat && coords?.lng && socketRef.current.connected) {
+      socketRef.current.emit("driver:online", { lat: coords.lat, lng: coords.lng });
+    }
+
+    if (!isOnlineState || !coords?.lat || !coords?.lng || !socketRef.current.connected) return;
 
     const interval = setInterval(() => {
       socketRef.current.emit("driver:location:update", {

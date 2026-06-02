@@ -5,16 +5,19 @@ import { faX } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from 'react-router-dom';
 
 const LoginPopUp = ({ closebackdrop }) => {
+  // Prevent background scrolling while the modal is open
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "auto";
     };
   }, []);
-  const navigate=useNavigate();
-  const handleBtn=()=>{
-    navigate('/login')
-  }
+
+  const navigate = useNavigate();
+  
+  const handleBtn = () => {
+    navigate('/login');
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -31,7 +34,8 @@ const LoginPopUp = ({ closebackdrop }) => {
         {/* CLOSE ICON */}
         <button
           onClick={closebackdrop}
-          className="absolute top-3 right-3 text-[#6C7A89] hover:text-[#0F2C46]"
+          className="absolute top-3 right-3 text-[#6C7A89] hover:text-[#0F2C46] transition-colors"
+          aria-label="Close modal"
         >
           <FontAwesomeIcon icon={faX} />
         </button>
@@ -46,15 +50,15 @@ const LoginPopUp = ({ closebackdrop }) => {
           </p>
         </div>
 
-        {/* CTA */}
+        {/* CTA BUTTON */}
         <div className="flex justify-center">
           <Button
-          onClick={handleBtn}
+            onClick={handleBtn}
             label="Continue to Login"
             bg="#2ECC71"
             textColor="#0F2C46"
-            className="w-full h-12 font-semibold"
             hoverbg="#3ABEFF"
+            className="w-full h-12 font-semibold shadow-md transition-all"
           />
         </div>
 

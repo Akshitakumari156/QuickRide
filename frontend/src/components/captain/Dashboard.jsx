@@ -102,10 +102,13 @@ const Dashboard = ({ isOnline, setIsOnline }) => {
       let pickupText = "Loading pickup address details...";
       let destinationText = "Loading destination address details...";
 
+      // Replaced hardcoded localhost URL with the environment variable
+      const baseUrl = import.meta.env.VITE_API_URL || '';
+
       try {
         if (ride.pickup && typeof ride.pickup === 'object' && ride.pickup.lat && ride.pickup.lng) {
           const pickupRes = await fetch(
-            `http://localhost:5000/api/location/reverse?lat=${ride.pickup.lat}&lng=${ride.pickup.lng}`
+            `${baseUrl}/api/location/reverse?lat=${ride.pickup.lat}&lng=${ride.pickup.lng}`
           );
           if (pickupRes.ok) {
             const data = await pickupRes.json();
@@ -119,7 +122,7 @@ const Dashboard = ({ isOnline, setIsOnline }) => {
 
         if (ride.destination && typeof ride.destination === 'object' && ride.destination.lat && ride.destination.lng) {
           const destRes = await fetch(
-            `http://localhost:5000/api/location/reverse?lat=${ride.destination.lat}&lng=${ride.destination.lng}`
+            `${baseUrl}/api/location/reverse?lat=${ride.destination.lat}&lng=${ride.destination.lng}`
           );
           if (destRes.ok) {
             const data = await destRes.json();
@@ -173,10 +176,13 @@ const Dashboard = ({ isOnline, setIsOnline }) => {
 
     console.log("🟡 Initiating dual-layer atomic validation check for rideId:", targetRideId);
 
+    // Replaced hardcoded localhost URL with the environment variable
+    const baseUrl = import.meta.env.VITE_API_URL || '';
+
     try {
       socket.emit("ride:accept", { rideId: targetRideId });
 
-      const res = await fetch("http://localhost:5000/api/ride/accept", {
+      const res = await fetch(`${baseUrl}/api/ride/accept`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

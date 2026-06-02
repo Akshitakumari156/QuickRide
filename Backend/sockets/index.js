@@ -1,29 +1,47 @@
-// Backend/sockets/index.js
 const socketIO = require("socket.io");
 
 let ioInstance = null;
 
-/**
- * @desc    Initialize real-time WebSockets gateway and configure cross-origin limits
- * @param   {Object} server - Native Node.js HTTP server instance initialized in server.js
- * @returns {Object} Configured Socket.io Server instance
- */
 function initsocket(server) {
+
+  const allowedOrigins = [
+    "http://localhost:5173",
+    process.env.FRONTEND_URL
+  ];
+
   ioInstance = socketIO(server, {
     cors: {
-      origin: "http://localhost:5173", // Matches your React Vite frontend port precisely
-      methods: ["GET", "POST"]
+      origin: function (origin, callback) {
+
+        if (!origin) {
+          return callback(null, true);
+        }
+
+        if (allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
+
+        return callback(new Error("Socket.IO CORS blocked"));
+      },
+
+      methods: ["GET", "POST"],
+      credentials: true
     }
   });
 
   ioInstance.on("connection", (socket) => {
+
     console.log(`🔌 New real-time handshake established: ${socket.id}`);
 
-    // Room registration pipeline so users can receive events by their database IDs
     socket.on("join:room", (data) => {
+
       if (data && data.roomId) {
+
         socket.join(data.roomId.toString());
-        console.log(`📡 Socket ${socket.id} successfully joined room channel: ${data.roomId}`);
+
+        console.log(
+          `📡 Socket ${socket.id} joined room ${data.roomId}`
+        );
       }
     });
 
@@ -32,7 +50,7 @@ function initsocket(server) {
     });
   });
 
-  return ioInstance; // 🎯 Returns instance to server.js
+  return ioInstance;
 }
 
 function getIO() {

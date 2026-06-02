@@ -1,9 +1,9 @@
-import React from 'react'
-import { useNavigate } from "react-router-dom"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { registerSchema } from '../validation/RegisterSchema'
-import Button from './Button'
+import React from 'react';
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { registerSchema } from '../validation/RegisterSchema';
+import Button from './Button';
 
 const UserRegister = () => {
   const navigate = useNavigate();
@@ -17,26 +17,37 @@ const UserRegister = () => {
   });
 
   const handleForm = async (data) => {
-    console.log(data);
-    const response = await fetch("http://localhost:5000/api/user/register", {
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data)
-    });
-    if (response.status == 201) {
-      navigate('/login')
-    }
-    if (response.status == 409) alert("user already exists  ");
-    console.log(response);
+    try {
+      // Replaced hardcoded localhost URL string with the environment variable configuration
+      const baseUrl = import.meta.env.VITE_API_URL || '';
+      const response = await fetch(`${baseUrl}/api/user/register`, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      });
 
-    reset(); reset({}, {
-      keepErrors: false,
-      keepDirty: false,
-      keepTouched: false,
-    });
-  }
+      if (response.status === 201) {
+        alert("Account created successfully!");
+        navigate('/login');
+      } else if (response.status === 409) {
+        alert("User already exists with this email registration.");
+      } else {
+        alert("Registration failed. Please try again.");
+      }
+
+      // Single unified clean call resets both input values and validation states cleanly
+      reset({}, {
+        keepErrors: false,
+        keepDirty: false,
+        keepTouched: false,
+      });
+    } catch (error) {
+      console.error("❌ Registration runtime operation exception:", error);
+      alert("Network error. Please make sure your server stack is online.");
+    }
+  };
 
   return (
     <div className="w-full min-h-screen flex items-center justify-center bg-[#0b1e30] relative overflow-hidden py-12 px-4">
@@ -82,7 +93,8 @@ const UserRegister = () => {
               )}
             </div>
 
-            <div className="flex flex-col gap-1} ">
+            {/* Fixed typo: Removed trailing bracket template syntax error here */}
+            <div className="flex flex-col gap-1">
               <input
                 type="text"
                 placeholder="Last name"
@@ -135,12 +147,15 @@ const UserRegister = () => {
 
           {/* Form Actions Button */}
           <div className="mt-2">
+            {/* Added type="submit" attribute to trigger the form's native onSubmit lifecycle pipeline hooks */}
             <Button 
+              type="submit"
               label={isSubmitting ? "Creating Account..." : "Confirm & Register"}
               bg="#2563eb"
               textColor="#FFFFFF"
               hoverbg="#1d4ed8"
-              className="w-full h-12 rounded-xl font-semibold tracking-wide shadow-md shadow-blue-500/10 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 transform hover:-translate-y-0.5"
+              disabled={isSubmitting}
+              className="w-full h-12 rounded-xl font-semibold tracking-wide shadow-md shadow-blue-500/10 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed"
             />
           </div>
         </form>
@@ -158,7 +173,7 @@ const UserRegister = () => {
 
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default UserRegister
+export default UserRegister;

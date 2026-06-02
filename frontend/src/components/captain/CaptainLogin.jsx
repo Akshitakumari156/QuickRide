@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 const CaptainLogin = () => {
-  const {login}=useAuth();
-    const navigate=useNavigate();
+  const { login } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -21,8 +21,10 @@ const CaptainLogin = () => {
     e.preventDefault()
 
     try {
+      // Replaced hardcoded localhost URL with the environment variable
+      const baseUrl = import.meta.env.VITE_API_URL || '';
       const response = await fetch(
-        'http://localhost:5000/api/captain/login',
+        `${baseUrl}/api/captain/login`,
         {
           method: 'POST',
           headers: {
@@ -46,9 +48,7 @@ const CaptainLogin = () => {
         localStorage.setItem('captainToken', data.token);
         alert('Captain logged in successfully!');
         navigate('/captain/dashboard');
-        
       }
-
 
     } catch (error) {
       console.error('Error in captain login:', error)
@@ -98,4 +98,4 @@ const CaptainLogin = () => {
   )
 }
 
-export default CaptainLogin
+export default CaptainLogin;

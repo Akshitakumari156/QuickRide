@@ -36,8 +36,10 @@ const InputLocation = ({ icon, description, callback, onInputChange }) => {
     }
 
     try {
+      // Replaced hardcoded localhost URL string with the environment variable configuration
+      const baseUrl = import.meta.env.VITE_API_URL || '';
       const resp = await fetch(
-        `http://localhost:5000/api/location/search?q=${text}`
+        `${baseUrl}/api/location/search?q=${text}`
       );
       const data = await resp.json();
       setSuggestion(data);

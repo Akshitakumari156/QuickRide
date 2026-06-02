@@ -10,33 +10,41 @@ const Login = () => {
   const [password, setPassword] = useState("");
 
   const Signupfn = () => {
-    navigate('/register')
-  }
+    navigate('/register');
+  };
 
   const handleBtn = async (e) => {
-    // Prevent form reload safely if triggered via Enter key press
+    // Safely prevent page reload on form submit
     if (e && e.preventDefault) e.preventDefault();
 
-    const response = await fetch("http://localhost:5000/api/user/login", {
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password })
-    });
+    try {
+      // Replaced hardcoded localhost URL string with the environment variable configuration
+      const baseUrl = import.meta.env.VITE_API_URL || '';
+      const response = await fetch(`${baseUrl}/api/user/login`, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password })
+      });
 
-    const res = await response.json();
-    if (response.status == 200) {
-      login(res.token, "user");
+      const res = await response.json();
+      
+      if (response.status === 200) {
+        login(res.token, "user");
 
-      alert("logged in success");
-      setEmail("");
-      setPassword("")
-      console.log(response)
-      navigate('/dashboard')
+        alert("logged in success");
+        setEmail("");
+        setPassword("");
+        navigate('/dashboard');
+      } else {
+        alert(res.message || "failed in logged in");
+      }
+    } catch (error) {
+      console.error("❌ Login handler operation crashed:", error);
+      alert("Network error. Please confirm your backend service is running.");
     }
-    else alert("failed in logged in ")
-  }
+  };
 
   return (
     <div className="w-full h-screen flex items-center justify-center bg-[#0b1e30] relative overflow-hidden px-4">
@@ -87,8 +95,9 @@ const Login = () => {
 
           {/* ACTIONS */}
           <div className="flex flex-col gap-4 mt-2">
+            {/* Added type="submit" so the form intercepts the action cleanly via Enter key or direct click */}
             <Button
-              onClick={handleBtn}
+              type="submit"
               label="Login"
               bg="#2563eb"
               textColor="#FFFFFF"

@@ -1,4 +1,3 @@
-// Backend/server.js
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -6,54 +5,70 @@ const express = require('express');
 const cors = require('cors');
 const http = require('http');
 
-// 🔌 Real-Time Socket Gateway Orchestrator (Points directly to your folder tree paths!)
 const { initsocket } = require('./sockets/index');
-
-// 🗄️ Database Bootstrapper
 const connectDB = require('./config/db');
 
-// 🗺️ API Route Definitions
 const userrouter = require('./routes/user.routes');
 const captainrouter = require('./routes/captain.routes');
 const locationRoutes = require('./routes/location.routes');
 const distanceRoutes = require('./routes/distance.routes');
 const fareRoutes = require('./routes/fare.route');
 const rideRequestRoutes = require('./routes/ride.request.routes');
+const rideAcceptRoutes = require('./routes/ride.accept');
 
 const app = express();
 const server = http.createServer(app);
 
-// 🔒 CORS Rules Configuration
-const corsOptions = {
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST"]
-};
+// Production + Development CORS
+const allowedOrigins = [
+    "http://localhost:5173",
+    process.env.FRONTEND_URL
+];
 
-// 🛠️ Foundational Global Middlewares
-app.use(cors(corsOptions));
+app.use(
+    cors({
+        origin: function (origin, callback) {
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, true);
+            } else {
+                callback(new Error("Not allowed by CORS"));
+            }
+        },
+        credentials: true,
+        methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    })
+);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ⚡ Connect to MongoDB
+// MongoDB Connection
 connectDB();
 
-// 🚀 Mount Real-Time WebSocket Server & Bind it globally onto Express App context mapping memory
-const io = initsocket(server);
-app.set("io", io); 
+// Health Route
+app.get("/", (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: "UrbanMove Backend Running 🚀",
+    });
+});
 
-// 🛣️ REST API Endpoint Route Pipeline
+// Socket.IO
+const io = initsocket(server);
+app.set("io", io);
+
+// Routes
 app.use('/api/user', userrouter);
 app.use('/api/captain', captainrouter);
 app.use('/api/location', locationRoutes);
-app.use('/api/route', distanceRoutes); 
-app.use('/api/route', fareRoutes);     
+app.use('/api/route', distanceRoutes);
+app.use('/api/route', fareRoutes);
 app.use('/api/ride', rideRequestRoutes);
+app.use('/api/ride', rideAcceptRoutes);
 
-const rideAcceptRoutes = require("./routes/ride.accept"); 
-app.use("/api/ride", rideAcceptRoutes);
-
-// 🔊 Start Server Engine
+// Start Server
 const PORT = process.env.PORT || 5000;
+
 server.listen(PORT, () => {
-    console.log(`🚀 UrbanMove Engine running smoothly on port ${PORT}`);
+    console.log(`🚀 UrbanMove Engine running on port ${PORT}`);
 });

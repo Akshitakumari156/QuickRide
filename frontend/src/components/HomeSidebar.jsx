@@ -55,8 +55,9 @@ const HomeSidebar = ({
     try {
       const token = localStorage.getItem("userToken") || localStorage.getItem("token");
       
-      // You may need to create a cancel endpoint on the backend
-      const res = await fetch(`http://localhost:5000/api/ride/cancel/${activeRide._id}`, {
+      // Replaced hardcoded localhost URL with the environment variable
+      const baseUrl = import.meta.env.VITE_API_URL || '';
+      const res = await fetch(`${baseUrl}/api/ride/cancel/${activeRide._id}`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`
@@ -119,7 +120,9 @@ const HomeSidebar = ({
     if (coords.lat && coords.lng) {
       try {
         console.log(`🌍 Resolving GPS coordinates to address: [Lat: ${coords.lat}, Lng: ${coords.lng}]`);
-        const res = await fetch(`http://localhost:5000/api/location/reverse?lat=${coords.lat}&lng=${coords.lng}`);
+        // Replaced hardcoded localhost URL with the environment variable
+        const baseUrl = import.meta.env.VITE_API_URL || '';
+        const res = await fetch(`${baseUrl}/api/location/reverse?lat=${coords.lat}&lng=${coords.lng}`);
         if (res.ok) {
           const data = await res.json();
           if (data && data.place) {
@@ -170,7 +173,9 @@ const HomeSidebar = ({
 
       console.log("🚀 Dispatched payload to backend matching engine:", requestPayload);
 
-      const res = await fetch("http://localhost:5000/api/ride/request", { 
+      // Replaced hardcoded localhost URL with the environment variable
+      const baseUrl = import.meta.env.VITE_API_URL || '';
+      const res = await fetch(`${baseUrl}/api/ride/request`, { 
         method: "POST",
         headers: {
           "Content-Type": "application/json",
