@@ -1,3 +1,4 @@
+const axios = require("axios");
 const redis = require("../config/redis.config");
 
 const LOCATION_TTL = 60; // seconds
@@ -12,32 +13,32 @@ exports.getAddressFromCoordinates = async (req, res) => {
       });
     }
 
-    // ✅ Cache by coordinates (NOT captain)
     const redisKey = `reverse:${lat}:${lng}`;
 
     const cached = await redis.get(redisKey);
+
     if (cached) {
       console.log("📦 Reverse geocode cache hit");
       return res.json(JSON.parse(cached));
     }
 
-    console.log("🌍 Reverse geocode API call");
+    console.log("🌍 LocationIQ Reverse Geocode API Call");
 
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1&zoom=18`,
+    const response = await axios.get(
+      "https://us1.locationiq.com/v1/reverse",
       {
-        headers: {
-          "User-Agent": "UrbanMove/1.0 (contact@urbanmove.app)",
-          "Accept-Language": "en-IN,en;q=0.9",
+        params: {
+          key: process.env.LOCATIONIQ_API_KEY,
+          lat,
+          lon: lng,
+          format: "json",
         },
+        timeout: 10000,
       }
     );
 
-    if (!response.ok) {
-      throw new Error("Nominatim API failed");
-    }
+    const data = response.data;
 
-    const data = await response.json();
     const address = data.address || {};
 
     const place =
@@ -49,6 +50,7 @@ exports.getAddressFromCoordinates = async (req, res) => {
       address.town ||
       address.village ||
       address.city ||
+      address.county ||
       data.display_name?.split(",")[0] ||
       "Unknown area";
 
@@ -59,15 +61,26 @@ exports.getAddressFromCoordinates = async (req, res) => {
       updatedAt: Date.now(),
     };
 
-    await redis.set(redisKey, JSON.stringify(payload), "EX", LOCATION_TTL);
+    await redis.set(
+      redisKey,
+      JSON.stringify(payload),
+      "EX",
+      LOCATION_TTL
+    );
 
     return res.json(payload);
 
   } catch (error) {
-    console.error("❌ Reverse geolocation error:", error);
+
+    console.error(
+      "❌ Reverse Geolocation Error:",
+      error.response?.data || error.message
+    );
 
     return res.status(500).json({
-      message: "Failed to reverse geocode location",
+      message:
+        error.response?.data?.error ||
+        "Failed to reverse geocode location",
     });
   }
 };
