@@ -20,7 +20,7 @@ router.get('/search', async (req, res) => {
       }
     });
 
-    const data = await response.json();
+    const data = await response.text();
 
     return res.json(data);
 
