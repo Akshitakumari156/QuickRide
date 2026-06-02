@@ -19,7 +19,6 @@ const useCaptainLocation = (enabled) => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
 
-        // ✅ OBJECT — NOT ARRAY
         setCoords({ lat, lng });
 
         const now = Date.now();

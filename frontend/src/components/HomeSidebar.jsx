@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import InputLocation from "./InputLocation";
 import SearchingRider from "./SearchingRider";
+import DriverArrivingCard from "./DriverArrivingCard";
+import socket from "../socket/socket";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -16,22 +18,70 @@ const HomeSidebar = ({
   onDropoffSelect,
   onCheckPrice,
   fareData,
-  setFareData, // Ensure you pass down the state setter function from the parent container component
+  setFareData, 
   pickupCoords,
+  dropoffCoords, 
   error,
 }) => {
   const [schedule, setSchedule] = useState("");
   const [searching, setSearching] = useState(false);
+  const [activeRide, setActiveRide] = useState(null); // ⚡ NEW: Track accepted rides
 
   const contentRef = useRef(null);
   const fareRef = useRef(null);
   const searchingRef = useRef(null);
 
-  // Safely intercept location changes to reset old pricing metrics
+  // ⚡ SOCKET LISTENER: When captain accepts the ride
+  useEffect(() => {
+    const handleRideAccepted = (payload) => {
+      console.log("🎉 RIDE ACCEPTED by captain:", payload);
+      setSearching(false); // Stop searching animation
+      setActiveRide(payload.ride); // Show driver arriving card
+    };
+
+    socket.on("ride:accepted", handleRideAccepted);
+
+    return () => {
+      socket.off("ride:accepted", handleRideAccepted);
+    };
+  }, []);
+
+  // ⚡ HANDLE CANCEL RIDE
+  const handleCancelRide = async () => {
+    if (!activeRide) return;
+
+    console.log("❌ Cancelling ride:", activeRide._id);
+    
+    try {
+      const token = localStorage.getItem("userToken") || localStorage.getItem("token");
+      
+      // You may need to create a cancel endpoint on the backend
+      const res = await fetch(`http://localhost:5000/api/ride/cancel/${activeRide._id}`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      if (res.ok) {
+        setActiveRide(null);
+        setFareData(null);
+        alert("Ride cancelled successfully");
+      } else {
+        alert("Failed to cancel ride");
+      }
+    } catch (err) {
+      console.error("❌ Cancel Error:", err);
+      alert("Error cancelling ride: " + err.message);
+    }
+  };
+
+  // ⚡ THE FIX: Reset both fareData and searching when any location input text field modifications occur
   const handleLocationInputChange = () => {
     if (setFareData) {
       setFareData(null);
     }
+    setSearching(false);
   };
 
   useEffect(() => {
@@ -56,39 +106,122 @@ const HomeSidebar = ({
     }
   }, [searching]);
 
+  // 🚀 ON-THE-FLY REVERSE GEOCODING TRANSLATION HELPER
+  const resolveLocationAddress = async (coords, defaultLabel) => {
+    if (!coords) return defaultLabel;
+
+    // Condition A: If the address property is already populated with a real search-text string, use it directly!
+    if (coords.address && typeof coords.address === "string" && !coords.address.startsWith("Selected")) {
+      return coords.address;
+    }
+
+    // Condition B: If the address string is a fallback or missing, invoke your backend cache layer geocoder
+    if (coords.lat && coords.lng) {
+      try {
+        console.log(`🌍 Resolving GPS coordinates to address: [Lat: ${coords.lat}, Lng: ${coords.lng}]`);
+        const res = await fetch(`http://localhost:5000/api/location/reverse?lat=${coords.lat}&lng=${coords.lng}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.place) {
+            return data.place;
+          }
+        }
+      } catch (err) {
+        console.error("⚠️ Local geocoder pipeline bypass or network block:", err.message);
+      }
+      return `${Number(coords.lat).toFixed(4)}, ${Number(coords.lng).toFixed(4)}`;
+    }
+
+    return defaultLabel;
+  };
+
+  // 🚀 UPDATED RIDE REQUEST DISPATCH FUNCTION
   const handleConfirmRide = async () => {
     console.log("Confirm Ride clicked");
 
-    if (!pickupCoords || !fareData) {
-      console.warn("Missing pickup or fare data");
+    if (!pickupCoords || !dropoffCoords || !fareData) {
+      console.warn("⚠️ Cannot request ride. Missing required position metrics:", { pickupCoords, dropoffCoords, fareData });
+      alert("Please select both locations and calculate the fare price first.");
       return;
     }
 
     try {
       setSearching(true);
+      
+      const token = localStorage.getItem("userToken") || localStorage.getItem("token"); 
 
-      const res = await fetch(
-        "http://localhost:5000/api/ride/request",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            pickup: pickupCoords,
-            vehicleType: "car",
-            schedule: schedule || null,
-          }),
+      // ⚡ RESOLVE ADDRESSES DYNAMICALLY BEFORE DISPATCHING THE PAYLOAD
+      const finalPickupAddress = await resolveLocationAddress(pickupCoords, "Selected Pickup Point");
+      const finalDestinationAddress = await resolveLocationAddress(dropoffCoords, "Selected Target Destination");
+
+      // Explicitly build the map request parameters format expected by your backend service structure
+      const requestPayload = {
+        pickup: {
+          lat: Number(pickupCoords.lat),
+          lng: Number(pickupCoords.lng),
+          address: finalPickupAddress // ⚡ Saved text string goes here
+        },
+        destination: {
+          lat: Number(dropoffCoords.lat),
+          lng: Number(dropoffCoords.lng),
+          address: finalDestinationAddress // ⚡ Saved text string goes here
         }
-      );
+      };
+
+      console.log("🚀 Dispatched payload to backend matching engine:", requestPayload);
+
+      const res = await fetch("http://localhost:5000/api/ride/request", { 
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}` 
+        },
+        body: JSON.stringify(requestPayload),
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("🔴 Backend Error Output:", errorText);
+        
+        if (errorText.startsWith("<!DOCTYPE") || errorText.startsWith("<html")) {
+          throw new Error(`Backend Server Error (${res.status}). Open your Node.js backend terminal log immediately to look at the error trace!`);
+        }
+        
+        const errorJson = JSON.parse(errorText);
+        throw new Error(errorJson.message || "Failed to process ride allocation request.");
+      }
 
       const data = await res.json();
-      console.log("Ride requested successfully:", data);
+      console.log("🎉 Ride tracking sequence created successfully:", data);
+
     } catch (err) {
-      console.error("Ride request failed:", err);
+      console.error("❌ Request Error:", err);
+      alert(err.message);
       setSearching(false);
     }
   };
+
+  // ⚡ IF RIDE IS ACCEPTED, SHOW DRIVER ARRIVING CARD
+  if (activeRide) {
+    return (
+      <div className="w-full max-w-sm mx-auto bg-white rounded-2xl h-[90%] flex flex-col shadow-xl border border-slate-100 overflow-hidden">
+        <div className="px-6 py-5 border-b border-slate-100 bg-white">
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+            Ride Details
+          </h2>
+          <p className="text-xs font-medium text-slate-400 mt-0.5">
+            Your driver is on the way
+          </p>
+        </div>
+        <div className="flex-1 overflow-y-auto px-6 py-5">
+          <DriverArrivingCard
+            activeRide={activeRide}
+            onCancelRide={handleCancelRide}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-sm mx-auto bg-white rounded-2xl h-[90%] flex flex-col shadow-xl border border-slate-100 overflow-hidden">
@@ -108,20 +241,19 @@ const HomeSidebar = ({
         ref={contentRef}
         className="flex-1 overflow-y-auto px-6 py-5 space-y-5 scrollbar-thin scrollbar-thumb-slate-200"
       >
-        {/* Location Wrapper */}
         <div className="space-y-3">
           <InputLocation
             icon={faLocationDot}
             description="Pickup location"
             callback={onPickupSelect}
-            onInputChange={handleLocationInputChange} // Reset on change
+            onInputChange={handleLocationInputChange}
           />
 
           <InputLocation
             icon={faFlagCheckered}
             description="Drop-off location"
             callback={onDropoffSelect}
-            onInputChange={handleLocationInputChange} // Reset on change
+            onInputChange={handleLocationInputChange}
           />
         </div>
 
@@ -142,7 +274,7 @@ const HomeSidebar = ({
               value={schedule}
               onChange={(e) => {
                 setSchedule(e.target.value);
-                handleLocationInputChange(); // Also toggle button back if date changes
+                handleLocationInputChange();
               }}
               className="w-full bg-white border border-slate-200 rounded-lg pl-10 pr-4 py-2.5 text-sm text-slate-800 font-medium transition-all focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
             />

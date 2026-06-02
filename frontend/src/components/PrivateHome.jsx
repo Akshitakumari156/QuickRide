@@ -1,22 +1,40 @@
-import { useState } from "react";
+// components/PrivateHome.jsx
+import { useState, useEffect } from "react";
 import HomeSidebar from "./HomeSidebar";
 import MapView from "./MapView";
+import DriverArriving from "./DriverArrivingCard"; 
+import socket from "../socket/socket"; 
 
 const PrivateHome = () => {
   const [pickup, setPickup] = useState(null);
   const [dropoff, setDropoff] = useState(null);
   const [fare, setFare] = useState(null);
   const [error, setError] = useState(null);
+  const [activeRide, setActiveRide] = useState(null);
+
+  useEffect(() => {
+    if (!socket.connected) {
+      socket.connect();
+    }
+
+    const handleRideAccepted = (payload) => {
+      console.log("🎉 Ride dual-lock allocation claimed by captain successfully:", payload.ride);
+      setActiveRide(payload.ride);
+    };
+
+    socket.on("ride:accepted", handleRideAccepted);
+
+    return () => {
+      socket.off("ride:accepted", handleRideAccepted);
+    };
+  }, []);
 
   const handleCheckPrice = async (schedule) => {
     if (!pickup || !dropoff) {
-      console.warn("Pickup or dropoff missing");
       setError("Please select both pickup and dropoff locations");
       return;
     }
     setError(null);
-
-    console.log({ pickup, dropoff, schedule });
 
     try {
       const resp = await fetch(
@@ -25,7 +43,6 @@ const PrivateHome = () => {
         `&dstLat=${dropoff.lat}&dstLng=${dropoff.lng}`
       );
       const data = await resp.json();
-      console.log("fare data:", data);
       setFare(data);
     } catch (err) {
       console.error("Failed to fetch fare estimation:", err);
@@ -33,27 +50,44 @@ const PrivateHome = () => {
     }
   };
 
+  const handleCancelActiveRide = () => {
+    if (window.confirm("Are you sure you want to cancel this ride request?")) {
+      setActiveRide(null);
+      setFare(null);
+    }
+  };
+
   return (
     <div className="w-full h-screen flex flex-col overflow-hidden bg-gray-50">
       <div className="flex-1 overflow-hidden pt-4">
-        <div className="flex h-full gap-4 px-4 md:px-6 pb-4">
+        <div className="flex flex-col md:flex-row h-full gap-4 px-4 md:px-6 pb-4 relative">
 
-          {/* SIDEBAR CONTAINER */}
-          <div className="hidden md:flex w-[380px] h-full flex-shrink-0">
-            <HomeSidebar
-              onPickupSelect={setPickup}
-              onDropoffSelect={setDropoff}
-              onCheckPrice={handleCheckPrice}
-              fareData={fare}
-              setFareData={setFare} // 🚀 CRITICAL FIX: Passing down the state modifier
-              pickupCoords={pickup}
-              error={error}
-            />
+          {/* RESPONSIVE PANEL OVERLAY BLOCK */}
+          <div className="w-full md:w-[380px] h-auto md:h-full flex-shrink-0 absolute bottom-4 left-0 right-0 px-4 md:static md:px-0 z-50 pointer-events-none">
+            <div className="w-full h-full pointer-events-auto bg-white md:bg-transparent rounded-2xl shadow-xl md:shadow-none">
+              {!activeRide ? (
+                <HomeSidebar
+                  onPickupSelect={setPickup}
+                  onDropoffSelect={setDropoff}
+                  onCheckPrice={handleCheckPrice}
+                  fareData={fare}
+                  setFareData={setFare}
+                  pickupCoords={pickup}   
+                  dropoffCoords={dropoff} 
+                  error={error}
+                />
+              ) : (
+                <DriverArriving 
+                  activeRide={activeRide} 
+                  onCancelRide={handleCancelActiveRide}
+                />
+              )}
+            </div>
           </div>
 
-          {/* MAP */}
-          <div className="flex-1 h-full min-h-0 relative overflow-hidden rounded-2xl border border-slate-200 shadow-md">
-            <MapView pickup={pickup} dropoff={dropoff} />
+          {/* MAP CANVAS GRID */}
+          <div className="flex-1 h-full min-h-0 relative overflow-hidden rounded-2xl border border-slate-200 shadow-md z-10">
+            <MapView pickup={pickup} dropoff={dropoff} activeRide={activeRide} />
           </div>
 
         </div>

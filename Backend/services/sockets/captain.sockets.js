@@ -1,5 +1,7 @@
 const redis = require('../../config/redis.config');
 const jwt = require('jsonwebtoken');
+const Ride = require('../../models/ride.model');
+
 module.exports = (socket) => {
  socket.on("captain:location", async (data) => {
   try {
@@ -31,57 +33,140 @@ module.exports = (socket) => {
     );
     pipeline.expire(`captain:${captainId}:socket`, 120);
 
+    // 🔑 CRITICAL FIX: Store driver socket ID in Redis for future broadcast targeting
+    pipeline.set(
+      `driver:socket:${captainId}`,
+      socket.id,
+      "EX",
+      300 // 5-minute TTL
+    );
+
     await pipeline.exec();
+
+    console.log(`✅ Captain ${captainId} registered online with socket ${socket.id}`);
 
   } catch (err) {
     console.error("captain:location error", err);
   }
 });
 
+// ⚡ NEW: Proper ride acceptance handler that integrates with REST API
 socket.on("ride:accept", async ({ rideId }) => {
   try {
     const captainId = socket.captainId;
-    if (!rideId || !captainId) return;
-
-    const status = await redis.hget(`ride:${rideId}`, "status");
-
-    if (status !== "requested") {
-      return socket.emit("ride:rejected", {
-        rideId,
-        reason: "Ride already taken"
-      });
+    if (!rideId || !captainId) {
+      socket.emit("ride:error", { message: "Missing rideId or captain identification" });
+      return;
     }
 
-    const lockKey = `ride:${rideId}:lock`;
-    const lock = await redis.set(lockKey, captainId, "NX", "EX", 30);
+    // 🔒 DISTRIBUTED LOCK: Prevent race conditions
+    const lockKey = `lock:ride:${rideId}`;
+    const acquireLock = await redis.set(lockKey, captainId.toString(), "NX", "EX", 15);
 
-    if (!lock) {
+    if (!acquireLock) {
+      console.warn(`🔒 Redis Lock Blocked: Captain ${captainId} denied access to Ride ${rideId}`);
       return socket.emit("ride:rejected", {
         rideId,
         reason: "Ride already accepted by another captain"
       });
     }
 
-    await redis.hset(`ride:${rideId}`, {
-      status: "accepted",
-      captainId
+    // 💾 UPDATE MONGODB: Mark ride as ACCEPTED
+    const updatedRide = await Ride.findOneAndUpdate(
+      { 
+        _id: rideId, 
+        status: "PENDING" 
+      },
+      {
+        $set: {
+          status: "ACCEPTED", 
+          captainId: captainId, 
+        }
+      },
+      { new: true }
+    ).populate("passengerId", "firstname lastname phone socketId");
+
+    if (!updatedRide) {
+      await redis.del(lockKey);
+      return socket.emit("ride:rejected", {
+        rideId,
+        reason: "Ride already taken or no longer available"
+      });
+    }
+
+    const captainName = `${updatedRide.captainId?.firstname || ''} ${updatedRide.captainId?.lastname || ''}`.trim() || "Your Captain";
+    const captainPhone = updatedRide.captainId?.phone || "N/A";
+
+    // ✅ CONFIRMATION TO CAPTAIN: This ride is now theirs
+    socket.emit("ride:confirmed", {
+      rideId: updatedRide._id,
+      message: "Ride successfully assigned to you!",
+      ride: {
+        _id: updatedRide._id,
+        status: updatedRide.status,
+        fare: updatedRide.fare,
+        pickup: updatedRide.pickup,
+        destination: updatedRide.destination,
+      }
     });
 
-    socket.emit("ride:confirmed", {
-      rideId,
-      message: "Ride successfully assigned to you"
-    });
+    // 📢 BROADCAST TO PASSENGER: Driver accepted!
+    const passengerSocketId = updatedRide.passengerId?.socketId;
+    const io = socket.nsp.server;
+
+    if (io) {
+      // Emit to passenger's direct socket connection
+      if (passengerSocketId) {
+        io.to(passengerSocketId).emit("ride:accepted", {
+          message: "Your driver is on the way!",
+          ride: {
+            _id: updatedRide._id,
+            status: updatedRide.status,
+            fare: updatedRide.fare,
+            pickup: updatedRide.pickup,
+            destination: updatedRide.destination,
+            captain: {
+              name: captainName,
+              phone: captainPhone,
+              id: captainId
+            }
+          }
+        });
+      }
+
+      // Fallback: Emit to passenger's user ID room
+      const passengerRoomId = updatedRide.passengerId?._id?.toString();
+      if (passengerRoomId) {
+        io.to(passengerRoomId).emit("ride:accepted", {
+          message: "Your driver is on the way!",
+          ride: {
+            _id: updatedRide._id,
+            status: updatedRide.status,
+            fare: updatedRide.fare,
+            pickup: updatedRide.pickup,
+            destination: updatedRide.destination,
+            captain: {
+              name: captainName,
+              phone: captainPhone,
+              id: captainId
+            }
+          }
+        });
+      }
+
+      // 🔔 BROADCAST TO OTHER CAPTAINS: This ride is taken
+      io.emit("ride:confirmed", { rideId: updatedRide._id });
+    }
 
     console.log(`✅ Ride ${rideId} accepted by captain ${captainId}`);
 
   } catch (err) {
     console.error("ride:accept error", err);
     socket.emit("ride:error", {
-      message: "Ride accept failed"
+      message: "Ride accept failed: " + err.message
     });
   }
 });
-
 
   socket.on("disconnect", async () => {
     try {
@@ -90,7 +175,7 @@ socket.on("ride:accept", async ({ rideId }) => {
       const pipeline = redis.pipeline();
       pipeline.zrem("captains:location", socket.captainId);
       pipeline.del(`captain:${socket.captainId}:online`);
-     // pipeline.del(`captain:${socket.captainId}:socket`);
+      pipeline.del(`driver:socket:${socket.captainId}`);
       
       await pipeline.exec();
       console.log(`👋 Driver ${socket.captainId} disconnected and cleaned up.`);

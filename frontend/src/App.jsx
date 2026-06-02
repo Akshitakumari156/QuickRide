@@ -12,10 +12,12 @@ import Safety from './pages/Safety'
 import CaptainRegisterForm from './components/captain/CaptainRegisterForm'
 import CaptainLogin from './components/captain/CaptainLogin'
 import CaptainHome from './components/captain/CaptainHome'
+
 function App() {
   return (
     <>
     <Routes>
+     
       <Route element={<Layout/>}>
       <Route path='/' element={<Home/>}/>
       <Route element={<Publicroutes/>}>
