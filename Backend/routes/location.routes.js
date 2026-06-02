@@ -1,8 +1,9 @@
 const express=require('express');
 const router=express.Router();
 const reversegeocode=require('../controllers/reversegeolocation.controllers');
+const axios = require("axios");
 
-router.get('/search', async (req, res) => {
+router.get("/search", async (req, res) => {
   try {
     const { q } = req.query;
 
@@ -10,25 +11,25 @@ router.get('/search', async (req, res) => {
       return res.json([]);
     }
 
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=5&addressdetails=1`;
-
-    console.log("Calling:", url);
-
-    const response = await fetch(url, {
-      headers: {
-        "User-Agent": "UrbanMove/1.0"
+    const response = await axios.get(
+      "https://us1.locationiq.com/v1/search",
+      {
+        params: {
+          key: process.env.LOCATIONIQ_API_KEY,
+          q,
+          format: "json",
+          limit: 5,
+        },
       }
-    });
+    );
 
-    const data = await response.text();
-
-    return res.json(data);
+    return res.json(response.data);
 
   } catch (error) {
-    console.error("Location API Error:", error);
+    console.error(error.response?.data || error.message);
 
     return res.status(500).json({
-      message: error.message
+      message: error.message,
     });
   }
 });

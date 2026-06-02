@@ -9,88 +9,132 @@ const InputLocation = ({ icon, description, callback, onInputChange }) => {
   const [query, setQuery] = useState("");
   const [suggestion, setSuggestion] = useState([]);
   const [isFocused, setIsFocused] = useState(false);
+
   const wrappedRef = useRef(null);
 
   /* Close dropdown on outside click */
   useEffect(() => {
     const clickOutside = (e) => {
-      if (wrappedRef.current && !wrappedRef.current.contains(e.target)) {
+      if (
+        wrappedRef.current &&
+        !wrappedRef.current.contains(e.target)
+      ) {
         setSuggestion([]);
         setIsFocused(false);
       }
     };
+
     document.addEventListener("mousedown", clickOutside);
-    return () => document.removeEventListener("mousedown", clickOutside);
+
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        clickOutside
+      );
+    };
   }, []);
 
   /* Fetch suggestions */
   const fetchSuggestion = async (text) => {
     setQuery(text);
 
-    // Alert layout that an edit transaction is actively occurring
-    if (onInputChange) onInputChange();
+    if (onInputChange) {
+      onInputChange();
+    }
 
-    if (text.length < 3) {
+    if (!text || text.length < 3) {
       setSuggestion([]);
       return;
     }
 
     try {
-      // Replaced hardcoded localhost URL string with the environment variable configuration
-      const baseUrl = import.meta.env.VITE_API_URL || '';
+      const baseUrl = import.meta.env.VITE_API_URL || "";
+
       const resp = await fetch(
-        `${baseUrl}/api/location/search?q=${text}`
+        `${baseUrl}/api/location/search?q=${encodeURIComponent(text)}`
       );
+
       const data = await resp.json();
-      setSuggestion(data);
+
+      console.log("📍 Location API Response:", data);
+
+      // IMPORTANT FIX
+      if (Array.isArray(data)) {
+        setSuggestion(data);
+      } else {
+        console.error(
+          "Location API returned non-array:",
+          data
+        );
+        setSuggestion([]);
+      }
     } catch (error) {
-      console.error("❌ error fetching location suggestions", error);
+      console.error(
+        "❌ Error fetching location suggestions:",
+        error
+      );
+
+      setSuggestion([]);
     }
   };
 
   /* Select searched place */
   const handleSelect = (item) => {
-    setQuery(item.display_name);
+    setQuery(item.display_name || "");
+
     setSuggestion([]);
     setIsFocused(false);
 
-    if (onInputChange) onInputChange();
+    if (onInputChange) {
+      onInputChange();
+    }
 
     callback({
       lat: Number(item.lat),
-      lng: Number(item.lon), 
+      lng: Number(item.lon),
       name: item.display_name,
+      address: item.display_name,
     });
   };
 
   /* Select current location */
   const handleCurrentLocation = () => {
     if (!navigator.geolocation) {
-      alert("Geolocation not supported");
+      alert("Geolocation is not supported.");
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setQuery("Current location");
+        setQuery("Current Location");
+
         setSuggestion([]);
         setIsFocused(false);
 
-        if (onInputChange) onInputChange();
+        if (onInputChange) {
+          onInputChange();
+        }
 
         callback({
           lat: position.coords.latitude,
-          lng: position.coords.longitude, 
-          name: "Current location",
+          lng: position.coords.longitude,
+          name: "Current Location",
+          address: "Current Location",
         });
       },
-      () => alert("Location permission denied"),
-      { enableHighAccuracy: true }
+      (err) => {
+        console.error(err);
+        alert("Location permission denied.");
+      },
+      {
+        enableHighAccuracy: true,
+      }
     );
   };
 
   const showDropdown =
-    isFocused && (suggestion.length > 0 || query.length === 0);
+    isFocused &&
+    (suggestion.length > 0 || query.length === 0);
 
   return (
     <div className="w-full flex justify-center">
@@ -105,17 +149,19 @@ const InputLocation = ({ icon, description, callback, onInputChange }) => {
 
         <input
           type="text"
-          placeholder={description || "Enter pickup location"}
+          placeholder={
+            description || "Enter pickup location"
+          }
           value={query}
           onFocus={() => setIsFocused(true)}
-          onChange={(e) => fetchSuggestion(e.target.value)}
+          onChange={(e) =>
+            fetchSuggestion(e.target.value)
+          }
           className="w-full pl-10 py-3 sm:py-4 rounded-lg border-2 border-gray-300 text-base sm:text-lg placeholder-gray-500"
         />
 
-        {/* Dropdown */}
         {showDropdown && (
           <ul className="absolute z-50 w-full bg-white border rounded-lg mt-2 shadow-lg max-h-60 overflow-y-auto">
-            {/* Current location */}
             <li
               onClick={handleCurrentLocation}
               className="px-4 py-3 cursor-pointer hover:bg-gray-100 flex items-center gap-2 font-medium border-b"
@@ -124,16 +170,29 @@ const InputLocation = ({ icon, description, callback, onInputChange }) => {
               Use current location
             </li>
 
-            {/* Search results */}
-            {suggestion.map((place) => (
-              <li
-                key={place.place_id}
-                onClick={() => handleSelect(place)}
-                className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-              >
-                {place.display_name}
-              </li>
-            ))}
+            {Array.isArray(suggestion) &&
+              suggestion.map((place) => (
+                <li
+                  key={
+                    place.place_id ||
+                    `${place.lat}-${place.lon}`
+                  }
+                  onClick={() =>
+                    handleSelect(place)
+                  }
+                  className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                >
+                  {place.display_name}
+                </li>
+              ))}
+
+            {Array.isArray(suggestion) &&
+              suggestion.length === 0 &&
+              query.length >= 3 && (
+                <li className="px-4 py-3 text-gray-500">
+                  No locations found
+                </li>
+              )}
           </ul>
         )}
       </div>
