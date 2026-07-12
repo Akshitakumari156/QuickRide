@@ -63,7 +63,6 @@ const Header = () => {
           </span>
         </div>
 
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8 lg:gap-10">
           <NavLink to="/pricing" className={navLinkClass}>Pricing</NavLink>
           <NavLink to="/safety" className={navLinkClass}>Safety</NavLink>
@@ -71,7 +70,6 @@ const Header = () => {
           <NavLink to="/support" className={navLinkClass}>Support</NavLink>
         </nav>
 
-        {/* Desktop Auth Buttons */}
         <div className="hidden md:flex items-center gap-4">
           <Button
             onClick={handleAuthClick}
@@ -91,7 +89,6 @@ const Header = () => {
           />
         </div>
 
-        {/* Mobile Toggle */}
         <button
           className="md:hidden text-white/80 hover:text-white p-2 rounded-lg bg-white/5 transition-colors text-2xl"
           onClick={() => setOpen(!open)}

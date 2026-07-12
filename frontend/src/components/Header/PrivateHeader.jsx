@@ -29,7 +29,6 @@ const PrivateHeader = () => {
 
   const { user, setAuthState, logout } = useAuth();
   
-  // Safe extraction to avoid breaking references
   const displayName = user?.firstname || user?.name || "User";
   const displayAvatar = displayName.charAt(0).toUpperCase();
 

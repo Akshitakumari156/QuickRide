@@ -21,7 +21,6 @@ const CaptainLogin = () => {
     e.preventDefault()
 
     try {
-      // Replaced hardcoded localhost URL with the environment variable
       const baseUrl = import.meta.env.VITE_API_URL || '';
       const response = await fetch(
         `${baseUrl}/api/captain/login`,

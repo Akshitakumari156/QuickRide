@@ -1,25 +1,27 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const CaptainRegisterForm = () => {
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
-    firstname: '',
-    lastname: '',
-    email: '',
-    password: '',
-    vehicleColor: '',
-    plateNumber: '',
-    capacity: '',
-    vehicleType: 'car'
-  })
+    firstname: "",
+    lastname: "",
+    email: "",
+    password: "",
+    vehicleColor: "",
+    plateNumber: "",
+    capacity: "",
+    vehicleType: "car",
+  });
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-  }
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const payload = {
       firstname: formData.firstname,
       lastname: formData.lastname,
@@ -29,49 +31,51 @@ const CaptainRegisterForm = () => {
         color: formData.vehicleColor,
         plateNumber: formData.plateNumber,
         capacity: Number(formData.capacity),
-        vehicleType: formData.vehicleType
-      }
-    }
+        vehicleType: formData.vehicleType,
+      },
+    };
 
     try {
-      // Dynamic API URL fetched from your environment variables
-      const baseUrl = import.meta.meta.env?.VITE_API_URL || import.meta.env.VITE_API_URL;
+      const baseUrl =
+        import.meta.env.VITE_API_URL || import.meta.meta.env?.VITE_API_URL;
+
       const response = await fetch(`${baseUrl}/api/captain/register`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload)
-      })
-      
+        body: JSON.stringify(payload),
+      });
+
       const data = await response.json();
+
       console.log("Captain Registration Response:", data);
-      
+
       if (data.token) {
         alert("Captain registered successfully!");
-        navigate('/captain/login');
+        navigate("/captain/login");
       }
-      
     } catch (error) {
       console.error("Error in captain registration:", error);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center mt-4 justify-center bg-gradient-to-br from-gray-100 to-gray-200 px-4">
       <div className="w-full max-w-2xl bg-white rounded-3xl shadow-xl overflow-hidden">
-        
-        {/* Header */}
-        <div className="bg-black h-24 text-center text-white p-4 ">
+        <div className="bg-black h-24 text-center text-white p-4">
           <h2 className="text-3xl font-semibold">Become a Captain</h2>
-          <p className="text-gray-300 mt-2">Drive, earn, and grow on your own schedule</p>
+          <p className="text-gray-300 mt-2">
+            Drive, earn, and grow on your own schedule
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-8 space-y-8">
-          
-          {/* Personal Info */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Personal Information</h3>
+            <h3 className="text-lg font-semibold mb-4">
+              Personal Information
+            </h3>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <input
                 type="text"
@@ -82,6 +86,7 @@ const CaptainRegisterForm = () => {
                 onChange={handleChange}
                 className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-black"
               />
+
               <input
                 type="text"
                 name="lastname"
@@ -115,9 +120,10 @@ const CaptainRegisterForm = () => {
             </div>
           </div>
 
-          {/* Vehicle Info */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Vehicle Details</h3>
+            <h3 className="text-lg font-semibold mb-4">
+              Vehicle Details
+            </h3>
 
             <div className="space-y-4">
               <input
@@ -165,7 +171,6 @@ const CaptainRegisterForm = () => {
             </div>
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             className="w-full bg-black text-white py-4 rounded-2xl text-lg font-medium hover:bg-gray-800 transition"
@@ -175,7 +180,7 @@ const CaptainRegisterForm = () => {
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default CaptainRegisterForm;
