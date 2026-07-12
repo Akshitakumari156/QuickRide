@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
-import CaptainMap from "../CaptainMap";
-import AvailabilityCard from "../AvailabilityCard";
+import CaptainMap from "./CaptainMap";
+import AvailabilityCard from "../ride/AvailabilityCard";
 import useCaptainLocation from "../../hooks/useCaptainLocation";
-import StatsCard from "../Statscard";
+import StatsCard from "../../common/Statscard";
 import socket from "../../socket/socket";
 
 const Dashboard = ({ isOnline, setIsOnline }) => {

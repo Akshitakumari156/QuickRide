@@ -1,6 +1,6 @@
 import React from 'react'
-import banner from "../assets/homepagebanner.jpg"
-import RideLocationForm from './RideLocationForm'
+import banner from "../../assets/homepagebanner.jpg"
+import RideLocationForm from '../ride/RideLocationForm'
 const HomeHeroSection = () => {
   return (
     <div className='w-[90%] m-auto bg-[#F2F4F5] flex flex-col md:flex-row justify-around items-start mt-1 p-4 min-h-screen'>

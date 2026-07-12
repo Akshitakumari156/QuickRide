@@ -1,9 +1,9 @@
 import React from 'react'
 import { Outlet } from 'react-router-dom'
-import Header from './components/Header/PublicHeader'
-import { useAuth } from './context/AuthContext'
-import PrivateHeader from './components/Header/PrivateHeader'
-import PublicHeader from './components/Header/PublicHeader'
+import Header from '../common/Header/PublicHeader'
+import { useAuth } from '../context/AuthContext'
+import PrivateHeader from '../common/Header/PrivateHeader'
+import PublicHeader from '../common/Header/PublicHeader'
 
 const Layout = () => {
   const {isAuth}=useAuth();

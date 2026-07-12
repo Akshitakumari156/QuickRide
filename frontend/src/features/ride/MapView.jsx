@@ -10,8 +10,8 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useEffect, useState } from "react";
 
-import userIconImg from "../assets/user-marker.png";
-import driverIconImg from "../assets/driver-marker.png";
+import userIconImg from "../../assets/user-marker.png";
+import driverIconImg from "../../assets/driver-marker.png";
 
 const DEFAULT_CENTER = [22.9734, 78.6569];
 const DEFAULT_ZOOM = 5;

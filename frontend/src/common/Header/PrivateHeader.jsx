@@ -27,7 +27,7 @@ const PrivateHeader = () => {
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
 
-  const { user, setAuthState, logout } = useAuth();
+  const { user, logout } = useAuth();
   
   const displayName = user?.firstname || user?.name || "User";
   const displayAvatar = displayName.charAt(0).toUpperCase();

@@ -6,7 +6,7 @@ import {
   useEffect,
   useCallback,
 } from "react";
-import axios from "axios";
+import { fetchProfile } from "../api/authService";
 
 const AuthContext = createContext(null);
 
@@ -55,16 +55,8 @@ export const AuthProvider = ({ children }) => {
         return;
       }
 
-      const baseUrl = import.meta.env.VITE_API_URL || '';
-      const endpoint = userToken
-        ? `${baseUrl}/api/user/profile`
-        : `${baseUrl}/api/captain/profile`;
-
-      const response = await axios.get(endpoint, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const role = userToken ? "user" : "captain";
+      const response = await fetchProfile(role);
 
       setAuthState((prev) => ({
         ...prev,

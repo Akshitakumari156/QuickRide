@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
-import InputLocation from "./InputLocation";
-import SearchingRider from "./SearchingRider";
-import DriverArrivingCard from "./DriverArrivingCard";
-import socket from "../socket/socket";
+import InputLocation from "../ride/InputLocation";
+import SearchingRider from "../ride/SearchingRider";
+import DriverArrivingCard from "../ride/DriverArrivingCard";
+import socket from "../../socket/socket";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {

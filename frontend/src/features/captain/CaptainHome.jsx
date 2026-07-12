@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../Sidebar";
+import Sidebar from "../../common/Sidebar";
 import Dashboard from "./Dashboard";
-import RideHistory from "../RideHistory";
-import Reviews from "../Reviews";
-import ProfileSettings from "../ProfileSettings";
+import RideHistory from "../ride/RideHistory";
+import Reviews from "../profile/Reviews";
+import ProfileSettings from "../profile/ProfileSettings";
 
 const CaptainHome = () => {
   const navigate = useNavigate();

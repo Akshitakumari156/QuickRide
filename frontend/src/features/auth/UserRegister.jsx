@@ -2,8 +2,9 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { registerSchema } from "../validation/RegisterSchema";
-import Button from "./Button";
+import { registerSchema } from "../../validation/RegisterSchema";
+import Button from "../../common/Button";
+import { registerUser } from "../../api/authService";
 
 const UserRegister = () => {
   const navigate = useNavigate();
@@ -19,25 +20,19 @@ const UserRegister = () => {
 
   const handleForm = async (data) => {
     try {
-      const baseUrl = import.meta.env.VITE_API_URL || "";
-
-      const response = await fetch(`${baseUrl}/api/user/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (response.status === 201) {
-        alert("Account created successfully!");
-        navigate("/login");
-      } else if (response.status === 409) {
+      await registerUser(data);
+      alert("Account created successfully!");
+      navigate("/login");
+    } catch (error) {
+      if (error.response?.status === 409) {
         alert("User already exists with this email registration.");
-      } else {
+      } else if (error.response) {
         alert("Registration failed. Please try again.");
+      } else {
+        console.error("Registration runtime operation exception:", error);
+        alert("Network error. Please make sure your server stack is online.");
       }
-
+    } finally {
       reset(
         {},
         {
@@ -46,9 +41,6 @@ const UserRegister = () => {
           keepTouched: false,
         }
       );
-    } catch (error) {
-      console.error("Registration runtime operation exception:", error);
-      alert("Network error. Please make sure your server stack is online.");
     }
   };
 

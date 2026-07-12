@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import Button from "./Button";
+import Button from "../../common/Button";
 import InputLocation from "./InputLocation";
 import {
   faLocationDot,
   faLocationCrosshairs,
 } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
-import LoginPopUp from "./LoginPopUp";
+import LoginPopUp from "../auth/LoginPopUp";
 
 const RideLocationForm = () => {
   const navigate = useNavigate();

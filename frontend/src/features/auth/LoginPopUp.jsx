@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import Button from "./Button";
+import Button from "../../common/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";

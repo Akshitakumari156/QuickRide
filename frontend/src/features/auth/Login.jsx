@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import Button from "./Button";
+import Button from "../../common/Button";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
+import { loginUser } from "../../api/authService";
 
 const Login = () => {
   const { login } = useAuth();
@@ -18,31 +19,22 @@ const Login = () => {
     if (e && e.preventDefault) e.preventDefault();
 
     try {
-      const baseUrl = import.meta.env.VITE_API_URL || "";
+      const { data } = await loginUser(email, password);
 
-      const response = await fetch(`${baseUrl}/api/user/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      login(data.token, "user");
 
-      const res = await response.json();
-
-      if (response.status === 200) {
-        login(res.token, "user");
-
-        alert("Logged in successfully");
-        setEmail("");
-        setPassword("");
-        navigate("/dashboard");
-      } else {
-        alert(res.message || "Failed to log in");
-      }
+      alert("Logged in successfully");
+      setEmail("");
+      setPassword("");
+      navigate("/dashboard");
     } catch (error) {
+      const message = error.response?.data?.message || "Failed to log in";
       console.error("Login handler operation crashed:", error);
-      alert("Network error. Please confirm your backend service is running.");
+      alert(
+        error.response
+          ? message
+          : "Network error. Please confirm your backend service is running."
+      );
     }
   };
 

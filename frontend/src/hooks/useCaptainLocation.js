@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { reverseGeocode } from "../api/authService";
 
 const LOCATION_INTERVAL = 10000;
 
@@ -37,11 +38,7 @@ const useCaptainLocation = (enabled) => {
         lastCallRef.current = now;
 
         try {
-          const baseUrl = import.meta.env.VITE_API_URL || "";
-          const res = await fetch(
-            `${baseUrl}/api/location/reverse?lat=${lat}&lng=${lng}`
-          );
-          const data = await res.json();
+          const { data } = await reverseGeocode(lat, lng);
           setAddress(data.place || "Unknown location");
         } catch (error) {
           console.error("Error reverse-geocoding coordinates:", error);

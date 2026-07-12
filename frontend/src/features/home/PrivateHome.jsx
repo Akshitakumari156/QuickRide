@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import HomeSidebar from "./HomeSidebar";
-import MapView from "./MapView";
-import DriverArriving from "./DriverArrivingCard";
-import socket from "../socket/socket";
+import MapView from "../ride/MapView";
+import DriverArriving from "../ride/DriverArrivingCard";
+import socket from "../../socket/socket";
 
 const PrivateHome = () => {
   const [pickup, setPickup] = useState(null);

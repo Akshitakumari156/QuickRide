@@ -2,7 +2,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-import driverIconImg from "../assets/driver-marker.png";
+import driverIconImg from "../../assets/driver-marker.png";
 
 const captainIcon = new L.Icon({
   iconUrl: driverIconImg,

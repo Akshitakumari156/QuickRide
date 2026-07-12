@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
+import { registerCaptain } from "../../api/authService";
+import useFormState from "../../hooks/useFormState";
 
 const CaptainRegisterForm = () => {
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
+  const { formData, handleChange } = useFormState({
     firstname: "",
     lastname: "",
     email: "",
@@ -14,10 +16,6 @@ const CaptainRegisterForm = () => {
     capacity: "",
     vehicleType: "car",
   });
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,27 +34,16 @@ const CaptainRegisterForm = () => {
     };
 
     try {
-      const baseUrl =
-        import.meta.env.VITE_API_URL || import.meta.meta.env?.VITE_API_URL;
-
-      const response = await fetch(`${baseUrl}/api/captain/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-
-      console.log("Captain Registration Response:", data);
+      const { data } = await registerCaptain(payload);
 
       if (data.token) {
         alert("Captain registered successfully!");
         navigate("/captain/login");
       }
     } catch (error) {
+      const message = error.response?.data?.message || "Registration failed";
       console.error("Error in captain registration:", error);
+      alert(message);
     }
   };
 

@@ -1,56 +1,32 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { loginCaptain } from '../../api/authService';
+import useFormState from '../../hooks/useFormState';
 
 const CaptainLogin = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+  const { formData, handleChange } = useFormState({
     email: '',
     password: ''
   })
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
     try {
-      const baseUrl = import.meta.env.VITE_API_URL || '';
-      const response = await fetch(
-        `${baseUrl}/api/captain/login`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(formData)
-        }
-      )
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        alert(data.message || 'Login failed')
-        return
-      }
-
-      console.log('Captain Login Response:', data)
+      const { data } = await loginCaptain(formData.email, formData.password);
 
       if (data.token) {
         login(data.token, 'captain');
-        localStorage.setItem('captainToken', data.token);
         alert('Captain logged in successfully!');
         navigate('/captain/dashboard');
       }
-
     } catch (error) {
+      const message = error.response?.data?.message || 'Login failed';
       console.error('Error in captain login:', error)
+      alert(message)
     }
   }
 

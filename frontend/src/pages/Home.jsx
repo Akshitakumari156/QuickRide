@@ -1,6 +1,6 @@
-import CaptainCTASection from '../components/captain/CaptainCTASection'
-import Header from '../components/Header/PublicHeader'
-import HomeHeroSection from '../components/HomeHeroSection'
+import CaptainCTASection from '../features/captain/CaptainCTASection'
+import Header from '../common/Header/PublicHeader'
+import HomeHeroSection from '../features/home/HomeHeroSection'
 import { useAuth } from '../context/AuthContext'
 
 const Home = () => {
