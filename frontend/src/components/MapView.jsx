@@ -13,16 +13,8 @@ import { useEffect, useState } from "react";
 import userIconImg from "../assets/user-marker.png";
 import driverIconImg from "../assets/driver-marker.png";
 
-/* =========================
-   CONFIG
-========================= */
-
-const DEFAULT_CENTER = [22.9734, 78.6569]; // India
+const DEFAULT_CENTER = [22.9734, 78.6569];
 const DEFAULT_ZOOM = 5;
-
-/* =========================
-   ICONS
-========================= */
 
 const srcIcon = new L.Icon({
   iconUrl: userIconImg,
@@ -37,10 +29,6 @@ const dstIcon = new L.Icon({
   iconAnchor: [20, 40],
   popupAnchor: [0, -40],
 });
-
-/* =========================
-   AUTO FIT BOUNDS
-========================= */
 
 const FitBounds = ({ positions }) => {
   const map = useMap();
@@ -58,14 +46,9 @@ const FitBounds = ({ positions }) => {
   return null;
 };
 
-/* =========================
-   MAP VIEW
-========================= */
-
 const MapView = ({ pickup, dropoff }) => {
   const [userLocation, setUserLocation] = useState(null);
 
-  /* Get user's current location */
   useEffect(() => {
     if (!navigator.geolocation) return;
 
@@ -83,8 +66,6 @@ const MapView = ({ pickup, dropoff }) => {
     );
   }, []);
 
-  /* Route positions */
-
   const positions = [];
 
   if (pickup?.lat && pickup?.lng) {
@@ -94,8 +75,6 @@ const MapView = ({ pickup, dropoff }) => {
   if (dropoff?.lat && dropoff?.lng) {
     positions.push([dropoff.lat, dropoff.lng]);
   }
-
-  /* Initial center */
 
   const mapCenter =
     positions.length > 0
@@ -132,15 +111,11 @@ const MapView = ({ pickup, dropoff }) => {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      {/* Current Location */}
-
       {userLocation && !pickup && (
         <Marker position={userLocation} icon={srcIcon}>
           <Popup>You are here</Popup>
         </Marker>
       )}
-
-      {/* Route Line */}
 
       {positions.length === 2 && (
         <Polyline
@@ -153,33 +128,19 @@ const MapView = ({ pickup, dropoff }) => {
         />
       )}
 
-      {/* Pickup Marker */}
-
       {pickup?.lat && pickup?.lng && (
-        <Marker
-          position={[pickup.lat, pickup.lng]}
-          icon={srcIcon}
-        >
+        <Marker position={[pickup.lat, pickup.lng]} icon={srcIcon}>
           <Popup>{pickup.name}</Popup>
         </Marker>
       )}
 
-      {/* Dropoff Marker */}
-
       {dropoff?.lat && dropoff?.lng && (
-        <Marker
-          position={[dropoff.lat, dropoff.lng]}
-          icon={dstIcon}
-        >
+        <Marker position={[dropoff.lat, dropoff.lng]} icon={dstIcon}>
           <Popup>{dropoff.name}</Popup>
         </Marker>
       )}
 
-      {/* Auto Fit Route */}
-
-      {positions.length > 0 && (
-        <FitBounds positions={positions} />
-      )}
+      {positions.length > 0 && <FitBounds positions={positions} />}
     </MapContainer>
   );
 };

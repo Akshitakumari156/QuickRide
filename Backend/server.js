@@ -70,5 +70,5 @@ app.use('/api/ride', rideAcceptRoutes);
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
-    console.log(`🚀 UrbanMove Engine running on port ${PORT}`);
+    console.log(`UrbanMove is running on port ${PORT} successfully!`);
 });

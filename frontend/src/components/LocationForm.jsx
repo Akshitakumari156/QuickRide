@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import InputLocation from "./InputLocation";
-import { faLocationDot, faFlagCheckered } from "@fortawesome/free-solid-svg-icons";
+import {
+  faLocationDot,
+  faFlagCheckered,
+} from "@fortawesome/free-solid-svg-icons";
 
 const LocationForm = ({ onCheckPrice }) => {
   const [pickupCoords, setPickupCoords] = useState(null);
   const [dropoffCoords, setDropoffCoords] = useState(null);
   const [error, setError] = useState("");
 
-  // Handles caching/reset logic when user types a new query
   const handleLocationInputChange = () => {
     setError("");
   };
@@ -22,13 +24,14 @@ const LocationForm = ({ onCheckPrice }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (!pickupCoords || !dropoffCoords) {
-      setError("Please select both a valid pickup and drop location from the suggestions.");
+      setError(
+        "Please select both a valid pickup and drop location from the suggestions."
+      );
       return;
     }
 
-    // Pass the coordinate state back up to your dashboard matching handler
     if (onCheckPrice) {
       onCheckPrice({ pickupCoords, dropoffCoords });
     }
@@ -46,11 +49,11 @@ const LocationForm = ({ onCheckPrice }) => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Pickup Search Component Integration */}
         <div>
           <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1 pl-4">
             Pickup Location
           </label>
+
           <InputLocation
             icon={faLocationDot}
             description="Where are we picking you up?"
@@ -59,11 +62,11 @@ const LocationForm = ({ onCheckPrice }) => {
           />
         </div>
 
-        {/* Dropoff Search Component Integration */}
         <div>
           <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1 pl-4">
             Drop Location
           </label>
+
           <InputLocation
             icon={faFlagCheckered}
             description="Where are you heading?"
@@ -78,7 +81,6 @@ const LocationForm = ({ onCheckPrice }) => {
           </div>
         )}
 
-        {/* Action Button */}
         <button
           type="submit"
           className="w-full bg-gradient-to-r from-blue-900 to-indigo-600 text-white py-3.5 rounded-xl text-base font-bold shadow-md shadow-blue-500/10 hover:shadow-lg hover:shadow-blue-500/20 hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 transform active:scale-[0.99]"

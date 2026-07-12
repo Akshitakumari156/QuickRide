@@ -12,7 +12,6 @@ const InputLocation = ({ icon, description, callback, onInputChange }) => {
 
   const wrappedRef = useRef(null);
 
-  /* Close dropdown on outside click */
   useEffect(() => {
     const clickOutside = (e) => {
       if (
@@ -27,14 +26,10 @@ const InputLocation = ({ icon, description, callback, onInputChange }) => {
     document.addEventListener("mousedown", clickOutside);
 
     return () => {
-      document.removeEventListener(
-        "mousedown",
-        clickOutside
-      );
+      document.removeEventListener("mousedown", clickOutside);
     };
   }, []);
 
-  /* Fetch suggestions */
   const fetchSuggestion = async (text) => {
     setQuery(text);
 
@@ -56,29 +51,20 @@ const InputLocation = ({ icon, description, callback, onInputChange }) => {
 
       const data = await resp.json();
 
-      console.log("📍 Location API Response:", data);
+      console.log("Location API Response:", data);
 
-      // IMPORTANT FIX
       if (Array.isArray(data)) {
         setSuggestion(data);
       } else {
-        console.error(
-          "Location API returned non-array:",
-          data
-        );
+        console.error("Location API returned non-array:", data);
         setSuggestion([]);
       }
     } catch (error) {
-      console.error(
-        "❌ Error fetching location suggestions:",
-        error
-      );
-
+      console.error("Error fetching location suggestions:", error);
       setSuggestion([]);
     }
   };
 
-  /* Select searched place */
   const handleSelect = (item) => {
     setQuery(item.display_name || "");
 
@@ -97,7 +83,6 @@ const InputLocation = ({ icon, description, callback, onInputChange }) => {
     });
   };
 
-  /* Select current location */
   const handleCurrentLocation = () => {
     if (!navigator.geolocation) {
       alert("Geolocation is not supported.");
@@ -149,14 +134,10 @@ const InputLocation = ({ icon, description, callback, onInputChange }) => {
 
         <input
           type="text"
-          placeholder={
-            description || "Enter pickup location"
-          }
+          placeholder={description || "Enter pickup location"}
           value={query}
           onFocus={() => setIsFocused(true)}
-          onChange={(e) =>
-            fetchSuggestion(e.target.value)
-          }
+          onChange={(e) => fetchSuggestion(e.target.value)}
           className="w-full pl-10 py-3 sm:py-4 rounded-lg border-2 border-gray-300 text-base sm:text-lg placeholder-gray-500"
         />
 
@@ -173,13 +154,8 @@ const InputLocation = ({ icon, description, callback, onInputChange }) => {
             {Array.isArray(suggestion) &&
               suggestion.map((place) => (
                 <li
-                  key={
-                    place.place_id ||
-                    `${place.lat}-${place.lon}`
-                  }
-                  onClick={() =>
-                    handleSelect(place)
-                  }
+                  key={place.place_id || `${place.lat}-${place.lon}`}
+                  onClick={() => handleSelect(place)}
                   className="px-4 py-2 cursor-pointer hover:bg-gray-100"
                 >
                   {place.display_name}

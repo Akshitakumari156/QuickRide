@@ -41,7 +41,6 @@ export const AuthProvider = ({ children }) => {
     };
   });
 
-  // Wrapped in useCallback to safely include it as a hook dependency
   const getProfile = useCallback(async () => {
     try {
       const userToken = localStorage.getItem("userToken");
@@ -56,7 +55,6 @@ export const AuthProvider = ({ children }) => {
         return;
       }
 
-      // Replaced hardcoded localhost endpoints with the environment variable configuration
       const baseUrl = import.meta.env.VITE_API_URL || '';
       const endpoint = userToken
         ? `${baseUrl}/api/user/profile`
@@ -74,7 +72,7 @@ export const AuthProvider = ({ children }) => {
         loading: false,
       }));
     } catch (error) {
-      console.error("❌ Profile retrieval failed:", error);
+      console.error(" Profile retrieval failed:", error);
 
       localStorage.removeItem("userToken");
       localStorage.removeItem("captainToken");
@@ -88,7 +86,6 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // Tracks authorization status across both mount and state change events safely
   useEffect(() => {
     if (authState.isAuth && !authState.user) {
       getProfile();

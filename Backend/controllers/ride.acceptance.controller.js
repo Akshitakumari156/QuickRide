@@ -130,7 +130,7 @@ exports.acceptRide = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("❌ Critical exception inside Ride Acceptance Pipeline:", error.message);
+    console.error("Critical exception inside Ride Acceptance Pipeline:", error.message);
     try { await redis.del(lockKey); } catch (_) {}
     return res.status(500).json({ success: false, error: error.message });
   }

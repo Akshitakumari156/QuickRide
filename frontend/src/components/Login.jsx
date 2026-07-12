@@ -1,73 +1,71 @@
-import React, { useState } from 'react';
-import Button from './Button';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import Button from "./Button";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const Signupfn = () => {
-    navigate('/register');
+    navigate("/register");
   };
 
   const handleBtn = async (e) => {
-    // Safely prevent page reload on form submit
     if (e && e.preventDefault) e.preventDefault();
 
     try {
-      // Replaced hardcoded localhost URL string with the environment variable configuration
-      const baseUrl = import.meta.env.VITE_API_URL || '';
+      const baseUrl = import.meta.env.VITE_API_URL || "";
+
       const response = await fetch(`${baseUrl}/api/user/login`, {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
       });
 
       const res = await response.json();
-      
+
       if (response.status === 200) {
         login(res.token, "user");
 
-        alert("logged in success");
+        alert("Logged in successfully");
         setEmail("");
         setPassword("");
-        navigate('/dashboard');
+        navigate("/dashboard");
       } else {
-        alert(res.message || "failed in logged in");
+        alert(res.message || "Failed to log in");
       }
     } catch (error) {
-      console.error("❌ Login handler operation crashed:", error);
+      console.error("Login handler operation crashed:", error);
       alert("Network error. Please confirm your backend service is running.");
     }
   };
 
   return (
     <div className="w-full h-screen flex items-center justify-center bg-[#0b1e30] relative overflow-hidden px-4">
-      {/* Premium background accent glowing blobs */}
       <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-blue-600/10 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-indigo-600/10 blur-[120px] pointer-events-none" />
 
       <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-100 p-8 md:p-10 flex flex-col gap-8 relative z-10 transform transition-all">
-        
-        {/* HEADER */}
         <div className="text-center flex flex-col items-center">
           <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center font-bold text-xl shadow-lg shadow-blue-500/20 mb-4">
             U
           </div>
+
           <h2 className="text-2xl font-bold tracking-tight text-slate-900">
             Welcome Back
           </h2>
+
           <p className="text-slate-500 text-sm mt-1.5 font-medium">
             Login to continue booking your ride
           </p>
         </div>
 
-        {/* FORM */}
         <form onSubmit={handleBtn} className="flex flex-col gap-5">
           <div className="space-y-4">
             <div className="relative">
@@ -93,9 +91,7 @@ const Login = () => {
             </div>
           </div>
 
-          {/* ACTIONS */}
           <div className="flex flex-col gap-4 mt-2">
-            {/* Added type="submit" so the form intercepts the action cleanly via Enter key or direct click */}
             <Button
               type="submit"
               label="Login"
@@ -105,7 +101,7 @@ const Login = () => {
               className="w-full h-12 rounded-xl font-semibold tracking-wide shadow-md shadow-blue-500/10 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 transform hover:-translate-y-0.5"
             />
 
-            <button 
+            <button
               type="button"
               className="text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors self-center py-1"
             >
@@ -114,7 +110,6 @@ const Login = () => {
           </div>
         </form>
 
-        {/* FOOTER */}
         <div className="text-center text-sm text-slate-500 font-medium border-t border-slate-100 pt-6">
           Don’t have an account?{" "}
           <span
@@ -124,7 +119,6 @@ const Login = () => {
             Sign up
           </span>
         </div>
-
       </div>
     </div>
   );

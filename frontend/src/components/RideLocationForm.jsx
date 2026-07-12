@@ -15,15 +15,14 @@ const RideLocationForm = () => {
   const [showLogin, setShowLogin] = useState(false);
 
   const onClickfn = () => {
-    // Check both standard naming variations used across your auth workflows
-    const token = localStorage.getItem("userToken") || localStorage.getItem("token");
+    const token =
+      localStorage.getItem("userToken") || localStorage.getItem("token");
 
     if (!pickup || !drop) {
       alert("Please select both pickup and drop location");
       return;
     }
 
-    // Fixed keys: InputLocation returns 'name' and 'lng' instead of 'display_name' and 'lon'
     console.log("SRC Address:", pickup.name);
     console.log("SRC Lat:", pickup.lat);
     console.log("SRC Lng:", pickup.lng);
@@ -34,8 +33,7 @@ const RideLocationForm = () => {
 
     if (token) {
       alert("Ride confirmed");
-      // If user is authenticated, route them to their workspace tracker
-      navigate('/dashboard');
+      navigate("/dashboard");
     } else {
       setShowLogin(true);
     }
@@ -43,17 +41,15 @@ const RideLocationForm = () => {
 
   return (
     <div className="w-full flex flex-col items-center gap-3 mt-8 px-3 sm:px-0">
-      
-      {/* Locations Layout Container */}
       <div className="w-full flex justify-center">
         <div className="w-full max-w-4xl px-4 sm:px-6">
-          {/* Fixed typo 'md:grid-2' to 'md:grid-cols-2' */}
           <div className="grid relative grid-cols-1 md:grid-cols-2 gap-4">
             <InputLocation
               icon={faLocationDot}
               description="Enter Pickup location"
               callback={setPickup}
             />
+
             <InputLocation
               icon={faLocationCrosshairs}
               description="Enter Drop location"
@@ -61,7 +57,6 @@ const RideLocationForm = () => {
             />
           </div>
 
-          {/* Action Confirmation Button */}
           <div className="flex justify-center mt-6">
             <Button
               onClick={onClickfn}
@@ -70,7 +65,6 @@ const RideLocationForm = () => {
             />
           </div>
 
-          {/* Modal Overlay Layer */}
           {showLogin && (
             <div className="fixed inset-0 z-[100]">
               <LoginPopUp closebackdrop={() => setShowLogin(false)} />
@@ -78,7 +72,6 @@ const RideLocationForm = () => {
           )}
         </div>
       </div>
-
     </div>
   );
 };
