@@ -1,16 +1,24 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faLocationDot,
-  faCrosshairs,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCrosshairs, faLocationDot } from "@fortawesome/free-solid-svg-icons";
+const InputLocation = ({
+  icon,
+  description,
+  callback,
+  onInputChange,
 
-const InputLocation = ({ icon, description, callback, onInputChange }) => {
-  const [query, setQuery] = useState("");
+  value = "",
+  onValueChange,
+}) => {
+  const [query, setQuery] = useState(value);
   const [suggestion, setSuggestion] = useState([]);
   const [isFocused, setIsFocused] = useState(false);
 
   const wrappedRef = useRef(null);
+
+  useEffect(() => {
+    setQuery(value || "");
+  }, [value]);
 
   useEffect(() => {
     const clickOutside = (e) => {
@@ -30,8 +38,16 @@ const InputLocation = ({ icon, description, callback, onInputChange }) => {
     };
   }, []);
 
-  const fetchSuggestion = async (text) => {
+  const updateQuery = (text) => {
     setQuery(text);
+
+    if (onValueChange) {
+      onValueChange(text);
+    }
+  };
+
+  const fetchSuggestion = async (text) => {
+    updateQuery(text);
 
     if (onInputChange) {
       onInputChange();
@@ -51,22 +67,19 @@ const InputLocation = ({ icon, description, callback, onInputChange }) => {
 
       const data = await resp.json();
 
-      console.log("Location API Response:", data);
-
       if (Array.isArray(data)) {
         setSuggestion(data);
       } else {
-        console.error("Location API returned non-array:", data);
         setSuggestion([]);
       }
-    } catch (error) {
-      console.error("Error fetching location suggestions:", error);
+    } catch (err) {
+      console.error(err);
       setSuggestion([]);
     }
   };
 
   const handleSelect = (item) => {
-    setQuery(item.display_name || "");
+    updateQuery(item.display_name || "");
 
     setSuggestion([]);
     setIsFocused(false);
@@ -91,7 +104,7 @@ const InputLocation = ({ icon, description, callback, onInputChange }) => {
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setQuery("Current Location");
+        updateQuery("Current Location");
 
         setSuggestion([]);
         setIsFocused(false);
@@ -134,7 +147,7 @@ const InputLocation = ({ icon, description, callback, onInputChange }) => {
 
         <input
           type="text"
-          placeholder={description || "Enter pickup location"}
+          placeholder={description}
           value={query}
           onFocus={() => setIsFocused(true)}
           onChange={(e) => fetchSuggestion(e.target.value)}
@@ -151,19 +164,17 @@ const InputLocation = ({ icon, description, callback, onInputChange }) => {
               Use current location
             </li>
 
-            {Array.isArray(suggestion) &&
-              suggestion.map((place) => (
-                <li
-                  key={place.place_id || `${place.lat}-${place.lon}`}
-                  onClick={() => handleSelect(place)}
-                  className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                >
-                  {place.display_name}
-                </li>
-              ))}
+            {suggestion.map((place) => (
+              <li
+                key={place.place_id || `${place.lat}-${place.lon}`}
+                onClick={() => handleSelect(place)}
+                className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+              >
+                {place.display_name}
+              </li>
+            ))}
 
-            {Array.isArray(suggestion) &&
-              suggestion.length === 0 &&
+            {suggestion.length === 0 &&
               query.length >= 3 && (
                 <li className="px-4 py-3 text-gray-500">
                   No locations found
@@ -175,5 +186,4 @@ const InputLocation = ({ icon, description, callback, onInputChange }) => {
     </div>
   );
 };
-
 export default InputLocation;

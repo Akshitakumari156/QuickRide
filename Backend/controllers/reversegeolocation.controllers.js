@@ -1,7 +1,7 @@
 const axios = require("axios");
 const redis = require("../config/redis.config");
 
-const LOCATION_TTL = 60; // seconds
+const LOCATION_TTL = 60; 
 
 exports.getAddressFromCoordinates = async (req, res) => {
   try {
@@ -18,11 +18,11 @@ exports.getAddressFromCoordinates = async (req, res) => {
     const cached = await redis.get(redisKey);
 
     if (cached) {
-      console.log("📦 Reverse geocode cache hit");
+      console.log("Reverse geocode cache hit");
       return res.json(JSON.parse(cached));
     }
 
-    console.log("🌍 LocationIQ Reverse Geocode API Call");
+    console.log("LocationIQ Reverse Geocode API Call");
 
     const response = await axios.get(
       "https://us1.locationiq.com/v1/reverse",
@@ -73,7 +73,7 @@ exports.getAddressFromCoordinates = async (req, res) => {
   } catch (error) {
 
     console.error(
-      "❌ Reverse Geolocation Error:",
+      "Reverse Geolocation Error:",
       error.response?.data || error.message
     );
 

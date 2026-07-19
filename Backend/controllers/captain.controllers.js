@@ -1,12 +1,9 @@
-const BlackListTokenModel = require('../models/Blacklisttoken.modle'); // Fixed typo in path extension (.model)
+const BlackListTokenModel = require('../models/Blacklisttoken.modle'); 
 const captainModel = require('../models/captain.model');
 const userModel = require('../models/user.model');
 const captainservice = require('../services/captain.service');
 const jwt = require('jsonwebtoken');
 
-/**
- * 📝 REGISTER CAPTAIN
- */
 exports.registerCaptain = async (req, res) => {
     const { email, password, firstname, lastname, vehicle } = req.body;
     try {
@@ -48,9 +45,6 @@ exports.registerCaptain = async (req, res) => {
     }
 };
 
-/**
- * 🔑 LOGIN CAPTAIN
- */
 exports.logincaptain = async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -85,16 +79,10 @@ exports.logincaptain = async (req, res) => {
     }
 };
 
-/**
- * 👤 CAPTAIN PROFILE
- */
 exports.captainProfile = async (req, res, next) => {
    return res.status(200).json(req.captain);
 };
 
-/**
- * 🚪 LOGOUT CAPTAIN
- */
 exports.logoutCaptain = async (req, res) => {
     const token = req.headers.authorization?.split(" ")[1] || req.cookies?.token;
     res.clearCookie('token');
@@ -108,15 +96,10 @@ exports.logoutCaptain = async (req, res) => {
     });
 };
 
-/**
- * 📡 FIND NEARBY CAPTAINS (GEOLOCATION SEARCH PIPELINE)
- * Route Call: GET /api/captain/get-nearby-captains?lat=22.7196&lng=75.8577
- */
 exports.getNearbyCaptains = async (req, res, next) => {
     try {
         const { lat, lng } = req.query;
 
-        // Validation guard to secure downstream Redis parsing parameters
         if (!lat || !lng) {
             return res.status(400).json({
                 success: false,
@@ -124,7 +107,6 @@ exports.getNearbyCaptains = async (req, res, next) => {
             });
         }
 
-        // Execution handover to your fixed Redis spatial lookup engine
         const nearbyCaptains = await captainservice.findNearbyCaptains(lat, lng);
 
         return res.status(200).json({
@@ -134,7 +116,7 @@ exports.getNearbyCaptains = async (req, res, next) => {
         });
 
     } catch (error) {
-        console.error("❌ Error in getNearbyCaptains matching sequence controller:", error);
+        console.error("Error in getNearbyCaptains matching sequence controller:", error);
         return res.status(500).json({
             success: false,
             message: "Internal tracking server anomaly crashed the lookup thread request."

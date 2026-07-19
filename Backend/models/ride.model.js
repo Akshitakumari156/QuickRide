@@ -13,11 +13,13 @@ const rideSchema = new mongoose.Schema({
     },
     pickup: {
         lat: { type: Number, required: true },
-        lng: { type: Number, required: true }
+        lng: { type: Number, required: true },
+        address: { type: String, required: true } 
     },
     destination: {
         lat: { type: Number, required: true },
-        lng: { type: Number, required: true }
+        lng: { type: Number, required: true },
+        address: { type: String, required: true } 
     },
     fare: {
         type: Number,
@@ -28,7 +30,12 @@ const rideSchema = new mongoose.Schema({
         enum: ['PENDING', 'ACCEPTED', 'ONGOING', 'COMPLETED', 'CANCELLED'],
         default: 'PENDING'
     },
-    // ⚡ THE CRITICAL FIX: Define these missing fields so Mongoose allows them to be saved!
+    clientRequestId: {
+        type: String,
+        index: true,
+        sparse: true,
+        unique: true 
+    },
     distanceKm: {
         type: Number,
         required: true
