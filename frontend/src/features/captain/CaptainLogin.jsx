@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { loginCaptain } from '../../api/authService';
@@ -7,6 +7,7 @@ import useFormState from '../../hooks/useFormState';
 const CaptainLogin = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const { formData, handleChange } = useFormState({
     email: '',
     password: ''
@@ -14,6 +15,9 @@ const CaptainLogin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (loading) return;
+
+    setLoading(true);
 
     try {
       const { data } = await loginCaptain(formData.email, formData.password);
@@ -27,6 +31,8 @@ const CaptainLogin = () => {
       const message = error.response?.data?.message || 'Login failed';
       console.error('Error in captain login:', error)
       alert(message)
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -63,9 +69,13 @@ const CaptainLogin = () => {
 
           <button
             type="submit"
-            className="w-full bg-black text-white py-3 rounded-2xl text-lg font-medium hover:bg-gray-800 transition"
+            disabled={loading}
+            className="w-full bg-black text-white py-3 rounded-2xl text-lg font-medium hover:bg-gray-800 transition disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            Login as Captain
+            {loading && (
+              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            )}
+            {loading ? "Logging in..." : "Login as Captain"}
           </button>
         </form>
       </div>

@@ -154,11 +154,12 @@ const UserRegister = () => {
                   ? "Creating Account..."
                   : "Confirm & Register"
               }
+              loading={isSubmitting}
               bg="#2563eb"
               textColor="#FFFFFF"
               hoverbg="#1d4ed8"
               disabled={isSubmitting}
-              className="w-full h-12 rounded-xl font-semibold tracking-wide shadow-md shadow-blue-500/10 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full h-12 rounded-xl font-semibold tracking-wide shadow-md shadow-blue-500/10 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 transform hover:-translate-y-0.5"
             />
           </div>
         </form>

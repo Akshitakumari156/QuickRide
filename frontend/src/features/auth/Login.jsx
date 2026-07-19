@@ -10,6 +10,7 @@ const Login = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const Signupfn = () => {
     navigate("/register");
@@ -17,6 +18,9 @@ const Login = () => {
 
   const handleBtn = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
+    if (loading) return;
+
+    setLoading(true);
 
     try {
       const { data } = await loginUser(email, password);
@@ -35,6 +39,8 @@ const Login = () => {
           ? message
           : "Network error. Please confirm your backend service is running."
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -86,7 +92,8 @@ const Login = () => {
           <div className="flex flex-col gap-4 mt-2">
             <Button
               type="submit"
-              label="Login"
+              label={loading ? "Logging in..." : "Login"}
+              loading={loading}
               bg="#2563eb"
               textColor="#FFFFFF"
               hoverbg="#1d4ed8"

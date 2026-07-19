@@ -9,7 +9,6 @@ const apiClient = axios.create({
   },
 });
 
-// Attach whichever token exists (user or captain) to every outgoing request.
 apiClient.interceptors.request.use((config) => {
   const token =
     localStorage.getItem("userToken") || localStorage.getItem("captainToken");

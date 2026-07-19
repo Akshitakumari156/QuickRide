@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerCaptain } from "../../api/authService";
 import useFormState from "../../hooks/useFormState";
 
 const CaptainRegisterForm = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const { formData, handleChange } = useFormState({
     firstname: "",
@@ -19,6 +20,9 @@ const CaptainRegisterForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
+
+    setLoading(true);
 
     const payload = {
       firstname: formData.firstname,
@@ -44,6 +48,8 @@ const CaptainRegisterForm = () => {
       const message = error.response?.data?.message || "Registration failed";
       console.error("Error in captain registration:", error);
       alert(message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -160,9 +166,13 @@ const CaptainRegisterForm = () => {
 
           <button
             type="submit"
-            className="w-full bg-black text-white py-4 rounded-2xl text-lg font-medium hover:bg-gray-800 transition"
+            disabled={loading}
+            className="w-full bg-black text-white py-4 rounded-2xl text-lg font-medium hover:bg-gray-800 transition disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            Register as Captain
+            {loading && (
+              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            )}
+            {loading ? "Registering..." : "Register as Captain"}
           </button>
         </form>
       </div>
