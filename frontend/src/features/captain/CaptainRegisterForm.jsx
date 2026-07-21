@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerCaptain } from "../../api/authService";
 import useFormState from "../../hooks/useFormState";
+import { useToast } from "../../common/Toast/ToastContext";
 
 const CaptainRegisterForm = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
   const { formData, handleChange } = useFormState({
@@ -41,13 +43,13 @@ const CaptainRegisterForm = () => {
       const { data } = await registerCaptain(payload);
 
       if (data.token) {
-        alert("Captain registered successfully!");
+        toast.success("Please log in to continue.", "Captain registered successfully");
         navigate("/captain/login");
       }
     } catch (error) {
       const message = error.response?.data?.message || "Registration failed";
       console.error("Error in captain registration:", error);
-      alert(message);
+      toast.error(message, "Registration failed");
     } finally {
       setLoading(false);
     }

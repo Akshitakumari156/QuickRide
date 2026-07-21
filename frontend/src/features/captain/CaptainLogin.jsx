@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { loginCaptain } from '../../api/authService';
 import useFormState from '../../hooks/useFormState';
+import { useToast } from '../../common/Toast/ToastContext';
 
 const CaptainLogin = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const { formData, handleChange } = useFormState({
     email: '',
@@ -24,13 +26,13 @@ const CaptainLogin = () => {
 
       if (data.token) {
         login(data.token, 'captain');
-        alert('Captain logged in successfully!');
+        toast.success('Redirecting to your dashboard.', 'Logged in successfully');
         navigate('/captain/dashboard');
       }
     } catch (error) {
       const message = error.response?.data?.message || 'Login failed';
       console.error('Error in captain login:', error)
-      alert(message)
+      toast.error(message, "Couldn't log you in");
     } finally {
       setLoading(false);
     }

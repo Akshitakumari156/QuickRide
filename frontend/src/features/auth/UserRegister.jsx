@@ -5,9 +5,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema } from "../../validation/RegisterSchema";
 import Button from "../../common/Button";
 import { registerUser } from "../../api/authService";
+import { useToast } from "../../common/Toast/ToastContext";
 
 const UserRegister = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const {
     register,
@@ -21,16 +23,19 @@ const UserRegister = () => {
   const handleForm = async (data) => {
     try {
       await registerUser(data);
-      alert("Account created successfully!");
+      toast.success("You're all set — please log in to continue.", "Account created");
       navigate("/login");
     } catch (error) {
       if (error.response?.status === 409) {
-        alert("User already exists with this email registration.");
+        toast.error("An account with this email already exists.", "Registration failed");
       } else if (error.response) {
-        alert("Registration failed. Please try again.");
+        toast.error("Please check your details and try again.", "Registration failed");
       } else {
         console.error("Registration runtime operation exception:", error);
-        alert("Network error. Please make sure your server stack is online.");
+        toast.error(
+          "Please make sure your server stack is online.",
+          "Network error"
+        );
       }
     } finally {
       reset(

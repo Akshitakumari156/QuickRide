@@ -3,10 +3,12 @@ import Button from "../../common/Button";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { loginUser } from "../../api/authService";
+import { useToast } from "../../common/Toast/ToastContext";
 
 const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,17 +29,18 @@ const Login = () => {
 
       login(data.token, "user");
 
-      alert("Logged in successfully");
+      toast.success("Welcome back — redirecting you now.", "Logged in successfully");
       setEmail("");
       setPassword("");
       navigate("/dashboard");
     } catch (error) {
       const message = error.response?.data?.message || "Failed to log in";
       console.error("Login handler operation crashed:", error);
-      alert(
+      toast.error(
         error.response
           ? message
-          : "Network error. Please confirm your backend service is running."
+          : "Network error. Please confirm your backend service is running.",
+        "Couldn't log you in"
       );
     } finally {
       setLoading(false);
@@ -110,7 +113,7 @@ const Login = () => {
         </form>
 
         <div className="text-center text-sm text-slate-500 font-medium border-t border-slate-100 pt-6">
-          Don’t have an account?{" "}
+          Don't have an account?{" "}
           <span
             onClick={Signupfn}
             className="text-blue-600 font-semibold cursor-pointer hover:text-blue-700 hover:underline ml-1 transition-colors"

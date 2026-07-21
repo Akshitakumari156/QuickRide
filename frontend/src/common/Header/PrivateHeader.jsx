@@ -78,7 +78,7 @@ const PrivateHeader = () => {
           <NavLink to="/safety" className={navLinkClass}>
             Safety
           </NavLink>
-          <NavLink to="/home" className={navLinkClass}>
+          <NavLink to="services" className={navLinkClass}>
             Service
           </NavLink>
           <NavLink to="/support" className={navLinkClass}>

@@ -1,8 +1,15 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { NavLink, useLocation, useNavigate } from "react-router-dom"
 import { FiMenu, FiX } from "react-icons/fi"
 import Button from "../Button"
 import { useAuth } from "../../context/AuthContext"
+
+const navItems = [
+  { label: "Services", to: "/services" },
+  { label: "Pricing", to: "/pricing" },
+  { label: "Safety", to: "/safety" },
+  { label: "Support", to: "/support" },
+]
 
 const navLinkClass = ({ isActive }) =>
   `relative py-2 text-sm lg:text-base font-medium tracking-wide transition-all duration-300 ease-in-out
@@ -15,15 +22,22 @@ const navLinkClass = ({ isActive }) =>
 
 const Header = () => {
   const [open, setOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const navigate = useNavigate()
   const { isAuth, logout, role } = useAuth()
   const location = useLocation()
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8)
+    window.addEventListener("scroll", onScroll)
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
 
   const handleAuthClick = () => {
     if (isAuth) {
       logout()
       navigate(role === "captain" ? "/captain/login" : "/login")
-    }  
+    }
     if (location.pathname.startsWith("/captain")) {
       navigate("/captain/login")
     } else {
@@ -37,19 +51,24 @@ const Header = () => {
       navigate("/dashboard")
     } else if (isAuth && role === "captain") {
       navigate("/captain/dashboard")
-    }  if (location.pathname.startsWith("/captain")) {
-      navigate("/captain/register")
     }
-    else {
+    if (location.pathname.startsWith("/captain")) {
+      navigate("/captain/register")
+    } else {
       navigate("/register")
     }
     setOpen(false)
   }
 
   return (
-    <header className="w-full bg-[#0b1e30] border-b border-white/5 sticky top-0 z-[9999] backdrop-blur-md shadow-lg shadow-black/10">
+    <header
+      className={`w-full sticky top-0 z-[9999] transition-all duration-300 ${
+        scrolled
+          ? "bg-[#0b1e30]/95 backdrop-blur-md shadow-lg shadow-black/20 border-b border-white/5"
+          : "bg-[#0b1e30] border-b border-white/5"
+      }`}
+    >
       <div className="max-w-7xl mx-auto flex items-center justify-between px-5 md:px-8 h-20">
-
         {/* Logo */}
         <div
           className="flex items-center gap-3 cursor-pointer group"
@@ -64,10 +83,11 @@ const Header = () => {
         </div>
 
         <nav className="hidden md:flex items-center gap-8 lg:gap-10">
-          <NavLink to="/pricing" className={navLinkClass}>Pricing</NavLink>
-          <NavLink to="/safety" className={navLinkClass}>Safety</NavLink>
-          <NavLink to="/home" className={navLinkClass}>Service</NavLink>
-          <NavLink to="/support" className={navLinkClass}>Support</NavLink>
+          {navItems.map((item) => (
+            <NavLink key={item.to} to={item.to} className={navLinkClass}>
+              {item.label}
+            </NavLink>
+          ))}
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
@@ -105,15 +125,14 @@ const Header = () => {
         }`}
       >
         <div className="p-6 space-y-6">
-          {/* Mobile Navigation Links */}
           <div className="flex flex-col gap-1.5">
-            <NavLink onClick={() => setOpen(false)} to="/pricing" className={navLinkClass}>Pricing</NavLink>
-            <NavLink onClick={() => setOpen(false)} to="/safety" className={navLinkClass}>Safety</NavLink>
-            <NavLink onClick={() => setOpen(false)} to="/home" className={navLinkClass}>Service</NavLink>
-            <NavLink onClick={() => setOpen(false)} to="/support" className={navLinkClass}>Support</NavLink>
+            {navItems.map((item) => (
+              <NavLink key={item.to} onClick={() => setOpen(false)} to={item.to} className={navLinkClass}>
+                {item.label}
+              </NavLink>
+            ))}
           </div>
 
-          {/* Mobile Action Buttons */}
           <div className="pt-5 border-t border-white/10 flex flex-col gap-3">
             <Button
               onClick={handleAuthClick}
