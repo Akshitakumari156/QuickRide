@@ -26,20 +26,20 @@ const services = [
 
 const ServicesPreview = () => {
   return (
-    <section className="w-full bg-[#F2F4F5] py-20 md:py-28">
+    <section className="w-full bg-white py-20 md:py-28 border-t border-slate-100">
       <div className="max-w-7xl mx-auto px-5 md:px-8">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-14">
           <div>
-            <p className="text-blue-600 font-semibold text-sm tracking-widest uppercase mb-3">
+            <p className="text-slate-500 font-semibold text-sm tracking-widest uppercase mb-3">
               What we offer
             </p>
-            <h2 className="text-3xl md:text-4xl font-bold text-[#0b1e30] tracking-tight max-w-lg">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight max-w-lg">
               One app, every way to move
             </h2>
           </div>
           <Link
             to="/services"
-            className="inline-flex items-center gap-2 text-[#0b1e30] font-semibold text-sm group shrink-0"
+            className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 font-semibold text-sm group shrink-0 transition-colors"
           >
             View all services
             <FiArrowRight className="transition-transform group-hover:translate-x-1" />
@@ -50,13 +50,13 @@ const ServicesPreview = () => {
           {services.map((s) => (
             <div
               key={s.title}
-              className="bg-white rounded-2xl p-7 border border-black/5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              className="bg-white rounded-2xl p-7 border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300"
             >
-              <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl mb-5">
+              <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-xl mb-5">
                 {s.icon}
               </div>
-              <h3 className="text-lg font-bold text-[#0b1e30] mb-2">{s.title}</h3>
-              <p className="text-sm text-slate-500 leading-relaxed">{s.desc}</p>
+              <h3 className="text-lg font-bold text-slate-900 mb-2">{s.title}</h3>
+              <p className="text-sm text-slate-500 leading-relaxed font-medium">{s.desc}</p>
             </div>
           ))}
         </div>

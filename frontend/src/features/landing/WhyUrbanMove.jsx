@@ -25,27 +25,13 @@ const points = [
 
 const WhyUrbanMove = () => {
   return (
-    <section className="w-full bg-[#0b1e30] py-20 md:py-28 relative overflow-hidden">
-      <svg
-        className="absolute inset-0 w-full h-full opacity-[0.05] pointer-events-none"
-        viewBox="0 0 1440 600"
-        preserveAspectRatio="none"
-      >
-        <path
-          d="M-50,100 C300,300 500,50 800,250 C1050,420 1200,150 1500,300"
-          stroke="#60A5FA"
-          strokeWidth="3"
-          strokeDasharray="8 14"
-          fill="none"
-        />
-      </svg>
-
+    <section className="w-full bg-white py-20 md:py-28 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-5 md:px-8 relative">
         <div className="text-center max-w-xl mx-auto mb-16">
-          <p className="text-blue-400 font-semibold text-sm tracking-widest uppercase mb-3">
+          <p className="text-slate-500 font-semibold text-sm tracking-widest uppercase mb-3">
             Why UrbanMove
           </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
             Built for trust, tuned for speed
           </h2>
         </div>
@@ -54,13 +40,13 @@ const WhyUrbanMove = () => {
           {points.map((p) => (
             <div
               key={p.title}
-              className="bg-white/5 border border-white/10 rounded-2xl p-7 backdrop-blur-sm hover:bg-white/[0.08] transition-colors duration-300"
+              className="bg-slate-50 border border-slate-100 rounded-2xl p-7 hover:bg-slate-100/80 transition-colors duration-300"
             >
-              <div className="w-11 h-11 rounded-lg bg-blue-500/15 text-blue-400 flex items-center justify-center text-lg mb-5">
+              <div className="w-12 h-12 rounded-xl bg-white text-slate-800 flex items-center justify-center text-xl mb-5 shadow-sm border border-slate-200">
                 {p.icon}
               </div>
-              <h3 className="text-white font-bold mb-2">{p.title}</h3>
-              <p className="text-sm text-slate-400 leading-relaxed">{p.desc}</p>
+              <h3 className="text-slate-900 font-bold mb-2">{p.title}</h3>
+              <p className="text-sm text-slate-600 leading-relaxed font-medium">{p.desc}</p>
             </div>
           ))}
         </div>

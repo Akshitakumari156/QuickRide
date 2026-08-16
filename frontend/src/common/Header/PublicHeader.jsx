@@ -12,12 +12,11 @@ const navItems = [
 ]
 
 const navLinkClass = ({ isActive }) =>
-  `relative py-2 text-sm lg:text-base font-medium tracking-wide transition-all duration-300 ease-in-out
-   after:absolute after:left-1/2 after:-bottom-0.5 after:h-[2px] after:bg-blue-400 after:transition-all after:duration-300 after:-translate-x-1/2
+  `relative py-2 text-sm lg:text-base font-medium tracking-wide transition-colors duration-200
    ${
      isActive
-       ? "after:w-full text-white font-semibold"
-       : "after:w-0 text-slate-300 hover:text-white hover:after:w-full"
+       ? "text-slate-900 font-semibold"
+       : "text-slate-500 hover:text-slate-900"
    }`
 
 const Header = () => {
@@ -64,8 +63,8 @@ const Header = () => {
     <header
       className={`w-full sticky top-0 z-[9999] transition-all duration-300 ${
         scrolled
-          ? "bg-[#0b1e30]/95 backdrop-blur-md shadow-lg shadow-black/20 border-b border-white/5"
-          : "bg-[#0b1e30] border-b border-white/5"
+          ? "bg-white/80 backdrop-blur-lg shadow-sm border-b border-slate-200"
+          : "bg-white border-b border-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between px-5 md:px-8 h-20">
@@ -74,11 +73,11 @@ const Header = () => {
           className="flex items-center gap-3 cursor-pointer group"
           onClick={() => navigate("/")}
         >
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center font-bold text-lg shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
+          <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-lg shadow-sm group-hover:bg-slate-800 transition-colors duration-300">
             U
           </div>
-          <span className="text-xl font-bold tracking-tight text-white transition-colors duration-300">
-            Urban<span className="text-blue-400 font-extrabold group-hover:text-blue-300 transition-colors">Move</span>
+          <span className="text-xl font-bold tracking-tight text-slate-900">
+            Urban<span className="font-extrabold">Move</span>
           </span>
         </div>
 
@@ -93,24 +92,24 @@ const Header = () => {
         <div className="hidden md:flex items-center gap-4">
           <Button
             onClick={handleAuthClick}
-            label={isAuth ? "Sign Out" : "Login"}
-            bg="rgba(255, 255, 255, 0.05)"
-            hoverbg="rgba(255, 255, 255, 0.1)"
-            textColor="#E2E8F0"
-            className="rounded-full px-6 py-2.5 text-sm font-semibold tracking-wide border border-white/10 transition-all duration-300 backdrop-blur-sm"
+            label={isAuth ? "Sign Out" : "Log In"}
+            bg="transparent"
+            hoverbg="#f1f5f9"
+            textColor="#0f172a"
+            className="rounded-full px-6 py-2.5 text-sm font-semibold tracking-wide transition-all duration-300"
           />
           <Button
             onClick={handleSecondaryClick}
-            label={isAuth ? "Dashboard" : "Register"}
-            bg="#FFFFFF"
-            textColor="#0b1e30"
-            hoverbg="#F1F5F9"
-            className="rounded-full px-6 py-2.5 text-sm font-bold tracking-wide shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
+            label={isAuth ? "Dashboard" : "Sign Up"}
+            bg="#0f172a"
+            textColor="#ffffff"
+            hoverbg="#1e293b"
+            className="rounded-full px-6 py-2.5 text-sm font-semibold tracking-wide shadow-sm hover:shadow-md transition-all duration-300"
           />
         </div>
 
         <button
-          className="md:hidden text-white/80 hover:text-white p-2 rounded-lg bg-white/5 transition-colors text-2xl"
+          className="md:hidden text-slate-600 hover:text-slate-900 p-2 rounded-lg bg-slate-50 transition-colors text-2xl"
           onClick={() => setOpen(!open)}
           aria-label="Toggle menu"
         >
@@ -120,11 +119,11 @@ const Header = () => {
 
       {/* Mobile Menu */}
       <div
-        className={`md:hidden bg-[#0b1e30] transition-all duration-300 ease-in-out border-t border-white/5 overflow-hidden ${
+        className={`md:hidden bg-white transition-all duration-300 ease-in-out border-t border-slate-100 overflow-hidden ${
           open ? "max-h-[100vh] opacity-100" : "max-h-0 opacity-0 pointer-events-none"
         }`}
       >
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 shadow-xl">
           <div className="flex flex-col gap-1.5">
             {navItems.map((item) => (
               <NavLink key={item.to} onClick={() => setOpen(false)} to={item.to} className={navLinkClass}>
@@ -133,22 +132,22 @@ const Header = () => {
             ))}
           </div>
 
-          <div className="pt-5 border-t border-white/10 flex flex-col gap-3">
+          <div className="pt-5 border-t border-slate-100 flex flex-col gap-3">
             <Button
               onClick={handleAuthClick}
-              label={isAuth ? "Sign Out" : "Login"}
-              bg="rgba(255, 255, 255, 0.05)"
-              hoverbg="rgba(255, 255, 255, 0.1)"
-              textColor="#E2E8F0"
-              className="w-full rounded-xl py-3 text-sm font-medium border border-white/10"
+              label={isAuth ? "Sign Out" : "Log In"}
+              bg="#f1f5f9"
+              hoverbg="#e2e8f0"
+              textColor="#0f172a"
+              className="w-full rounded-xl py-3 text-sm font-medium"
             />
             <Button
               onClick={handleSecondaryClick}
-              label={isAuth ? "Dashboard" : "Register"}
-              bg="#FFFFFF"
-              textColor="#0b1e30"
-              hoverbg="#F1F5F9"
-              className="w-full rounded-xl py-3 text-sm font-bold shadow-sm"
+              label={isAuth ? "Dashboard" : "Sign Up"}
+              bg="#0f172a"
+              textColor="#ffffff"
+              hoverbg="#1e293b"
+              className="w-full rounded-xl py-3 text-sm font-semibold shadow-sm"
             />
           </div>
         </div>

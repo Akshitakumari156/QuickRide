@@ -50,9 +50,9 @@ const UserRegister = () => {
   };
 
   return (
-    <div className="w-full min-h-screen flex items-center justify-center bg-[#0b1e30] relative overflow-hidden py-12 px-4">
-      <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-blue-600/10 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-indigo-600/10 blur-[120px] pointer-events-none" />
+    <div className="w-full min-h-screen flex items-center justify-center bg-slate-50 relative overflow-hidden py-12 px-4">
+      <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-blue-600/5 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-indigo-600/5 blur-[120px] pointer-events-none" />
 
       <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-100 p-8 md:p-10 flex flex-col gap-8 relative z-10">
         <div className="text-center flex flex-col items-center">
