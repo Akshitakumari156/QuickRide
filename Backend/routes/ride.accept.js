@@ -25,5 +25,7 @@ if (typeof authCaptain !== "function") {
 }
 
 router.post("/accept", authCaptain, rideController.acceptRide);
+router.post("/arrive", authCaptain, rideController.arrivedAtPickup);
+router.post("/start", authCaptain, rideController.startRide);
 
 module.exports = router;

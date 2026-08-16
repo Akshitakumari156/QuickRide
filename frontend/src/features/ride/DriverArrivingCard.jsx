@@ -11,22 +11,45 @@ const DriverArrivingCard = ({ activeRide, onCancelRide }) => {
     ? Math.max(2, Math.round(activeRide.durationMin * 0.05)) 
     : 3;
 
+  let title = `Arriving in ${etaMinutes} mins!`;
+  let subtitle = "Captain is heading your way.";
+  let badgeText = "En Route";
+
+  if (activeRide.status === "ARRIVED") {
+    title = "Captain has Arrived!";
+    subtitle = "Please provide your OTP to start.";
+    badgeText = "Arrived";
+  } else if (activeRide.status === "ONGOING") {
+    title = "Ride in Progress";
+    subtitle = "Have a safe journey.";
+    badgeText = "Ongoing";
+  }
+
   return (
     <div className="w-full h-full bg-slate-900 text-white p-6 shadow-xl rounded-2xl border border-slate-800 flex flex-col justify-between">
       <div>
         <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
           <div>
-            <h2 className="text-lg font-black text-emerald-400 tracking-wide animate-pulse">
-              Arriving in {etaMinutes} mins!
+            <h2 className={`text-lg font-black tracking-wide ${activeRide.status === 'ONGOING' ? 'text-blue-400' : 'text-emerald-400 animate-pulse'}`}>
+              {title}
             </h2>
             <p className="text-xs text-slate-400 font-medium mt-0.5">
-              Captain is heading your way.
+              {subtitle}
             </p>
           </div>
-          <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase">
-            En Route
+          <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase ${activeRide.status === 'ONGOING' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}`}>
+            {badgeText}
           </span>
         </div>
+
+        {activeRide.otp && activeRide.status !== "ONGOING" && (
+          <div className="mb-4 bg-slate-800/80 rounded-xl p-4 border border-slate-700 flex flex-col items-center justify-center">
+            <span className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">Your OTP</span>
+            <span className="text-3xl font-black tracking-[0.2em] text-white bg-slate-950 px-4 py-2 rounded-lg border border-slate-700/50 shadow-inner">
+              {activeRide.otp}
+            </span>
+          </div>
+        )}
 
         <div className="flex items-center justify-between bg-slate-950/60 p-4 rounded-xl border border-slate-800/50 mb-4">
           <div className="flex items-center gap-3">
@@ -68,12 +91,14 @@ const DriverArrivingCard = ({ activeRide, onCancelRide }) => {
         >
           📞 Call Captain
         </a>
-        <button 
-          onClick={onCancelRide}
-          className="w-full bg-rose-600/10 hover:bg-rose-600/20 text-rose-400 font-medium py-2.5 rounded-xl transition-all text-xs tracking-wide border border-rose-500/10"
-        >
-          Cancel Ride Request
-        </button>
+        {activeRide.status !== "ONGOING" && (
+          <button 
+            onClick={onCancelRide}
+            className="w-full bg-rose-600/10 hover:bg-rose-600/20 text-rose-400 font-medium py-2.5 rounded-xl transition-all text-xs tracking-wide border border-rose-500/10"
+          >
+            Cancel Ride Request
+          </button>
+        )}
       </div>
     </div>
   );

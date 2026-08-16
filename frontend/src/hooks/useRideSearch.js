@@ -38,10 +38,24 @@ export default function useRideSearch({
       setActiveRide(payload.ride);
     };
 
+    const handleRideArrived = (payload) => {
+      console.log("RIDE ARRIVED:", payload);
+      setActiveRide((prev) => prev ? { ...prev, status: payload.ride.status } : null);
+    };
+
+    const handleRideStarted = (payload) => {
+      console.log("RIDE STARTED:", payload);
+      setActiveRide((prev) => prev ? { ...prev, status: payload.ride.status } : null);
+    };
+
     socket.on("ride:accepted", handleRideAccepted);
+    socket.on("ride:arrived", handleRideArrived);
+    socket.on("ride:started", handleRideStarted);
 
     return () => {
       socket.off("ride:accepted", handleRideAccepted);
+      socket.off("ride:arrived", handleRideArrived);
+      socket.off("ride:started", handleRideStarted);
     };
   }, []);
 

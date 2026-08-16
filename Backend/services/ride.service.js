@@ -36,7 +36,11 @@ exports.createRide = async ({
     throw new Error("REQUEST_CANCELLED");
   }
 
+const crypto = require("crypto");
+
   const fare = calculateFare(Number(distanceKm), Number(durationMin));
+  
+  const otp = crypto.randomInt(100000, 999999).toString();
 
   const ride = await Ride.create({
     passengerId,
@@ -45,6 +49,7 @@ exports.createRide = async ({
     distanceKm,
     durationMin,
     fare,
+    otp,
     status: "PENDING",
     clientRequestId
   });
@@ -118,8 +123,8 @@ exports.cancelRideByRequestId = async ({ clientRequestId, passengerId }) => {
 exports.getActiveRide = async (passengerId) => {
     const ride = await Ride.findOne({
         passengerId,
-        status: { $in: ["PENDING", "ACCEPTED", "ONGOING"] }
-    }).sort({ createdAt: -1 });
+        status: { $in: ["PENDING", "ACCEPTED", "ARRIVED", "ONGOING"] }
+    }).select('+otp').sort({ createdAt: -1 });
 
     return ride;
 };

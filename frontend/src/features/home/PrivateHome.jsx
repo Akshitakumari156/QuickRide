@@ -10,6 +10,7 @@ const PrivateHome = () => {
   const [fare, setFare] = useState(null);
   const [error, setError] = useState(null);
   const [activeRide, setActiveRide] = useState(null);
+  const [captainLocation, setCaptainLocation] = useState(null);
 
   useEffect(() => {
     if (!socket.connected) {
@@ -30,6 +31,22 @@ const PrivateHome = () => {
       socket.off("ride:accepted", handleRideAccepted);
     };
   }, []);
+
+  useEffect(() => {
+    if (!activeRide) return;
+
+    socket.emit("join:room", { roomId: activeRide._id });
+
+    const handleLocationUpdate = (data) => {
+      setCaptainLocation({ lat: data.lat, lng: data.lng });
+    };
+
+    socket.on("captain:location:update", handleLocationUpdate);
+
+    return () => {
+      socket.off("captain:location:update", handleLocationUpdate);
+    };
+  }, [activeRide]);
 
   const handleCheckPrice = async () => {
     if (!pickup || !dropoff) {
@@ -94,6 +111,7 @@ const PrivateHome = () => {
               pickup={pickup}
               dropoff={dropoff}
               activeRide={activeRide}
+              captainLocation={captainLocation}
             />
           </div>
         </div>

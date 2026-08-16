@@ -50,7 +50,7 @@ exports.acceptRide = async (req, res) => {
         }
       },
       { new: true }
-    ).populate("passengerId", "firstname lastname phone socketId"); 
+    ).select('+otp').populate("passengerId", "firstname lastname phone socketId"); 
 
     if (!updatedRide) {
       await redis.del(lockKey);
@@ -73,6 +73,7 @@ exports.acceptRide = async (req, res) => {
           fare: updatedRide.fare,
           pickup: updatedRide.pickup,
           destination: updatedRide.destination,
+          otp: updatedRide.otp, // Sent to passenger
           captain: { 
             name: captainName, 
             phone: captainPhone 
@@ -86,7 +87,10 @@ exports.acceptRide = async (req, res) => {
 
       const passengerRoomId = updatedRide.passengerId?._id || updatedRide.passengerId;
       if (passengerRoomId) {
-        io.to(passengerRoomId.toString()).emit("ride:accepted", payload);
+        const roomName = passengerRoomId.toString();
+        const roomSockets = io.sockets.adapter.rooms.get(roomName);
+        console.log(`EMITTING ride:accepted to room: ${roomName}. Sockets in room:`, roomSockets ? Array.from(roomSockets) : "NONE");
+        io.to(roomName).emit("ride:accepted", payload);
       }
 
       io.emit("ride:confirmed", { rideId: updatedRide._id });
@@ -115,5 +119,85 @@ exports.acceptRide = async (req, res) => {
     console.error("Critical exception inside Ride Acceptance Pipeline:", error.message);
     try { await redis.del(lockKey); } catch (_) {}
     return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+exports.arrivedAtPickup = async (req, res) => {
+  const { rideId } = req.body;
+  const captainUser = req.captain || req.user;
+  
+  if (!captainUser) {
+    return res.status(401).json({ success: false, message: "Unauthorized." });
+  }
+
+  try {
+    const ride = await Ride.findOneAndUpdate(
+      { _id: rideId, captainId: captainUser._id, status: "ACCEPTED" },
+      { $set: { status: "ARRIVED" } },
+      { new: true }
+    ).populate("passengerId", "socketId _id");
+
+    if (!ride) {
+      return res.status(400).json({ success: false, message: "Ride not found or invalid status." });
+    }
+
+    const io = req.app.get("io");
+    if (io) {
+      const passengerRoomId = ride.passengerId?._id || ride.passengerId;
+      if (passengerRoomId) {
+        io.to(passengerRoomId.toString()).emit("ride:arrived", {
+          message: "Your captain has arrived at the pickup location.",
+          ride: { _id: ride._id, status: ride.status }
+        });
+      }
+    }
+
+    return res.status(200).json({ success: true, message: "Arrived at pickup", ride });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+exports.startRide = async (req, res) => {
+  const { rideId, otp } = req.body;
+  const captainUser = req.captain || req.user;
+
+  if (!captainUser) {
+    return res.status(401).json({ success: false, message: "Unauthorized." });
+  }
+
+  try {
+    // Explicitly select OTP for verification
+    const ride = await Ride.findOne({ _id: rideId, captainId: captainUser._id }).select('+otp').populate("passengerId", "socketId _id");
+
+    if (!ride) {
+      return res.status(404).json({ success: false, message: "Ride not found." });
+    }
+    
+    if (ride.status !== "ACCEPTED" && ride.status !== "ARRIVED") {
+      return res.status(400).json({ success: false, message: "Ride cannot be started from this status." });
+    }
+
+    if (ride.otp !== otp) {
+      return res.status(400).json({ success: false, message: "Invalid OTP." });
+    }
+
+    ride.status = "ONGOING";
+    await ride.save();
+
+    const io = req.app.get("io");
+    if (io) {
+      const passengerRoomId = ride.passengerId?._id || ride.passengerId;
+      if (passengerRoomId) {
+        io.to(passengerRoomId.toString()).emit("ride:started", {
+          message: "Your ride has started. Have a safe journey!",
+          ride: { _id: ride._id, status: ride.status }
+        });
+      }
+    }
+
+    return res.status(200).json({ success: true, message: "Ride started successfully", ride });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
   }
 };

@@ -29,9 +29,46 @@ function initsocket(server) {
     }
   });
 
+  const jwt = require("jsonwebtoken");
+  const captainModel = require("../models/captain.model");
+  const userModel = require("../models/user.model");
+  const driverHandler = require("./driverHandler");
+
+  ioInstance.use(async (socket, next) => {
+    try {
+      const token = socket.handshake.auth.token;
+      if (!token) return next();
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      
+      const captain = await captainModel.findById(decoded._id);
+      if (captain) {
+        socket.role = "driver";
+        socket.userId = captain._id.toString();
+        return next();
+      }
+
+      const user = await userModel.findById(decoded._id);
+      if (user) {
+        socket.role = "passenger";
+        socket.userId = user._id.toString();
+        return next();
+      }
+
+      return next();
+    } catch (err) {
+      return next();
+    }
+  });
+
   ioInstance.on("connection", (socket) => {
 
-    console.log(`🔌 New real-time handshake established: ${socket.id}`);
+    console.log(`🔌 New real-time handshake established: ${socket.id} (Role: ${socket.role})`);
+
+    if (socket.userId) {
+      socket.join(socket.userId.toString());
+      console.log(`📡 Socket ${socket.id} automatically joined its user room ${socket.userId}`);
+    }
 
     socket.on("join:room", (data) => {
 
@@ -48,6 +85,9 @@ function initsocket(server) {
     socket.on("disconnect", () => {
       console.log(`❌ Handshake disconnected: ${socket.id}`);
     });
+
+    // Register driver handlers
+    driverHandler(ioInstance, socket);
   });
 
   return ioInstance;

@@ -46,7 +46,7 @@ const FitBounds = ({ positions }) => {
   return null;
 };
 
-const MapView = ({ pickup, dropoff }) => {
+const MapView = ({ pickup, dropoff, activeRide, captainLocation }) => {
   const [userLocation, setUserLocation] = useState(null);
 
   useEffect(() => {
@@ -74,6 +74,10 @@ const MapView = ({ pickup, dropoff }) => {
 
   if (dropoff?.lat && dropoff?.lng) {
     positions.push([dropoff.lat, dropoff.lng]);
+  }
+
+  if (captainLocation?.lat && captainLocation?.lng) {
+    positions.push([captainLocation.lat, captainLocation.lng]);
   }
 
   const mapCenter =
@@ -117,7 +121,7 @@ const MapView = ({ pickup, dropoff }) => {
         </Marker>
       )}
 
-      {positions.length === 2 && (
+      {positions.length >= 2 && !captainLocation && (
         <Polyline
           positions={positions}
           pathOptions={{
@@ -130,13 +134,19 @@ const MapView = ({ pickup, dropoff }) => {
 
       {pickup?.lat && pickup?.lng && (
         <Marker position={[pickup.lat, pickup.lng]} icon={srcIcon}>
-          <Popup>{pickup.name}</Popup>
+          <Popup>{pickup.name || "Pickup"}</Popup>
         </Marker>
       )}
 
       {dropoff?.lat && dropoff?.lng && (
-        <Marker position={[dropoff.lat, dropoff.lng]} icon={dstIcon}>
-          <Popup>{dropoff.name}</Popup>
+        <Marker position={[dropoff.lat, dropoff.lng]} icon={srcIcon}>
+          <Popup>{dropoff.name || "Dropoff"}</Popup>
+        </Marker>
+      )}
+
+      {captainLocation?.lat && captainLocation?.lng && (
+        <Marker position={[captainLocation.lat, captainLocation.lng]} icon={dstIcon}>
+          <Popup>Captain Location</Popup>
         </Marker>
       )}
 

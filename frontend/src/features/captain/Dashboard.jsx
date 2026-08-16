@@ -26,6 +26,8 @@ const Dashboard = ({ isOnline, setIsOnline }) => {
   useEffect(() => {
     if (isOnline) {
       if (!socket.connected) {
+        const token = localStorage.getItem("captainToken") || localStorage.getItem("token");
+        socket.auth = { token };
         socket.connect();
         console.log("Captain socket initiating handshake...");
       } else {
@@ -79,11 +81,12 @@ const Dashboard = ({ isOnline, setIsOnline }) => {
       socket.emit("driver:location:update", {
         lat: coords.lat,
         lng: coords.lng,
+        rideId: activeTrip?._id || activeTrip?.rideId
       });
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [coords, isOnline]);
+  }, [coords, isOnline, activeTrip]);
 
   useEffect(() => {
     const onRideRequest = async (payload) => {
@@ -204,6 +207,61 @@ const Dashboard = ({ isOnline, setIsOnline }) => {
     }
   };
 
+  const [otp, setOtp] = useState("");
+
+  const handleArrived = async () => {
+    if (!activeTrip) return;
+    const token = localStorage.getItem("captainToken") || localStorage.getItem("token");
+    const baseUrl = import.meta.env.VITE_API_URL || '';
+
+    try {
+      const res = await fetch(`${baseUrl}/api/ride/arrive`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ rideId: activeTrip._id || activeTrip.rideId })
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Failed to notify passenger.");
+      }
+
+      setActiveTrip(prev => ({ ...prev, status: "ARRIVED" }));
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  const handleStartRide = async () => {
+    if (!activeTrip || !otp) return;
+    const token = localStorage.getItem("captainToken") || localStorage.getItem("token");
+    const baseUrl = import.meta.env.VITE_API_URL || '';
+
+    try {
+      const res = await fetch(`${baseUrl}/api/ride/start`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ rideId: activeTrip._id || activeTrip.rideId, otp })
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Failed to start ride.");
+      }
+
+      setActiveTrip(prev => ({ ...prev, status: "ONGOING" }));
+      alert("Ride Started Successfully!");
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
   return (
     <>
       <h1 className="text-2xl font-semibold mb-1">Dashboard Overview</h1>
@@ -254,8 +312,8 @@ const Dashboard = ({ isOnline, setIsOnline }) => {
       {activeTrip && (
         <div className="bg-slate-950 text-white rounded-2xl p-5 mb-6 shadow-xl border border-slate-800 animate-fadeIn">
           <div className="flex items-center justify-between mb-4">
-            <span className="text-xs uppercase font-bold bg-blue-500/20 text-blue-400 px-2.5 py-1 rounded-full border border-blue-500/30 tracking-wider">
-              Job Active: Heading to Pickup
+            <span className={`text-xs uppercase font-bold px-2.5 py-1 rounded-full border tracking-wider ${activeTrip.status === "ONGOING" ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" : "bg-blue-500/20 text-blue-400 border-blue-500/30"}`}>
+              {activeTrip.status === "ONGOING" ? "Job Active: En Route to Dropoff" : "Job Active: Heading to Pickup"}
             </span>
             <div className="text-right">
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Fare Collection</p>
@@ -283,12 +341,46 @@ const Dashboard = ({ isOnline, setIsOnline }) => {
             </p>
           </div>
 
-          <button 
-            onClick={() => alert("Notifying passenger of arrival...")}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all active:scale-[0.99]"
-          >
-            Arrived at Pickup
-          </button>
+          {activeTrip.status !== "ARRIVED" && activeTrip.status !== "ONGOING" && (
+            <button 
+              onClick={handleArrived}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all active:scale-[0.99]"
+            >
+              Arrived at Pickup
+            </button>
+          )}
+
+          {activeTrip.status === "ARRIVED" && (
+            <div className="mt-4 p-4 bg-slate-900 rounded-xl border border-slate-700">
+              <p className="text-sm text-slate-300 mb-2 font-medium text-center">Ask passenger for OTP to start ride</p>
+              <div className="flex gap-2">
+                <input 
+                  type="text"
+                  maxLength="6"
+                  placeholder="Enter 6-digit OTP"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  className="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-center text-xl font-bold tracking-widest text-emerald-400 focus:outline-none focus:border-emerald-500"
+                />
+                <button 
+                  onClick={handleStartRide}
+                  disabled={otp.length !== 6}
+                  className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-700 disabled:text-slate-500 text-white font-bold px-6 rounded-xl shadow-md transition-all active:scale-[0.99]"
+                >
+                  Start Ride
+                </button>
+              </div>
+            </div>
+          )}
+
+          {activeTrip.status === "ONGOING" && (
+            <button 
+              onClick={() => alert("Complete Ride functionality pending...")}
+              className="w-full mt-4 bg-rose-600 hover:bg-rose-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all active:scale-[0.99]"
+            >
+              Complete Ride
+            </button>
+          )}
         </div>
       )}
 

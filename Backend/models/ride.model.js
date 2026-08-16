@@ -25,9 +25,14 @@ const rideSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    otp: {
+        type: String,
+        select: false,
+        required: true
+    },
     status: {
         type: String,
-        enum: ['PENDING', 'ACCEPTED', 'ONGOING', 'COMPLETED', 'CANCELLED'],
+        enum: ['PENDING', 'ACCEPTED', 'ARRIVED', 'ONGOING', 'COMPLETED', 'CANCELLED'],
         default: 'PENDING'
     },
     clientRequestId: {

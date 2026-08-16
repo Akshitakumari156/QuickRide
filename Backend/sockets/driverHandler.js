@@ -44,13 +44,18 @@ module.exports = (io, socket) => {
 
   // Event B: Continuous 3-second live positional update packets
   socket.on("driver:location:update", async (data) => {
-    const { lat, lng } = data;
+    const { lat, lng, rideId } = data;
     if (!lat || !lng) return;
 
     try {
       // Refresh geographic spatial metrics inside Redis
       await redisClient.geoadd("drivers:online", Number(lng), Number(lat), String(driverId));
       await redisClient.hset(`driver:profile:${driverId}`, "lastUpdated", Date.now().toString());
+
+      // If driver is on an active ride, broadcast their live location to the ride's specific room
+      if (rideId) {
+        io.to(rideId.toString()).emit("captain:location:update", { lat, lng });
+      }
     } catch (error) {
       console.error(`❌ Telemetry streaming failed for driver: ${driverId}`, error);
     }
