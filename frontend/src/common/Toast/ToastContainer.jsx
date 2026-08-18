@@ -22,9 +22,9 @@ const styles = {
   },
   info: {
     icon: <FiInfo />,
-    ring: "border-blue-200",
-    iconWrap: "bg-blue-50 text-blue-600",
-    bar: "bg-blue-500",
+    ring: "border-slate-300",
+    iconWrap: "bg-slate-100 text-slate-900",
+    bar: "bg-slate-800",
   },
 }
 

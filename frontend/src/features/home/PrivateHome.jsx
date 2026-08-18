@@ -25,10 +25,28 @@ const PrivateHome = () => {
       setActiveRide(payload.ride);
     };
 
+    const handleRideStarted = (payload) => {
+      alert(payload.message || "Ride has started!");
+      setActiveRide(payload.ride);
+    };
+
+    const handleRideCompleted = (payload) => {
+      alert(payload.message || "Ride completed!");
+      setActiveRide(null);
+      setPickup(null);
+      setDropoff(null);
+      setFare(null);
+      setCaptainLocation(null);
+    };
+
     socket.on("ride:accepted", handleRideAccepted);
+    socket.on("ride:started", handleRideStarted);
+    socket.on("ride:completed", handleRideCompleted);
 
     return () => {
       socket.off("ride:accepted", handleRideAccepted);
+      socket.off("ride:started", handleRideStarted);
+      socket.off("ride:completed", handleRideCompleted);
     };
   }, []);
 

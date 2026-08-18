@@ -24,8 +24,11 @@ const userSchema=new mongoose.Schema({
     },
     socketid:{
         type:String,
-    }
-
+    },
+    history: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Ride'
+    }]
 });
 userSchema.pre("save",async function(next){
     if(!this.isModified("password")){

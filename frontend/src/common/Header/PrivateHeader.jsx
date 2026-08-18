@@ -13,7 +13,7 @@ import { useAuth } from "../../context/AuthContext";
 
 const navLinkClass = ({ isActive }) =>
   `relative py-2 text-sm lg:text-base font-medium tracking-wide transition-all duration-300 ease-in-out
-   after:absolute after:left-1/2 after:-bottom-0.5 after:h-[2px] after:bg-blue-400 after:transition-all after:duration-300 after:-translate-x-1/2
+   after:absolute after:left-1/2 after:-bottom-0.5 after:h-[2px] after:bg-slate-400 after:transition-all after:duration-300 after:-translate-x-1/2
    ${
      isActive
        ? "after:w-full text-white font-semibold"
@@ -62,11 +62,11 @@ const PrivateHeader = () => {
           className="flex items-center gap-3 cursor-pointer group"
           onClick={() => navigate("/")}
         >
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center font-bold text-lg shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-slate-900 to-slate-800 text-white flex items-center justify-center font-bold text-lg shadow-md shadow-slate-800/20 group-hover:scale-105 transition-transform duration-300">
             {displayAvatar}
           </div>
           <span className="text-xl font-bold tracking-tight text-white transition-colors duration-300">
-            Urban<span className="text-blue-400 font-extrabold group-hover:text-blue-300 transition-colors">Move</span>
+            Urban<span className="text-slate-400 font-extrabold group-hover:text-slate-400 transition-colors">Move</span>
           </span>
         </div>
 
@@ -97,7 +97,7 @@ const PrivateHeader = () => {
                   : "bg-white/5 hover:bg-white/10"
               }`}
             >
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold text-sm border-2 border-white/10 shadow-sm">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center text-white font-semibold text-sm border-2 border-white/10 shadow-sm">
                 {displayAvatar}
               </div>
 
@@ -136,7 +136,7 @@ const PrivateHeader = () => {
                       navigate("/profile");
                       setProfileOpen(false);
                     }}
-                    className="w-full flex items-center gap-3 px-5 py-2.5 text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-blue-50/50 transition-colors"
+                    className="w-full flex items-center gap-3 px-5 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 transition-colors"
                   >
                     <FiUser className="text-slate-400 text-base" />
                     <span>Profile</span>
@@ -147,7 +147,7 @@ const PrivateHeader = () => {
                       navigate("/account");
                       setProfileOpen(false);
                     }}
-                    className="w-full flex items-center gap-3 px-5 py-2.5 text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-blue-50/50 transition-colors"
+                    className="w-full flex items-center gap-3 px-5 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 transition-colors"
                   >
                     <FiSettings className="text-slate-400 text-base" />
                     <span>Manage Account</span>
@@ -158,7 +158,7 @@ const PrivateHeader = () => {
                       navigate("/history");
                       setProfileOpen(false);
                     }}
-                    className="w-full flex items-center gap-3 px-5 py-2.5 text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-blue-50/50 transition-colors"
+                    className="w-full flex items-center gap-3 px-5 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 transition-colors"
                   >
                     <FiClock className="text-slate-400 text-base" />
                     <span>Ride History</span>
@@ -169,7 +169,7 @@ const PrivateHeader = () => {
                       navigate("/settings");
                       setProfileOpen(false);
                     }}
-                    className="w-full flex items-center gap-3 px-5 py-2.5 text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-blue-50/50 transition-colors"
+                    className="w-full flex items-center gap-3 px-5 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 transition-colors"
                   >
                     <FiSettings className="text-slate-400 text-base" />
                     <span>Settings</span>
@@ -209,7 +209,7 @@ const PrivateHeader = () => {
         <div className="p-6 space-y-6">
           {/* User Section */}
           <div className="flex items-center gap-4 pb-5 border-b border-white/10">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold text-lg shadow-inner">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-slate-900 to-slate-800 flex items-center justify-center text-white font-bold text-lg shadow-inner">
               {displayAvatar}
             </div>
 

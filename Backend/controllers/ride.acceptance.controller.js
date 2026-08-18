@@ -1,4 +1,6 @@
 const Ride = require("../models/ride.model"); 
+const User = require("../models/user.model");
+const Captain = require("../models/captain.model");
 const redis = require("../config/redis.config");
 
 exports.acceptRide = async (req, res) => {
@@ -61,6 +63,16 @@ exports.acceptRide = async (req, res) => {
     }
 
     console.log(`Dual-Lock Verified. Ride ${rideId} committed cleanly to Captain: ${captainId}`);
+
+    // Add to History
+    if (updatedRide.passengerId) {
+      await User.findByIdAndUpdate(updatedRide.passengerId._id || updatedRide.passengerId, {
+        $addToSet: { history: updatedRide._id }
+      });
+    }
+    await Captain.findByIdAndUpdate(captainId, {
+      $addToSet: { history: updatedRide._id }
+    });
 
     const io = req.app ? req.app.get("io") : null;
 
@@ -201,3 +213,76 @@ exports.startRide = async (req, res) => {
     return res.status(500).json({ success: false, error: err.message });
   }
 };
+
+exports.endRide = async (req, res) => {
+  const { rideId } = req.body;
+  const captainUser = req.captain || req.user;
+
+  if (!captainUser) {
+    return res.status(401).json({ success: false, message: "Unauthorized." });
+  }
+
+  try {
+    const ride = await Ride.findOne({ _id: rideId, captainId: captainUser._id }).populate("passengerId", "socketId _id");
+
+    if (!ride) {
+      return res.status(404).json({ success: false, message: "Ride not found." });
+    }
+    
+    if (ride.status !== "ONGOING") {
+      return res.status(400).json({ success: false, message: "Ride is not ongoing." });
+    }
+
+    ride.status = "COMPLETED";
+    await ride.save();
+
+    const io = req.app.get("io");
+    if (io) {
+      const passengerRoomId = ride.passengerId?._id || ride.passengerId;
+      if (passengerRoomId) {
+        io.to(passengerRoomId.toString()).emit("ride:completed", {
+          message: "Your ride has been completed. Thank you for riding with us!",
+          ride: { _id: ride._id, status: ride.status }
+        });
+      }
+    }
+
+    return res.status(200).json({ success: true, message: "Ride completed successfully", ride });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+exports.getCaptainActiveRide = async (req, res, next) => {
+    try {
+        const captainId = req.captain._id || req.user._id;
+        const rideService = require('../services/ride.service');
+        const ride = await rideService.getCaptainActiveRide(captainId);
+
+        return res.status(200).json({
+            success: true,
+            ride: ride || null 
+        });
+
+    } catch (err) {
+        return res.status(500).json({ success: false, error: err.message });
+    }
+};
+
+exports.getCaptainRideHistory = async (req, res, next) => {
+    try {
+        const captainId = req.captain._id || req.user._id;
+        const Ride = require("../models/ride.model");
+        const history = await Ride.find({ captainId: captainId })
+            .populate('passengerId', 'firstname lastname phone')
+            .sort({ createdAt: -1 });
+
+        return res.status(200).json({
+            success: true,
+            history: history || []
+        });
+
+    } catch (err) {
+        return res.status(500).json({ success: false, error: err.message });
+    }
+};

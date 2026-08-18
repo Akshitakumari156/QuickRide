@@ -40,7 +40,7 @@ const ServicesPage = () => {
       {/* Header banner */}
       <div className="bg-[#0b1e30] py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-5 md:px-8 text-center">
-          <p className="text-blue-400 font-semibold text-sm tracking-widest uppercase mb-3">
+          <p className="text-slate-400 font-semibold text-sm tracking-widest uppercase mb-3">
             Our services
           </p>
           <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight">
@@ -62,10 +62,10 @@ const ServicesPage = () => {
               className="bg-white rounded-2xl border border-black/5 shadow-sm hover:shadow-xl transition-all duration-300 p-8"
             >
               <div className="flex items-start justify-between mb-6">
-                <div className="w-14 h-14 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl">
+                <div className="w-14 h-14 rounded-xl bg-slate-100 text-slate-900 flex items-center justify-center text-2xl">
                   {s.icon}
                 </div>
-                <span className="text-xs font-semibold text-blue-600 bg-blue-50 rounded-full px-3 py-1">
+                <span className="text-xs font-semibold text-slate-900 bg-slate-100 rounded-full px-3 py-1">
                   {s.tag}
                 </span>
               </div>
@@ -76,7 +76,7 @@ const ServicesPage = () => {
               <ul className="space-y-2.5 mb-8">
                 {s.features.map((f) => (
                   <li key={f} className="flex items-center gap-2.5 text-sm text-slate-600">
-                    <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+                    <span className="w-5 h-5 rounded-full bg-slate-200 text-slate-900 flex items-center justify-center shrink-0">
                       <FiCheck size={12} />
                     </span>
                     {f}

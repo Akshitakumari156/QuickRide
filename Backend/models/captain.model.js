@@ -59,8 +59,11 @@ const captainSchema=new mongoose.Schema({
         lat:{
             type:Number
         }
-    }
-
+    },
+    history: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Ride'
+    }]
 });
 captainSchema.methods.generateAuthToken=function(){
     const token=jwt.sign({

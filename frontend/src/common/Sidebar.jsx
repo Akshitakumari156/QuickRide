@@ -17,7 +17,7 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout }) => {
             onClick={() => setActiveTab(item.id)}
             className={`text-left px-4 py-2 rounded-lg transition ${
               activeTab === item.id
-                ? "bg-blue-600"
+                ? "bg-slate-900"
                 : "hover:bg-[#1E293B]"
             }`}
           >

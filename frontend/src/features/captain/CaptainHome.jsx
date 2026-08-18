@@ -28,7 +28,7 @@ const CaptainHome = () => {
         {activeTab === "dashboard" && (
           <Dashboard isOnline={isOnline} setIsOnline={setIsOnline} />
         )}
-        {activeTab === "history" && <RideHistory />}
+        {activeTab === "history" && <RideHistory userType="captain" />}
         {activeTab === "reviews" && <Reviews />}
         {activeTab === "profile" && <ProfileSettings />}
       </main>

@@ -24,6 +24,28 @@ const Dashboard = ({ isOnline, setIsOnline }) => {
   ];
 
   useEffect(() => {
+    const fetchActiveTrip = async () => {
+      try {
+        const token = localStorage.getItem("captainToken") || localStorage.getItem("token");
+        if (!token) return;
+        const res = await fetch(`${import.meta.env.VITE_API_URL || ""}/api/ride/captain/active`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        const data = await res.json();
+        if (data.success && data.ride) {
+          setActiveTrip(data.ride);
+          setIsOnline(true);
+        }
+      } catch (err) {
+        console.error("Error fetching active trip", err);
+      }
+    };
+    fetchActiveTrip();
+  }, [setIsOnline]);
+
+  useEffect(() => {
     if (isOnline) {
       if (!socket.connected) {
         const token = localStorage.getItem("captainToken") || localStorage.getItem("token");
@@ -262,6 +284,34 @@ const Dashboard = ({ isOnline, setIsOnline }) => {
     }
   };
 
+  const handleCompleteRide = async () => {
+    if (!activeTrip) return;
+    const token = localStorage.getItem("captainToken") || localStorage.getItem("token");
+    const baseUrl = import.meta.env.VITE_API_URL || '';
+
+    try {
+      const res = await fetch(`${baseUrl}/api/ride/end`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ rideId: activeTrip._id || activeTrip.rideId })
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Failed to complete ride.");
+      }
+
+      alert("Ride Completed Successfully!");
+      setActiveTrip(null);
+      setOtp("");
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
   return (
     <>
       <h1 className="text-2xl font-semibold mb-1">Dashboard Overview</h1>
@@ -312,7 +362,7 @@ const Dashboard = ({ isOnline, setIsOnline }) => {
       {activeTrip && (
         <div className="bg-slate-950 text-white rounded-2xl p-5 mb-6 shadow-xl border border-slate-800 animate-fadeIn">
           <div className="flex items-center justify-between mb-4">
-            <span className={`text-xs uppercase font-bold px-2.5 py-1 rounded-full border tracking-wider ${activeTrip.status === "ONGOING" ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" : "bg-blue-500/20 text-blue-400 border-blue-500/30"}`}>
+            <span className={`text-xs uppercase font-bold px-2.5 py-1 rounded-full border tracking-wider ${activeTrip.status === "ONGOING" ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" : "bg-slate-800/20 text-slate-400 border-slate-800/30"}`}>
               {activeTrip.status === "ONGOING" ? "Job Active: En Route to Dropoff" : "Job Active: Heading to Pickup"}
             </span>
             <div className="text-right">
@@ -344,7 +394,7 @@ const Dashboard = ({ isOnline, setIsOnline }) => {
           {activeTrip.status !== "ARRIVED" && activeTrip.status !== "ONGOING" && (
             <button 
               onClick={handleArrived}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all active:scale-[0.99]"
+              className="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all active:scale-[0.99]"
             >
               Arrived at Pickup
             </button>
@@ -375,8 +425,8 @@ const Dashboard = ({ isOnline, setIsOnline }) => {
 
           {activeTrip.status === "ONGOING" && (
             <button 
-              onClick={() => alert("Complete Ride functionality pending...")}
-              className="w-full mt-4 bg-rose-600 hover:bg-rose-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all active:scale-[0.99]"
+              onClick={handleCompleteRide}
+              className="w-full bg-[#0b1e30] hover:bg-slate-800 text-white font-semibold py-3.5 rounded-xl shadow-lg transition-all active:scale-[0.98]"
             >
               Complete Ride
             </button>

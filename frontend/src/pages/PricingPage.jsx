@@ -35,7 +35,7 @@ const PricingPage = () => {
     <div className="w-full bg-[#F2F4F5]">
       <div className="bg-[#0b1e30] py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-5 md:px-8 text-center">
-          <p className="text-blue-400 font-semibold text-sm tracking-widest uppercase mb-3">
+          <p className="text-slate-400 font-semibold text-sm tracking-widest uppercase mb-3">
             Pricing
           </p>
           <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight">
@@ -59,7 +59,7 @@ const PricingPage = () => {
               }`}
             >
               {p.highlight && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full tracking-wide">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs font-bold px-3 py-1 rounded-full tracking-wide">
                   MOST CHOSEN
                 </span>
               )}
@@ -79,7 +79,7 @@ const PricingPage = () => {
                   <li key={f} className="flex items-center gap-2.5 text-sm">
                     <span
                       className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${
-                        p.highlight ? "bg-blue-500/20 text-blue-400" : "bg-blue-100 text-blue-600"
+                        p.highlight ? "bg-slate-800/20 text-slate-400" : "bg-slate-200 text-slate-900"
                       }`}
                     >
                       <FiCheck size={12} />

@@ -49,9 +49,9 @@ const LoginPopUp = ({ closebackdrop }) => {
           <Button
             onClick={handleBtn}
             label="Continue to Login"
-            bg="#2563eb"
+            bg="#0f172a"
             textColor="#FFFFFF"
-            hoverbg="#1d4ed8"
+            hoverbg="#1e293b"
             className="w-full h-12 font-semibold shadow-md transition-all"
           />
         </div>

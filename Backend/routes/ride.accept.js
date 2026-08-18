@@ -24,8 +24,11 @@ if (typeof authCaptain !== "function") {
   };
 }
 
+router.get("/captain/active", authCaptain, rideController.getCaptainActiveRide);
+router.get("/captain/history", authCaptain, rideController.getCaptainRideHistory);
 router.post("/accept", authCaptain, rideController.acceptRide);
 router.post("/arrive", authCaptain, rideController.arrivedAtPickup);
 router.post("/start", authCaptain, rideController.startRide);
+router.post("/end", authCaptain, rideController.endRide);
 
 module.exports = router;

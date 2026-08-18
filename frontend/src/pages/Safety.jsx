@@ -28,10 +28,10 @@ const Safety = () => {
     <div className="w-full bg-[#F2F4F5]">
       <div className="bg-[#0b1e30] py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-5 md:px-8 text-center">
-          <span className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-500/15 text-blue-400 text-2xl mb-6">
+          <span className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-slate-800/15 text-slate-400 text-2xl mb-6">
             <FiShield />
           </span>
-          <p className="text-blue-400 font-semibold text-sm tracking-widest uppercase mb-3">
+          <p className="text-slate-400 font-semibold text-sm tracking-widest uppercase mb-3">
             Safety
           </p>
           <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight">
@@ -51,7 +51,7 @@ const Safety = () => {
               key={p.title}
               className="bg-white rounded-2xl border border-black/5 shadow-sm p-7 hover:shadow-md transition-shadow duration-200"
             >
-              <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl mb-5">
+              <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-900 flex items-center justify-center text-xl mb-5">
                 {p.icon}
               </div>
               <h3 className="font-bold text-[#0b1e30] mb-2">{p.title}</h3>

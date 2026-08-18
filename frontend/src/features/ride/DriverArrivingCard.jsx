@@ -30,14 +30,14 @@ const DriverArrivingCard = ({ activeRide, onCancelRide }) => {
       <div>
         <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
           <div>
-            <h2 className={`text-lg font-black tracking-wide ${activeRide.status === 'ONGOING' ? 'text-blue-400' : 'text-emerald-400 animate-pulse'}`}>
+            <h2 className={`text-lg font-black tracking-wide ${activeRide.status === 'ONGOING' ? 'text-slate-400' : 'text-emerald-400 animate-pulse'}`}>
               {title}
             </h2>
             <p className="text-xs text-slate-400 font-medium mt-0.5">
               {subtitle}
             </p>
           </div>
-          <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase ${activeRide.status === 'ONGOING' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}`}>
+          <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase ${activeRide.status === 'ONGOING' ? 'bg-slate-700/40 text-slate-300 border border-slate-600/50' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}`}>
             {badgeText}
           </span>
         </div>
@@ -53,7 +53,7 @@ const DriverArrivingCard = ({ activeRide, onCancelRide }) => {
 
         <div className="flex items-center justify-between bg-slate-950/60 p-4 rounded-xl border border-slate-800/50 mb-4">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-black text-base text-white shadow-md">
+            <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-slate-700 to-slate-800 flex items-center justify-center font-black text-base text-white shadow-md">
               {captainName.charAt(0).toUpperCase()}
             </div>
             <div>
@@ -87,7 +87,7 @@ const DriverArrivingCard = ({ activeRide, onCancelRide }) => {
       <div className="space-y-3 mt-4">
         <a 
           href={`tel:${captainPhone}`}
-          className="block w-full bg-blue-600 hover:bg-blue-700 text-center text-white font-bold py-3 rounded-xl transition-all text-sm shadow-md"
+          className="block w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-center text-white font-bold py-3 rounded-xl transition-all text-sm shadow-md"
         >
           📞 Call Captain
         </a>

@@ -141,11 +141,40 @@ exports.cancelRideByRequest = async (req, res, next) => {
 exports.getActiveRide = async (req, res, next) => {
     try {
         const passengerId = req.user._id;
-        const ride = await rideService.getActiveRide(passengerId);
+        let ride = await rideService.getActiveRide(passengerId);
+
+        if (ride) {
+            ride = ride.toObject();
+            if (ride.captainId) {
+                ride.captain = {
+                    name: `${ride.captainId.firstname} ${ride.captainId.lastname || ''}`.trim(),
+                    phone: ride.captainId.phone || 'N/A',
+                    vehicle: ride.captainId.vehicle
+                };
+            }
+        }
 
         return res.status(200).json({
             success: true,
             ride: ride || null 
+        });
+
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.getRideHistory = async (req, res, next) => {
+    try {
+        const userId = req.user._id;
+        const Ride = require("../models/ride.model");
+        const history = await Ride.find({ passengerId: userId })
+            .populate('captainId', 'firstname lastname vehicle')
+            .sort({ createdAt: -1 });
+
+        return res.status(200).json({
+            success: true,
+            history: history || []
         });
 
     } catch (err) {

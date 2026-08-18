@@ -22,7 +22,7 @@ const ScheduleInput = ({ value, onChange }) => {
           type="datetime-local"
           value={value}
           onChange={onChange}
-          className="w-full bg-white border border-slate-200 rounded-lg pl-10 pr-4 py-2.5 text-sm text-slate-800 font-medium transition-all focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+          className="w-full bg-white border border-slate-200 rounded-lg pl-10 pr-4 py-2.5 text-sm text-slate-800 font-medium transition-all focus:outline-none focus:border-slate-800 focus:ring-4 focus:ring-slate-800/10"
         />
       </div>
     </div>

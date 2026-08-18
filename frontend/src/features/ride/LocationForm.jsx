@@ -83,7 +83,7 @@ const LocationForm = ({ onCheckPrice }) => {
 
         <button
           type="submit"
-          className="w-full bg-gradient-to-r from-blue-900 to-indigo-600 text-white py-3.5 rounded-xl text-base font-bold shadow-md shadow-blue-500/10 hover:shadow-lg hover:shadow-blue-500/20 hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 transform active:scale-[0.99]"
+          className="w-full bg-gradient-to-r from-slate-950 to-slate-900 text-white py-3.5 rounded-xl text-base font-bold shadow-md shadow-slate-800/10 hover:shadow-lg hover:shadow-slate-800/20 hover:from-slate-800 hover:to-slate-800 transition-all duration-300 transform active:scale-[0.99]"
         >
           Find Ride
         </button>

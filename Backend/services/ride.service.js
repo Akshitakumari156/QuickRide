@@ -65,6 +65,16 @@ const crypto = require("crypto");
 
     if (!targetCaptainId) continue;
 
+    const activeRideForCaptain = await Ride.findOne({
+      captainId: targetCaptainId,
+      status: { $in: ["ACCEPTED", "ARRIVED", "ONGOING"] }
+    });
+
+    if (activeRideForCaptain) {
+      console.log(`Captain ${targetCaptainId} is busy, skipping broadcast.`);
+      continue;
+    }
+
     const lookupKey = `driver:socket:${targetCaptainId}`;
 
     try {
@@ -100,6 +110,18 @@ exports.cancelRide = async ({ rideId, passengerId }) => {
     return ride;
 };
 
+exports.getCaptainActiveRide = async (captainId) => {
+    const ride = await Ride.findOne({
+        captainId,
+        status: { $in: ["ACCEPTED", "ARRIVED", "ONGOING"] }
+    })
+    .select('+otp')
+    .populate('passengerId', 'firstname lastname phone')
+    .sort({ createdAt: -1 });
+
+    return ride;
+};
+
 exports.cancelRideByRequestId = async ({ clientRequestId, passengerId }) => {
     if (!clientRequestId) throw new Error("CLIENT_REQUEST_ID_REQUIRED");
 
@@ -124,7 +146,10 @@ exports.getActiveRide = async (passengerId) => {
     const ride = await Ride.findOne({
         passengerId,
         status: { $in: ["PENDING", "ACCEPTED", "ARRIVED", "ONGOING"] }
-    }).select('+otp').sort({ createdAt: -1 });
+    })
+    .select('+otp')
+    .populate('captainId', 'firstname lastname phone vehicle')
+    .sort({ createdAt: -1 });
 
     return ride;
 };

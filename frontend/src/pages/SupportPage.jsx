@@ -35,7 +35,7 @@ const FaqItem = ({ item, isOpen, onToggle }) => (
       </span>
       <FiChevronDown
         className={`shrink-0 text-slate-400 transition-transform duration-300 ${
-          isOpen ? "rotate-180 text-blue-600" : ""
+          isOpen ? "rotate-180 text-slate-900" : ""
         }`}
       />
     </button>
@@ -56,7 +56,7 @@ const SupportPage = () => {
     <div className="w-full bg-[#F2F4F5]">
       <div className="bg-[#0b1e30] py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-5 md:px-8 text-center">
-          <p className="text-blue-400 font-semibold text-sm tracking-widest uppercase mb-3">
+          <p className="text-slate-400 font-semibold text-sm tracking-widest uppercase mb-3">
             Support
           </p>
           <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight">
@@ -75,7 +75,7 @@ const SupportPage = () => {
             href="mailto:support@urbanmove.app"
             className="bg-white rounded-2xl border border-black/5 shadow-sm hover:shadow-md transition-all duration-200 p-6 flex flex-col items-start gap-3"
           >
-            <span className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+            <span className="w-11 h-11 rounded-xl bg-slate-100 text-slate-900 flex items-center justify-center text-lg">
               <FiMail />
             </span>
             <div>
@@ -88,7 +88,7 @@ const SupportPage = () => {
             href="tel:+919876543210"
             className="bg-white rounded-2xl border border-black/5 shadow-sm hover:shadow-md transition-all duration-200 p-6 flex flex-col items-start gap-3"
           >
-            <span className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+            <span className="w-11 h-11 rounded-xl bg-slate-100 text-slate-900 flex items-center justify-center text-lg">
               <FiPhone />
             </span>
             <div>
@@ -98,7 +98,7 @@ const SupportPage = () => {
           </a>
 
           <div className="bg-white rounded-2xl border border-black/5 shadow-sm p-6 flex flex-col items-start gap-3">
-            <span className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+            <span className="w-11 h-11 rounded-xl bg-slate-100 text-slate-900 flex items-center justify-center text-lg">
               <FiMessageCircle />
             </span>
             <div>

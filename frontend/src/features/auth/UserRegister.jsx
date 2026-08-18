@@ -51,12 +51,12 @@ const UserRegister = () => {
 
   return (
     <div className="w-full min-h-screen flex items-center justify-center bg-slate-50 relative overflow-hidden py-12 px-4">
-      <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-blue-600/5 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-indigo-600/5 blur-[120px] pointer-events-none" />
+      <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-slate-900/5 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-slate-900/5 blur-[120px] pointer-events-none" />
 
       <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-100 p-8 md:p-10 flex flex-col gap-8 relative z-10">
         <div className="text-center flex flex-col items-center">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center font-bold text-xl shadow-lg shadow-blue-500/20 mb-4">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-slate-900 to-slate-800 text-white flex items-center justify-center font-bold text-xl shadow-lg shadow-slate-800/20 mb-4">
             U
           </div>
 
@@ -79,7 +79,7 @@ const UserRegister = () => {
                 type="text"
                 placeholder="First name"
                 {...register("firstname")}
-                className={`w-full h-12 px-4 rounded-xl border bg-slate-50/50 text-slate-900 placeholder-slate-400 font-medium text-sm transition-all duration-200 focus:outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 ${
+                className={`w-full h-12 px-4 rounded-xl border bg-slate-50/50 text-slate-900 placeholder-slate-400 font-medium text-sm transition-all duration-200 focus:outline-none focus:border-slate-800 focus:bg-white focus:ring-4 focus:ring-slate-800/10 ${
                   errors.firstname
                     ? "border-red-300 focus:border-red-500 focus:ring-red-500/10"
                     : "border-slate-200"
@@ -98,7 +98,7 @@ const UserRegister = () => {
                 type="text"
                 placeholder="Last name"
                 {...register("lastname")}
-                className={`w-full h-12 px-4 rounded-xl border bg-slate-50/50 text-slate-900 placeholder-slate-400 font-medium text-sm transition-all duration-200 focus:outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 ${
+                className={`w-full h-12 px-4 rounded-xl border bg-slate-50/50 text-slate-900 placeholder-slate-400 font-medium text-sm transition-all duration-200 focus:outline-none focus:border-slate-800 focus:bg-white focus:ring-4 focus:ring-slate-800/10 ${
                   errors.lastname
                     ? "border-red-300 focus:border-red-500 focus:ring-red-500/10"
                     : "border-slate-200"
@@ -118,7 +118,7 @@ const UserRegister = () => {
               type="text"
               placeholder="saurav@gmail.com"
               {...register("email")}
-              className={`w-full h-12 px-4 rounded-xl border bg-slate-50/50 text-slate-900 placeholder-slate-400 font-medium text-sm transition-all duration-200 focus:outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 ${
+              className={`w-full h-12 px-4 rounded-xl border bg-slate-50/50 text-slate-900 placeholder-slate-400 font-medium text-sm transition-all duration-200 focus:outline-none focus:border-slate-800 focus:bg-white focus:ring-4 focus:ring-slate-800/10 ${
                 errors.email
                   ? "border-red-300 focus:border-red-500 focus:ring-red-500/10"
                   : "border-slate-200"
@@ -137,7 +137,7 @@ const UserRegister = () => {
               type="password"
               placeholder="Password"
               {...register("password")}
-              className={`w-full h-12 px-4 rounded-xl border bg-slate-50/50 text-slate-900 placeholder-slate-400 font-medium text-sm transition-all duration-200 focus:outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 ${
+              className={`w-full h-12 px-4 rounded-xl border bg-slate-50/50 text-slate-900 placeholder-slate-400 font-medium text-sm transition-all duration-200 focus:outline-none focus:border-slate-800 focus:bg-white focus:ring-4 focus:ring-slate-800/10 ${
                 errors.password
                   ? "border-red-300 focus:border-red-500 focus:ring-red-500/10"
                   : "border-slate-200"
@@ -160,11 +160,11 @@ const UserRegister = () => {
                   : "Confirm & Register"
               }
               loading={isSubmitting}
-              bg="#2563eb"
+              bg="#0f172a"
               textColor="#FFFFFF"
-              hoverbg="#1d4ed8"
+              hoverbg="#1e293b"
               disabled={isSubmitting}
-              className="w-full h-12 rounded-xl font-semibold tracking-wide shadow-md shadow-blue-500/10 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 transform hover:-translate-y-0.5"
+              className="w-full h-12 rounded-xl font-semibold tracking-wide shadow-md shadow-slate-800/10 hover:shadow-lg hover:shadow-slate-800/20 transition-all duration-300 transform hover:-translate-y-0.5"
             />
           </div>
         </form>
@@ -173,7 +173,7 @@ const UserRegister = () => {
           Already have an account?{" "}
           <span
             onClick={() => navigate("/login")}
-            className="text-blue-600 font-semibold cursor-pointer hover:text-blue-700 hover:underline ml-1 transition-colors"
+            className="text-slate-900 font-semibold cursor-pointer hover:text-slate-800 hover:underline ml-1 transition-colors"
           >
             Login
           </span>
