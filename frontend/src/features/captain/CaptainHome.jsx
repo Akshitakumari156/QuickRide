@@ -17,7 +17,7 @@ const CaptainHome = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#F4F6FA]">
+    <div className="min-h-screen flex bg-gray-50">
       <Sidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}

@@ -8,7 +8,8 @@ import {
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import socket from "../../socket/socket";
 
 import userIconImg from "../../assets/user-marker.png";
 import driverIconImg from "../../assets/driver-marker.png";
@@ -32,14 +33,19 @@ const dstIcon = new L.Icon({
 
 const FitBounds = ({ positions }) => {
   const map = useMap();
+  const previousPositionsRef = useRef("");
 
   useEffect(() => {
     if (positions.length > 0) {
-      map.fitBounds(positions, {
-        padding: [80, 80],
-        maxZoom: 14,
-        animate: true,
-      });
+      const sig = positions.length.toString();
+      if (previousPositionsRef.current !== sig) {
+        map.fitBounds(positions, {
+          padding: [80, 80],
+          maxZoom: 14,
+          animate: true,
+        });
+        previousPositionsRef.current = sig;
+      }
     }
   }, [map, positions]);
 
@@ -52,32 +58,63 @@ const MapView = ({ pickup, dropoff, activeRide, captainLocation }) => {
   useEffect(() => {
     if (!navigator.geolocation) return;
 
-    navigator.geolocation.getCurrentPosition(
+    const watchId = navigator.geolocation.watchPosition(
       (position) => {
         setUserLocation([
           position.coords.latitude,
           position.coords.longitude,
         ]);
+        
+        if (activeRide && socket.connected) {
+           socket.emit("user:location:update", {
+             lat: position.coords.latitude,
+             lng: position.coords.longitude,
+             rideId: activeRide._id
+           });
+        }
       },
       () => setUserLocation(null),
       {
         enableHighAccuracy: true,
+        maximumAge: 10000,
       }
     );
-  }, []);
+    
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, [activeRide]);
 
   const positions = [];
+  const routePositions = [];
 
-  if (pickup?.lat && pickup?.lng) {
-    positions.push([pickup.lat, pickup.lng]);
-  }
-
-  if (dropoff?.lat && dropoff?.lng) {
-    positions.push([dropoff.lat, dropoff.lng]);
-  }
-
-  if (captainLocation?.lat && captainLocation?.lng) {
-    positions.push([captainLocation.lat, captainLocation.lng]);
+  // Logic for drawing the map and route based on ride status
+  if (activeRide && activeRide.status === "ONGOING") {
+     if (captainLocation?.lat && captainLocation?.lng) {
+        positions.push([captainLocation.lat, captainLocation.lng]);
+        routePositions.push([captainLocation.lat, captainLocation.lng]);
+     }
+     if (dropoff?.lat && dropoff?.lng) {
+        positions.push([dropoff.lat, dropoff.lng]);
+        routePositions.push([dropoff.lat, dropoff.lng]);
+     }
+  } else if (activeRide && activeRide.status !== "ONGOING") {
+     if (captainLocation?.lat && captainLocation?.lng) {
+        positions.push([captainLocation.lat, captainLocation.lng]);
+        routePositions.push([captainLocation.lat, captainLocation.lng]);
+     }
+     if (pickup?.lat && pickup?.lng) {
+        positions.push([pickup.lat, pickup.lng]);
+        routePositions.push([pickup.lat, pickup.lng]);
+     }
+  } else {
+    // Before active ride (e.g., selecting locations)
+    if (pickup?.lat && pickup?.lng) {
+      positions.push([pickup.lat, pickup.lng]);
+      routePositions.push([pickup.lat, pickup.lng]);
+    }
+    if (dropoff?.lat && dropoff?.lng) {
+      positions.push([dropoff.lat, dropoff.lng]);
+      routePositions.push([dropoff.lat, dropoff.lng]);
+    }
   }
 
   const mapCenter =
@@ -115,30 +152,30 @@ const MapView = ({ pickup, dropoff, activeRide, captainLocation }) => {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      {userLocation && !pickup && (
+      {userLocation && (
         <Marker position={userLocation} icon={srcIcon}>
           <Popup>You are here</Popup>
         </Marker>
       )}
 
-      {positions.length >= 2 && !captainLocation && (
+      {routePositions.length >= 2 && (
         <Polyline
-          positions={positions}
+          positions={routePositions}
           pathOptions={{
-            color: "#111827",
+            color: "#2563eb",
             weight: 5,
             opacity: 0.8,
           }}
         />
       )}
 
-      {pickup?.lat && pickup?.lng && (
+      {(!activeRide || activeRide.status !== "ONGOING") && pickup?.lat && pickup?.lng && (
         <Marker position={[pickup.lat, pickup.lng]} icon={srcIcon}>
           <Popup>{pickup.name || "Pickup"}</Popup>
         </Marker>
       )}
 
-      {dropoff?.lat && dropoff?.lng && (
+      {(!activeRide || activeRide.status === "ONGOING") && dropoff?.lat && dropoff?.lng && (
         <Marker position={[dropoff.lat, dropoff.lng]} icon={srcIcon}>
           <Popup>{dropoff.name || "Dropoff"}</Popup>
         </Marker>

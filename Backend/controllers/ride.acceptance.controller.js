@@ -203,7 +203,7 @@ exports.startRide = async (req, res) => {
       if (passengerRoomId) {
         io.to(passengerRoomId.toString()).emit("ride:started", {
           message: "Your ride has started. Have a safe journey!",
-          ride: { _id: ride._id, status: ride.status }
+          ride: ride
         });
       }
     }

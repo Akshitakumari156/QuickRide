@@ -96,36 +96,56 @@ const InputLocation = ({
     });
   };
 
+  const [isLocating, setIsLocating] = useState(false);
+
   const handleCurrentLocation = () => {
     if (!navigator.geolocation) {
       alert("Geolocation is not supported.");
       return;
     }
 
+    setIsLocating(true);
+
+    const successCallback = (position) => {
+      setIsLocating(false);
+      updateQuery("Current Location");
+
+      setSuggestion([]);
+      setIsFocused(false);
+
+      if (onInputChange) {
+        onInputChange();
+      }
+
+      callback({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+        name: "Current Location",
+        address: "Current Location",
+      });
+    };
+
+    const errorCallback = (err) => {
+      console.warn("High accuracy failed, trying low accuracy...", err);
+      // Fallback to low accuracy
+      navigator.geolocation.getCurrentPosition(
+        successCallback,
+        (err2) => {
+          setIsLocating(false);
+          console.error(err2);
+          alert("Location permission denied or unavailable.");
+        },
+        { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
+      );
+    };
+
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        updateQuery("Current Location");
-
-        setSuggestion([]);
-        setIsFocused(false);
-
-        if (onInputChange) {
-          onInputChange();
-        }
-
-        callback({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-          name: "Current Location",
-          address: "Current Location",
-        });
-      },
-      (err) => {
-        console.error(err);
-        alert("Location permission denied.");
-      },
+      successCallback,
+      errorCallback,
       {
         enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0
       }
     );
   };
@@ -157,18 +177,33 @@ const InputLocation = ({
         {showDropdown && (
           <ul className="absolute z-50 w-full bg-white border rounded-lg mt-2 shadow-lg max-h-60 overflow-y-auto">
             <li
-              onClick={handleCurrentLocation}
-              className="px-4 py-3 cursor-pointer hover:bg-gray-100 flex items-center gap-2 font-medium border-b"
+              onMouseDown={(e) => {
+                e.preventDefault(); // Prevent input from losing focus immediately just in case
+                handleCurrentLocation();
+              }}
+              className="px-4 py-3 cursor-pointer hover:bg-gray-100 flex items-center gap-2 font-medium border-b text-slate-800"
             >
-              <FontAwesomeIcon icon={faCrosshairs} />
-              Use current location
+              {isLocating ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-slate-400 border-t-slate-800 rounded-full animate-spin" />
+                  Locating...
+                </>
+              ) : (
+                <>
+                  <FontAwesomeIcon icon={faCrosshairs} className="text-slate-500" />
+                  Use current location
+                </>
+              )}
             </li>
 
             {suggestion.map((place) => (
               <li
                 key={place.place_id || `${place.lat}-${place.lon}`}
-                onClick={() => handleSelect(place)}
-                className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  handleSelect(place);
+                }}
+                className="px-4 py-3 cursor-pointer hover:bg-gray-100 text-slate-700"
               >
                 {place.display_name}
               </li>

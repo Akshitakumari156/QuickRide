@@ -26,77 +26,84 @@ const DriverArrivingCard = ({ activeRide, onCancelRide }) => {
   }
 
   return (
-    <div className="w-full h-full bg-slate-900 text-white p-6 shadow-xl rounded-2xl border border-slate-800 flex flex-col justify-between">
+    <div className="w-full h-full bg-white text-gray-900 p-6 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] rounded-t-[2.5rem] md:rounded-2xl border-t border-gray-100 flex flex-col justify-between">
       <div>
-        <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
+        <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-5">
           <div>
-            <h2 className={`text-lg font-black tracking-wide ${activeRide.status === 'ONGOING' ? 'text-slate-400' : 'text-emerald-400 animate-pulse'}`}>
+            <h2 className={`text-xl font-bold tracking-tight ${activeRide.status === 'ONGOING' ? 'text-gray-900' : 'text-blue-600'}`}>
               {title}
             </h2>
-            <p className="text-xs text-slate-400 font-medium mt-0.5">
+            <p className="text-sm text-gray-500 font-medium mt-1">
               {subtitle}
             </p>
           </div>
-          <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase ${activeRide.status === 'ONGOING' ? 'bg-slate-700/40 text-slate-300 border border-slate-600/50' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}`}>
+          <span className={`px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase ${activeRide.status === 'ONGOING' ? 'bg-gray-100 text-gray-600 border border-gray-200' : 'bg-blue-50 text-blue-600 border border-blue-100'}`}>
             {badgeText}
           </span>
         </div>
 
         {activeRide.otp && activeRide.status !== "ONGOING" && (
-          <div className="mb-4 bg-slate-800/80 rounded-xl p-4 border border-slate-700 flex flex-col items-center justify-center">
-            <span className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">Your OTP</span>
-            <span className="text-3xl font-black tracking-[0.2em] text-white bg-slate-950 px-4 py-2 rounded-lg border border-slate-700/50 shadow-inner">
+          <div className="mb-5 bg-blue-50 rounded-2xl p-5 border border-blue-100 flex flex-col items-center justify-center shadow-inner">
+            <span className="text-xs text-blue-600/80 font-bold uppercase tracking-widest mb-1.5">Your OTP</span>
+            <span className="text-4xl font-black tracking-[0.25em] text-blue-700 bg-white px-6 py-2 rounded-xl shadow-sm border border-blue-100/50">
               {activeRide.otp}
             </span>
           </div>
         )}
 
-        <div className="flex items-center justify-between bg-slate-950/60 p-4 rounded-xl border border-slate-800/50 mb-4">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-slate-700 to-slate-800 flex items-center justify-center font-black text-base text-white shadow-md">
+        <div className="flex items-center justify-between bg-gray-50 p-4 rounded-2xl border border-gray-100 mb-5">
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-12 rounded-full bg-blue-600 flex items-center justify-center font-bold text-lg text-white shadow-md">
               {captainName.charAt(0).toUpperCase()}
             </div>
             <div>
-              <h4 className="font-bold text-slate-200 text-sm">{captainName}</h4>
-              <p className="text-[11px] text-slate-400 font-semibold">★ 4.9 Rating</p>
+              <h4 className="font-bold text-gray-900 text-base">{captainName}</h4>
+              <p className="text-xs text-yellow-500 font-bold flex items-center gap-1 mt-0.5">
+                <span>★</span> 4.9 Rating
+              </p>
             </div>
           </div>
           
           <div className="text-right">
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Fare</p>
-            <p className="text-base font-black text-slate-100">₹{activeRide.fare}</p>
+            <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-0.5">Fare</p>
+            <p className="text-xl font-black text-gray-900">₹{activeRide.fare}</p>
           </div>
         </div>
 
-        <div className="space-y-2 text-xs text-slate-300 bg-slate-950/30 p-3 rounded-xl border border-slate-800/30">
-          <p className="truncate">
-            <span className="text-emerald-500 font-bold">🟢 Pickup:</span>{" "}
-            {typeof activeRide.pickup === 'string' 
-              ? activeRide.pickup 
-              : activeRide.pickup?.address || "Selected Pickup Coordinates"}
+        <div className="space-y-3 text-sm text-gray-700 font-medium bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
+          <p className="flex items-start gap-3 truncate">
+            <span className="text-green-600 font-bold flex-shrink-0 mt-0.5">●</span>
+            <span className="truncate">
+              {typeof activeRide.pickup === 'string' 
+                ? activeRide.pickup 
+                : activeRide.pickup?.address || "Selected Pickup Coordinates"}
+            </span>
           </p>
-          <p className="truncate">
-            <span className="text-rose-500 font-bold">🏁 Dropoff:</span>{" "}
-            {typeof activeRide.destination === 'string' 
-              ? activeRide.destination 
-              : activeRide.destination?.address || "Selected Destination Location"}
+          <div className="border-l-2 border-dashed border-gray-300 ml-1.5 h-3 -my-2.5"></div>
+          <p className="flex items-start gap-3 truncate">
+            <span className="text-red-500 font-bold flex-shrink-0 mt-0.5">■</span>
+            <span className="truncate">
+              {typeof activeRide.destination === 'string' 
+                ? activeRide.destination 
+                : activeRide.destination?.address || "Selected Destination Location"}
+            </span>
           </p>
         </div>
       </div>
 
-      <div className="space-y-3 mt-4">
+      <div className="space-y-3 mt-6">
         <a 
           href={`tel:${captainPhone}`}
-          className="block w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-center text-white font-bold py-3 rounded-xl transition-all text-sm shadow-md"
+          className="flex items-center justify-center gap-2 w-full bg-gray-900 hover:bg-black border border-gray-900 text-white font-bold py-3.5 rounded-xl transition-all shadow-md active:scale-[0.98]"
         >
-          📞 Call Captain
+          <span className="text-lg">📞</span> Call Captain
         </a>
         {activeRide.status !== "ONGOING" && (
           <button 
             onClick={onCancelRide}
-            className="w-full bg-rose-600/10 hover:bg-rose-600/20 text-rose-400 font-medium py-2.5 rounded-xl transition-all text-xs tracking-wide border border-rose-500/10"
+            className="w-full bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3 rounded-xl transition-all text-sm tracking-wide active:scale-[0.98]"
           >
-            Cancel Ride Request
+            Cancel Ride
           </button>
         )}
       </div>

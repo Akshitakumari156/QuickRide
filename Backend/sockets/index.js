@@ -82,6 +82,13 @@ function initsocket(server) {
       }
     });
 
+    socket.on("user:location:update", (data) => {
+      const { lat, lng, rideId } = data;
+      if (rideId && lat && lng) {
+        ioInstance.to(rideId.toString()).emit("user:location:update", { lat, lng });
+      }
+    });
+
     socket.on("disconnect", () => {
       console.log(`❌ Handshake disconnected: ${socket.id}`);
     });

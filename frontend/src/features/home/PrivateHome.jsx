@@ -50,6 +50,8 @@ const PrivateHome = () => {
     };
   }, []);
 
+
+
   useEffect(() => {
     if (!activeRide) return;
 
