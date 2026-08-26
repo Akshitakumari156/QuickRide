@@ -13,6 +13,10 @@ import SupportPage from './pages/SupportPage'
 import CaptainRegisterForm from './features/captain/CaptainRegisterForm'
 import CaptainLogin from './features/captain/CaptainLogin'
 import CaptainHome from './features/captain/CaptainHome'
+import ProfilePage from './pages/ProfilePage'
+import ManageAccountPage from './pages/ManageAccountPage'
+import RideHistoryPage from './pages/RideHistoryPage'
+import SettingsPage from './pages/SettingsPage'
 
 function App() {
   return (
@@ -36,7 +40,10 @@ function App() {
       <Route element={<Privateroutes/>}>
       <Route path='/dashboard' element={<PrivateHome/>}/>
         <Route path='/captain/dashboard' element={<CaptainHome/>}/>
-
+        <Route path='/profile' element={<ProfilePage/>}/>
+        <Route path='/account' element={<ManageAccountPage/>}/>
+        <Route path='/history' element={<RideHistoryPage/>}/>
+        <Route path='/settings' element={<SettingsPage/>}/>
       </Route>
     </Route>
     </Routes>

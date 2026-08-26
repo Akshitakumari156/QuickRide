@@ -79,3 +79,51 @@ exports.logoutuser=async(req,res,next)=>{
     });
 
 }
+
+exports.updateProfile = async (req, res, next) => {
+    try {
+        const { firstname, lastname } = req.body;
+        const user = await userModel.findByIdAndUpdate(
+            req.user._id,
+            { firstname, lastname },
+            { new: true, runValidators: true }
+        );
+        res.status(200).json({ success: true, user: {
+            id: user._id,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            email: user.email,
+        }, message: "Profile updated successfully" });
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.updatePassword = async (req, res, next) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        const user = await userModel.findById(req.user._id).select("+password");
+        
+        const isMatch = await user.comparePassword(currentPassword);
+        if (!isMatch) {
+            return res.status(400).json({ success: false, message: "Invalid current password" });
+        }
+        
+        user.password = newPassword;
+        await user.save();
+        
+        res.status(200).json({ success: true, message: "Password updated successfully" });
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.deleteAccount = async (req, res, next) => {
+    try {
+        await userModel.findByIdAndDelete(req.user._id);
+        res.clearCookie("token");
+        res.status(200).json({ success: true, message: "Account deleted successfully" });
+    } catch (err) {
+        next(err);
+    }
+};
