@@ -15,7 +15,7 @@ const CaptainCTASection = () => {
 
           <div className="flex-1 relative z-10">
             <span className="inline-block text-blue-700 bg-blue-100/50 border border-blue-200 rounded-full px-4 py-1.5 text-xs font-bold tracking-wide uppercase mb-5">
-              Drive with UrbanMove
+              Drive with QuickRide
             </span>
             <h2 className="text-3xl md:text-5xl font-black mb-4 tracking-tight text-gray-900">
               Turn your car into an income

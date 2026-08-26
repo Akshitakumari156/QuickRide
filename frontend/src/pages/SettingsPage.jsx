@@ -51,7 +51,7 @@ const SettingsPage = () => {
 
           <div className="mt-8 pt-6 border-t border-gray-100">
             <p className="text-xs font-medium text-gray-400 text-center">
-              UrbanMove App Version 1.0.0
+              QuickRide App Version 1.0.0
             </p>
           </div>
         </div>

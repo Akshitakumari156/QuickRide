@@ -1,6 +1,6 @@
 # User Authentication Module
 
-This module provides user authentication functionality for the **UrbanMove** application. It includes user registration, login, and token-based authentication using **Node.js**, **Express**, **MongoDB**, and **JWT**.
+This module provides user authentication functionality for the **QuickRide** application. It includes user registration, login, and token-based authentication using **Node.js**, **Express**, **MongoDB**, and **JWT**.
 
 ---
 
@@ -27,8 +27,8 @@ Before running the project, ensure you have the following installed:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-repo/urbanmove.git
-   cd urbanmove/Backend
+   git clone https://github.com/your-repo/QuickRide.git
+   cd QuickRide/Backend
    ```
 2. Install dependencies:
    npm install
@@ -61,7 +61,7 @@ API Endpoints
 "firstname": "John",
 # Backend — User Authentication
 
-This document describes the authentication module used by the UrbanMove backend.
+This document describes the authentication module used by the QuickRide backend.
 It explains how to set up, run, and use the user authentication API, plus important implementation notes for developers.
 
 ---

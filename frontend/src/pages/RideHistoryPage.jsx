@@ -45,7 +45,7 @@ const RideHistoryPage = () => {
         ) : history.length === 0 ? (
           <div className="bg-white border border-gray-200 rounded-2xl p-12 text-center shadow-sm">
             <h3 className="text-xl font-medium text-gray-900 mb-2">No rides yet</h3>
-            <p className="text-gray-500">You haven't taken any rides with UrbanMove.</p>
+            <p className="text-gray-500">You haven't taken any rides with QuickRide.</p>
           </div>
         ) : (
           <div className="space-y-6">

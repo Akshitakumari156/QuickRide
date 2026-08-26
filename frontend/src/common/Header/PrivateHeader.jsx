@@ -66,7 +66,7 @@ const PrivateHeader = () => {
             {displayAvatar}
           </div>
           <span className="text-xl font-bold tracking-tight text-white transition-colors duration-300">
-            Urban<span className="text-slate-400 font-extrabold group-hover:text-slate-400 transition-colors">Move</span>
+            Quick<span className="text-slate-400 font-extrabold group-hover:text-slate-400 transition-colors">Ride</span>
           </span>
         </div>
 

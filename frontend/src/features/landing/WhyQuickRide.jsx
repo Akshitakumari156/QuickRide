@@ -23,13 +23,13 @@ const points = [
   },
 ]
 
-const WhyUrbanMove = () => {
+const WhyQuickRide = () => {
   return (
     <section className="w-full bg-white py-20 md:py-28 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-5 md:px-8 relative">
         <div className="text-center max-w-xl mx-auto mb-16">
           <p className="text-slate-500 font-semibold text-sm tracking-widest uppercase mb-3">
-            Why UrbanMove
+            Why QuickRide
           </p>
           <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
             Built for trust, tuned for speed
@@ -55,4 +55,4 @@ const WhyUrbanMove = () => {
   )
 }
 
-export default WhyUrbanMove
+export default WhyQuickRide

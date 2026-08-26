@@ -51,7 +51,7 @@ const HeroSection = () => {
             <div className="absolute -inset-4 bg-gradient-to-tr from-slate-200 to-slate-50 rounded-[2rem] blur-2xl opacity-60" />
             <img
               src={banner}
-              alt="UrbanMove ride"
+              alt="QuickRide ride"
               className="relative w-full h-auto object-cover rounded-2xl shadow-2xl shadow-slate-300/60 border border-slate-200"
             />
           </div>

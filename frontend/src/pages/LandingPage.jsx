@@ -2,7 +2,7 @@ import { useAuth } from "../context/AuthContext"
 import HeroSection from "../features/landing/HeroSection"
 import ServicesPreview from "../features/landing/ServicesPreview"
 import HowItWorks from "../features/landing/HowItWorks"
-import WhyUrbanMove from "../features/landing/WhyUrbanMove"
+import WhyQuickRide from "../features/landing/WhyQuickRide"
 import CaptainCTASection from "../features/captain/CaptainCTASection"
 
 const LandingPage = () => {
@@ -13,7 +13,7 @@ const LandingPage = () => {
       <HeroSection />
       <ServicesPreview />
       <HowItWorks />
-      <WhyUrbanMove />
+      <WhyQuickRide />
       {!isAuth && <CaptainCTASection />}
     </div>
   )

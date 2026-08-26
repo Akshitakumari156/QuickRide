@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"
 
 const plans = [
   {
-    name: "UrbanGo",
+    name: "QuickGo",
     price: "₹9",
     unit: "/km",
     base: "₹40 base fare",
@@ -11,7 +11,7 @@ const plans = [
     features: ["1–2 passengers", "Standard hatchback/sedan", "Live tracking", "Cash & UPI"],
   },
   {
-    name: "UrbanXL",
+    name: "QuickXL",
     price: "₹15",
     unit: "/km",
     base: "₹70 base fare",
@@ -19,7 +19,7 @@ const plans = [
     features: ["Up to 6 passengers", "SUV / MPV fleet", "Live tracking", "Priority matching"],
   },
   {
-    name: "UrbanBiz",
+    name: "QuickBiz",
     price: "Custom",
     unit: "",
     base: "Monthly billing",

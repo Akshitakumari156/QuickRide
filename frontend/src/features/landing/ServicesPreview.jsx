@@ -4,22 +4,22 @@ import { FiArrowRight, FiUser, FiUsers, FiPackage, FiTruck } from "react-icons/f
 const services = [
   {
     icon: <FiUser />,
-    title: "UrbanGo",
+    title: "QuickGo",
     desc: "Affordable everyday rides for one or two, right from your street corner.",
   },
   {
     icon: <FiUsers />,
-    title: "UrbanXL",
+    title: "QuickXL",
     desc: "Extra room for groups and families, up to six passengers per trip.",
   },
   {
     icon: <FiPackage />,
-    title: "UrbanParcel",
+    title: "QuickParcel",
     desc: "Same-day courier pickup and drop across the city, tracked live.",
   },
   {
     icon: <FiTruck />,
-    title: "UrbanBiz",
+    title: "QuickBiz",
     desc: "Scheduled rides and monthly billing built for teams and offices.",
   },
 ]

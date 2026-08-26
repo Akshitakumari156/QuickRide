@@ -72,7 +72,7 @@ const SupportPage = () => {
         {/* Contact cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16">
           <a
-            href="mailto:support@urbanmove.app"
+            href="mailto:support@quickride.app"
             className="bg-white rounded-2xl border border-black/5 shadow-sm hover:shadow-md transition-all duration-200 p-6 flex flex-col items-start gap-3"
           >
             <span className="w-11 h-11 rounded-xl bg-slate-100 text-slate-900 flex items-center justify-center text-lg">
@@ -80,7 +80,7 @@ const SupportPage = () => {
             </span>
             <div>
               <p className="font-semibold text-[#0b1e30] text-sm">Email us</p>
-              <p className="text-xs text-slate-500 mt-1">support@urbanmove.app</p>
+              <p className="text-xs text-slate-500 mt-1">support@quickride.app</p>
             </div>
           </a>
 

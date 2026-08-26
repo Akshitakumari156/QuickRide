@@ -47,14 +47,14 @@ const Footer = () => {
           <div className="md:col-span-4">
             <div className="flex items-center gap-3 mb-5">
               <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-lg shadow-sm">
-                U
+                Q
               </div>
               <span className="text-xl font-bold tracking-tight text-slate-900">
-                Urban<span className="font-extrabold">Move</span>
+                Quick<span className="font-extrabold">Ride</span>
               </span>
             </div>
             <p className="text-sm leading-relaxed text-slate-500 max-w-xs font-medium">
-              Reliable rides, on your schedule. UrbanMove connects riders and captains
+              Reliable rides, on your schedule. QuickRide connects riders and captains
               across the city, every day, at a fair price.
             </p>
 
@@ -69,7 +69,7 @@ const Footer = () => {
                 <div className="p-2 bg-white rounded-lg border border-slate-200 shadow-sm text-slate-900">
                   <FiMail />
                 </div>
-                <span>support@urbanmove.app</span>
+                <span>support@quickride.app</span>
               </div>
               <div className="flex items-center gap-3 text-slate-600">
                 <div className="p-2 bg-white rounded-lg border border-slate-200 shadow-sm text-slate-900">
@@ -107,7 +107,7 @@ const Footer = () => {
         {/* Bottom bar */}
         <div className="mt-14 pt-6 border-t border-slate-200 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
           <p className="text-xs font-medium text-slate-500">
-            © {new Date().getFullYear()} UrbanMove Technologies Pvt. Ltd. All rights reserved.
+            © {new Date().getFullYear()} QuickRide Technologies Pvt. Ltd. All rights reserved.
           </p>
 
           <div className="flex items-center gap-3">

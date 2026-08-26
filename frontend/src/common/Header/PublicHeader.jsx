@@ -74,10 +74,10 @@ const Header = () => {
           onClick={() => navigate("/")}
         >
           <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-lg shadow-sm group-hover:bg-slate-800 transition-colors duration-300">
-            U
+            Q
           </div>
           <span className="text-xl font-bold tracking-tight text-slate-900">
-            Urban<span className="font-extrabold">Move</span>
+            Quick<span className="font-extrabold">Ride</span>
           </span>
         </div>
 

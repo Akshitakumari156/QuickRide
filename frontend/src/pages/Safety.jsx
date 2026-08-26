@@ -39,7 +39,7 @@ const Safety = () => {
           </h1>
           <p className="mt-4 text-slate-300 max-w-xl mx-auto">
             Safety isn't a feature we bolt on — it's checked before, during, and
-            after every single trip on UrbanMove.
+            after every single trip on QuickRide.
           </p>
         </div>
       </div>

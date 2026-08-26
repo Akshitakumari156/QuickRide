@@ -49,7 +49,7 @@ connectDB();
 app.get("/", (req, res) => {
     res.status(200).json({
         success: true,
-        message: "UrbanMove Backend Running ",
+        message: "QuickRide Backend Running ",
     });
 });
 
@@ -70,5 +70,5 @@ app.use('/api/ride', rideAcceptRoutes);
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
-    console.log(`UrbanMove is running on port ${PORT} successfully!`);
+    console.log(`QuickRide is running on port ${PORT} successfully!`);
 });

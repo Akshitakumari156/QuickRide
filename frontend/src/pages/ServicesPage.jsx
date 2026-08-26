@@ -4,28 +4,28 @@ import { FiUser, FiUsers, FiPackage, FiTruck, FiCheck } from "react-icons/fi"
 const services = [
   {
     icon: <FiUser />,
-    title: "UrbanGo",
+    title: "QuickGo",
     tag: "Most popular",
     desc: "Quick, affordable everyday rides for one or two passengers.",
     features: ["Nearest available captain", "Upfront fare", "Cashless & cash payments"],
   },
   {
     icon: <FiUsers />,
-    title: "UrbanXL",
+    title: "QuickXL",
     tag: "Groups & families",
     desc: "Extra seats and boot space for up to six passengers per trip.",
     features: ["Roomy sedans & SUVs", "Split-fare with friends", "Child seat on request"],
   },
   {
     icon: <FiPackage />,
-    title: "UrbanParcel",
+    title: "QuickParcel",
     tag: "Courier",
     desc: "Same-day pickup and drop for packages and documents, tracked live.",
     features: ["Live parcel tracking", "Same-day delivery", "Proof of drop-off"],
   },
   {
     icon: <FiTruck />,
-    title: "UrbanBiz",
+    title: "QuickBiz",
     tag: "For teams",
     desc: "Scheduled rides and consolidated monthly billing for businesses.",
     features: ["Employee ride accounts", "Monthly invoicing", "Priority dispatch"],
@@ -47,7 +47,7 @@ const ServicesPage = () => {
             A ride for every plan
           </h1>
           <p className="mt-4 text-slate-300 max-w-xl mx-auto">
-            From a quick solo trip to a same-day parcel drop, UrbanMove has a
+            From a quick solo trip to a same-day parcel drop, QuickRide has a
             service built around how you actually move.
           </p>
         </div>

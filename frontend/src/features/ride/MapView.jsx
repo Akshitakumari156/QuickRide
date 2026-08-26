@@ -148,7 +148,7 @@ const MapView = ({ pickup, dropoff, activeRide, captainLocation }) => {
       maxBoundsViscosity={1.0}
     >
       <TileLayer
-        attribution="UrbanMove Map"
+        attribution="QuickRide Map"
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
