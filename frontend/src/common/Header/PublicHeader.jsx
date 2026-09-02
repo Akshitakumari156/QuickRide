@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { NavLink, useLocation, useNavigate } from "react-router-dom"
-import { FiMenu, FiX } from "react-icons/fi"
+import { FiMenu, FiX, FiArrowRight } from "react-icons/fi"
 import Button from "../Button"
 import { useAuth } from "../../context/AuthContext"
 
@@ -12,11 +12,11 @@ const navItems = [
 ]
 
 const navLinkClass = ({ isActive }) =>
-  `relative py-2 text-sm lg:text-base font-medium tracking-wide transition-colors duration-200
+  `relative px-3.5 py-1.5 text-sm font-semibold tracking-tight transition-all duration-200 rounded-full
    ${
      isActive
-       ? "text-slate-900 font-semibold"
-       : "text-slate-500 hover:text-slate-900"
+       ? "text-white bg-white/10 shadow-sm border border-white/15"
+       : "text-slate-300 hover:text-white hover:bg-white/5"
    }`
 
 const Header = () => {
@@ -27,7 +27,7 @@ const Header = () => {
   const location = useLocation()
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8)
+    const onScroll = () => setScrolled(window.scrollY > 12)
     window.addEventListener("scroll", onScroll)
     return () => window.removeEventListener("scroll", onScroll)
   }, [])
@@ -36,8 +36,7 @@ const Header = () => {
     if (isAuth) {
       logout()
       navigate(role === "captain" ? "/captain/login" : "/login")
-    }
-    if (location.pathname.startsWith("/captain")) {
+    } else if (location.pathname.startsWith("/captain")) {
       navigate("/captain/login")
     } else {
       navigate("/login")
@@ -50,8 +49,7 @@ const Header = () => {
       navigate("/dashboard")
     } else if (isAuth && role === "captain") {
       navigate("/captain/dashboard")
-    }
-    if (location.pathname.startsWith("/captain")) {
+    } else if (location.pathname.startsWith("/captain")) {
       navigate("/captain/register")
     } else {
       navigate("/register")
@@ -63,25 +61,26 @@ const Header = () => {
     <header
       className={`w-full sticky top-0 z-[9999] transition-all duration-300 ${
         scrolled
-          ? "bg-white/80 backdrop-blur-lg shadow-sm border-b border-slate-200"
-          : "bg-white border-b border-transparent"
+          ? "bg-[#090d16]/85 backdrop-blur-xl border-b border-white/10 shadow-2xl shadow-black/40 py-3"
+          : "bg-[#090d16] border-b border-white/5 py-4"
       }`}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-5 md:px-8 h-20">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-5 md:px-8">
         {/* Logo */}
         <div
-          className="flex items-center gap-3 cursor-pointer group"
+          className="flex items-center gap-3 cursor-pointer group select-none"
           onClick={() => navigate("/")}
         >
-          <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-lg shadow-sm group-hover:bg-slate-800 transition-colors duration-300">
-            Q
+          <div className="relative w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-black text-lg shadow-lg shadow-blue-500/25 group-hover:scale-105 group-hover:shadow-blue-500/40 transition-all duration-300 border border-white/20">
+            <span>Q</span>
           </div>
-          <span className="text-xl font-bold tracking-tight text-slate-900">
-            Quick<span className="font-extrabold">Ride</span>
+          <span className="text-xl font-extrabold tracking-tight text-white font-display">
+            Quick<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 font-black">Ride</span>
           </span>
         </div>
 
-        <nav className="hidden md:flex items-center gap-8 lg:gap-10">
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-2 p-1.5 rounded-full bg-slate-900/60 border border-white/10 backdrop-blur-md">
           {navItems.map((item) => (
             <NavLink key={item.to} to={item.to} className={navLinkClass}>
               {item.label}
@@ -89,27 +88,29 @@ const Header = () => {
           ))}
         </nav>
 
-        <div className="hidden md:flex items-center gap-4">
+        {/* Desktop Action Buttons */}
+        <div className="hidden md:flex items-center gap-3">
           <Button
             onClick={handleAuthClick}
             label={isAuth ? "Sign Out" : "Log In"}
             bg="transparent"
-            hoverbg="#f1f5f9"
-            textColor="#0f172a"
-            className="rounded-full px-6 py-2.5 text-sm font-semibold tracking-wide transition-all duration-300"
+            hoverbg="rgba(255, 255, 255, 0.08)"
+            textColor="#f8fafc"
+            className="rounded-full px-5 py-2 text-sm font-semibold tracking-tight border border-white/10 hover:border-white/20 transition-all duration-200"
           />
           <Button
             onClick={handleSecondaryClick}
             label={isAuth ? "Dashboard" : "Sign Up"}
-            bg="#0f172a"
+            bg="#2563eb"
             textColor="#ffffff"
-            hoverbg="#1e293b"
-            className="rounded-full px-6 py-2.5 text-sm font-semibold tracking-wide shadow-sm hover:shadow-md transition-all duration-300"
+            hoverbg="#1d4ed8"
+            className="rounded-full px-6 py-2 text-sm font-semibold tracking-tight shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50 transition-all duration-200"
           />
         </div>
 
+        {/* Mobile Menu Trigger */}
         <button
-          className="md:hidden text-slate-600 hover:text-slate-900 p-2 rounded-lg bg-slate-50 transition-colors text-2xl"
+          className="md:hidden text-slate-300 hover:text-white p-2 rounded-xl bg-slate-800/80 border border-white/10 transition-colors text-xl"
           onClick={() => setOpen(!open)}
           aria-label="Toggle menu"
         >
@@ -117,37 +118,48 @@ const Header = () => {
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Drawer */}
       <div
-        className={`md:hidden bg-white transition-all duration-300 ease-in-out border-t border-slate-100 overflow-hidden ${
-          open ? "max-h-[100vh] opacity-100" : "max-h-0 opacity-0 pointer-events-none"
+        className={`md:hidden transition-all duration-300 ease-in-out overflow-hidden ${
+          open ? "max-h-[100vh] opacity-100 border-t border-white/10 bg-[#0c1222]/95 backdrop-blur-2xl" : "max-h-0 opacity-0 pointer-events-none"
         }`}
       >
-        <div className="p-6 space-y-6 shadow-xl">
-          <div className="flex flex-col gap-1.5">
+        <div className="p-6 space-y-6">
+          <div className="flex flex-col gap-2">
             {navItems.map((item) => (
-              <NavLink key={item.to} onClick={() => setOpen(false)} to={item.to} className={navLinkClass}>
+              <NavLink
+                key={item.to}
+                onClick={() => setOpen(false)}
+                to={item.to}
+                className={({ isActive }) =>
+                  `px-4 py-3 text-base font-semibold rounded-xl transition-all ${
+                    isActive
+                      ? "bg-blue-600/20 text-blue-400 border border-blue-500/30 font-bold"
+                      : "text-slate-300 hover:text-white hover:bg-white/5"
+                  }`
+                }
+              >
                 {item.label}
               </NavLink>
             ))}
           </div>
 
-          <div className="pt-5 border-t border-slate-100 flex flex-col gap-3">
+          <div className="pt-4 border-t border-white/10 flex flex-col gap-3">
             <Button
               onClick={handleAuthClick}
               label={isAuth ? "Sign Out" : "Log In"}
-              bg="#f1f5f9"
-              hoverbg="#e2e8f0"
-              textColor="#0f172a"
-              className="w-full rounded-xl py-3 text-sm font-medium"
+              bg="rgba(255, 255, 255, 0.05)"
+              hoverbg="rgba(255, 255, 255, 0.1)"
+              textColor="#f8fafc"
+              className="w-full rounded-xl py-3 text-sm font-semibold border border-white/10"
             />
             <Button
               onClick={handleSecondaryClick}
               label={isAuth ? "Dashboard" : "Sign Up"}
-              bg="#0f172a"
+              bg="#2563eb"
               textColor="#ffffff"
-              hoverbg="#1e293b"
-              className="w-full rounded-xl py-3 text-sm font-semibold shadow-sm"
+              hoverbg="#1d4ed8"
+              className="w-full rounded-xl py-3 text-sm font-semibold shadow-lg shadow-blue-600/30"
             />
           </div>
         </div>

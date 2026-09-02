@@ -1,32 +1,32 @@
 import { Link } from "react-router-dom"
-import { FiInstagram, FiTwitter, FiFacebook, FiLinkedin, FiMapPin, FiMail, FiPhone } from "react-icons/fi"
+import { FiInstagram, FiTwitter, FiFacebook, FiLinkedin, FiMapPin, FiMail, FiPhone, FiArrowRight, FiShield, FiCheckCircle } from "react-icons/fi"
 
 const footerLinks = [
   {
     title: "Company",
     links: [
-      { label: "About Us", to: "/about" },
-      { label: "Careers", to: "/careers" },
-      { label: "Press", to: "/press" },
-      { label: "Blog", to: "/blog" },
+      { label: "About Us", to: "/" },
+      { label: "Our Services", to: "/services" },
+      { label: "Safety Standards", to: "/safety" },
+      { label: "Pricing & Plans", to: "/pricing" },
     ],
   },
   {
-    title: "Product",
+    title: "Mobility",
     links: [
-      { label: "Services", to: "/services" },
-      { label: "Pricing", to: "/pricing" },
-      { label: "Safety", to: "/safety" },
-      { label: "Become a Captain", to: "/captain/register" },
+      { label: "QuickGo Rides", to: "/services" },
+      { label: "QuickXL Group", to: "/services" },
+      { label: "QuickParcel Courier", to: "/services" },
+      { label: "Captain Registration", to: "/captain/register" },
     ],
   },
   {
-    title: "Support",
+    title: "Support & Legal",
     links: [
-      { label: "Help Center", to: "/support" },
-      { label: "Contact Us", to: "/support" },
-      { label: "Terms of Service", to: "/terms" },
-      { label: "Privacy Policy", to: "/privacy" },
+      { label: "Help & FAQ Center", to: "/support" },
+      { label: "24/7 Safety Line", to: "/safety" },
+      { label: "Terms of Service", to: "/support" },
+      { label: "Privacy Policy", to: "/support" },
     ],
   },
 ]
@@ -40,42 +40,46 @@ const socials = [
 
 const Footer = () => {
   return (
-    <footer className="w-full bg-slate-50 border-t border-slate-200">
-      <div className="max-w-7xl mx-auto px-5 md:px-8 pt-16 pb-8">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8">
+    <footer className="w-full bg-[#060a12] text-slate-300 border-t border-white/10 relative overflow-hidden">
+      {/* Ambient background glow */}
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-0 left-0 w-80 h-80 bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-5 md:px-8 pt-16 pb-12 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8">
           {/* Brand column */}
           <div className="md:col-span-4">
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-black text-lg shadow-lg shadow-blue-500/25 border border-white/20">
                 Q
               </div>
-              <span className="text-xl font-bold tracking-tight text-slate-900">
-                Quick<span className="font-extrabold">Ride</span>
+              <span className="text-2xl font-extrabold tracking-tight text-white font-display">
+                Quick<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 font-black">Ride</span>
               </span>
             </div>
-            <p className="text-sm leading-relaxed text-slate-500 max-w-xs font-medium">
-              Reliable rides, on your schedule. QuickRide connects riders and captains
-              across the city, every day, at a fair price.
+            
+            <p className="text-sm leading-relaxed text-slate-400 max-w-sm font-medium">
+              Next-generation urban mobility built for seamless booking, real-time routing, and reliable city travel at transparent rates.
             </p>
 
-            <div className="mt-6 space-y-3 text-sm font-medium">
-              <div className="flex items-center gap-3 text-slate-600">
-                <div className="p-2 bg-white rounded-lg border border-slate-200 shadow-sm text-slate-900">
+            <div className="mt-6 space-y-2.5 text-xs font-semibold text-slate-300">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-blue-400">
                   <FiMapPin />
                 </div>
-                <span>Ahmedabad, Gujarat, India</span>
+                <span>Pan-India Mobility Network</span>
               </div>
-              <div className="flex items-center gap-3 text-slate-600">
-                <div className="p-2 bg-white rounded-lg border border-slate-200 shadow-sm text-slate-900">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-blue-400">
                   <FiMail />
                 </div>
                 <span>support@quickride.app</span>
               </div>
-              <div className="flex items-center gap-3 text-slate-600">
-                <div className="p-2 bg-white rounded-lg border border-slate-200 shadow-sm text-slate-900">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-emerald-400">
                   <FiPhone />
                 </div>
-                <span>+91 82358 52423</span>
+                <span>+91 82358 52423 (24/7 Helpline)</span>
               </div>
             </div>
           </div>
@@ -84,16 +88,17 @@ const Footer = () => {
           <div className="md:col-span-8 grid grid-cols-2 sm:grid-cols-3 gap-8">
             {footerLinks.map((col) => (
               <div key={col.title}>
-                <h4 className="text-slate-900 font-bold text-sm tracking-wide mb-4 uppercase">
+                <h4 className="text-white font-bold text-xs tracking-widest uppercase mb-4 font-display">
                   {col.title}
                 </h4>
-                <ul className="space-y-3">
+                <ul className="space-y-2.5">
                   {col.links.map((link) => (
                     <li key={link.label}>
                       <Link
                         to={link.to}
-                        className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors duration-200"
+                        className="text-sm font-medium text-slate-400 hover:text-white transition-colors duration-200 inline-flex items-center gap-1.5 group"
                       >
+                        <span className="w-1 h-1 rounded-full bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                         {link.label}
                       </Link>
                     </li>
@@ -105,7 +110,7 @@ const Footer = () => {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-14 pt-6 border-t border-slate-200 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
+        <div className="mt-14 pt-8 border-t border-white/10 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
           <p className="text-xs font-medium text-slate-500">
             © {new Date().getFullYear()} QuickRide Technologies Pvt. Ltd. All rights reserved.
           </p>
@@ -118,7 +123,7 @@ const Footer = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="social link"
-                className="w-9 h-9 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:shadow-sm transition-all duration-200"
+                className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all duration-200"
               >
                 {s.icon}
               </a>

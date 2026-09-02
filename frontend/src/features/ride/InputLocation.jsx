@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCrosshairs, faLocationDot } from "@fortawesome/free-solid-svg-icons";
+
 const InputLocation = ({
   icon,
   description,
@@ -155,15 +156,11 @@ const InputLocation = ({
     (suggestion.length > 0 || query.length === 0);
 
   return (
-    <div className="w-full flex justify-center">
-      <div
-        ref={wrappedRef}
-        className="w-full relative max-w-3xl px-4 sm:px-6 py-4"
-      >
-        <FontAwesomeIcon
-          icon={icon || faLocationDot}
-          className="absolute left-10 top-1/2 transform -translate-y-1/2 text-[#45574d] text-lg"
-        />
+    <div className="w-full relative" ref={wrappedRef}>
+      <div className="relative flex items-center">
+        <div className="absolute left-3.5 flex items-center pointer-events-none text-blue-400 text-sm">
+          <FontAwesomeIcon icon={icon || faLocationDot} />
+        </div>
 
         <input
           type="text"
@@ -171,54 +168,54 @@ const InputLocation = ({
           value={query}
           onFocus={() => setIsFocused(true)}
           onChange={(e) => fetchSuggestion(e.target.value)}
-          className="w-full pl-10 py-3 sm:py-4 rounded-lg border-2 border-gray-300 text-base sm:text-lg placeholder-gray-500"
+          className="w-full h-12 sm:h-13 pl-10 pr-4 rounded-2xl border border-white/15 bg-slate-950/60 text-white placeholder-slate-400 font-medium text-sm transition-all duration-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:bg-slate-900"
         />
-
-        {showDropdown && (
-          <ul className="absolute z-50 w-full bg-white border rounded-lg mt-2 shadow-lg max-h-60 overflow-y-auto">
-            <li
-              onMouseDown={(e) => {
-                e.preventDefault(); // Prevent input from losing focus immediately just in case
-                handleCurrentLocation();
-              }}
-              className="px-4 py-3 cursor-pointer hover:bg-gray-100 flex items-center gap-2 font-medium border-b text-slate-800"
-            >
-              {isLocating ? (
-                <>
-                  <span className="w-4 h-4 border-2 border-slate-400 border-t-slate-800 rounded-full animate-spin" />
-                  Locating...
-                </>
-              ) : (
-                <>
-                  <FontAwesomeIcon icon={faCrosshairs} className="text-slate-500" />
-                  Use current location
-                </>
-              )}
-            </li>
-
-            {suggestion.map((place) => (
-              <li
-                key={place.place_id || `${place.lat}-${place.lon}`}
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  handleSelect(place);
-                }}
-                className="px-4 py-3 cursor-pointer hover:bg-gray-100 text-slate-700"
-              >
-                {place.display_name}
-              </li>
-            ))}
-
-            {suggestion.length === 0 &&
-              query.length >= 3 && (
-                <li className="px-4 py-3 text-gray-500">
-                  No locations found
-                </li>
-              )}
-          </ul>
-        )}
       </div>
+
+      {showDropdown && (
+        <ul className="absolute left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-2xl border border-white/15 rounded-2xl mt-2 shadow-2xl max-h-60 overflow-y-auto overflow-x-hidden p-1.5 space-y-1 animate-[toast-in_0.15s_ease-out]">
+          <li
+            onMouseDown={(e) => {
+              e.preventDefault();
+              handleCurrentLocation();
+            }}
+            className="px-3.5 py-2.5 rounded-xl cursor-pointer hover:bg-blue-600/20 text-blue-400 flex items-center gap-2.5 text-xs sm:text-sm font-bold border-b border-white/10 transition-colors"
+          >
+            {isLocating ? (
+              <>
+                <span className="w-4 h-4 border-2 border-blue-400/30 border-t-blue-400 rounded-full animate-spin" />
+                <span>Locating your coordinates...</span>
+              </>
+            ) : (
+              <>
+                <FontAwesomeIcon icon={faCrosshairs} className="text-blue-400 text-sm" />
+                <span>Use my current GPS location</span>
+              </>
+            )}
+          </li>
+
+          {suggestion.map((place) => (
+            <li
+              key={place.place_id || `${place.lat}-${place.lon}`}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                handleSelect(place);
+              }}
+              className="px-3.5 py-2 rounded-xl cursor-pointer hover:bg-white/10 text-slate-200 text-xs sm:text-sm font-medium transition-colors line-clamp-2"
+            >
+              {place.display_name}
+            </li>
+          ))}
+
+          {suggestion.length === 0 && query.length >= 3 && (
+            <li className="px-3.5 py-2.5 text-slate-400 text-xs text-center">
+              No matching locations found
+            </li>
+          )}
+        </ul>
+      )}
     </div>
   );
 };
+
 export default InputLocation;

@@ -4,10 +4,12 @@ import AvailabilityCard from "../ride/AvailabilityCard";
 import useCaptainLocation from "../../hooks/useCaptainLocation";
 import StatsCard from "../../common/Statscard";
 import socket from "../../socket/socket";
+import { FiNavigation, FiZap, FiCheck, FiMapPin, FiShield, FiTrendingUp, FiClock, FiAward, FiAlertTriangle } from "react-icons/fi";
 
 const Dashboard = ({ isOnline, setIsOnline }) => {
   const { coords, address } = useCaptainLocation(isOnline);
   const [incomingRide, setIncomingRide] = useState(null);
+  const [countdown, setCountdown] = useState(15);
   
   const incomingRideRef = useRef(null);
   useEffect(() => {
@@ -17,11 +19,32 @@ const Dashboard = ({ isOnline, setIsOnline }) => {
   const [activeTrip, setActiveTrip] = useState(null);
 
   const stats = [
-    { label: "Total Earnings", value: "₹12,450" },
+    { label: "Today's Earnings", value: "₹1,450" },
     { label: "Rides Accepted", value: "128" },
-    { label: "Rides Rejected", value: "12" },
+    { label: "Completion Rate", value: "98.4%" },
     { label: "Online Hours", value: "74h" },
   ];
+
+  // Incoming ride countdown timer
+  useEffect(() => {
+    if (!incomingRide) {
+      setCountdown(15);
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setIncomingRide(null);
+          return 15;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [incomingRide]);
 
   useEffect(() => {
     const fetchActiveTrip = async () => {
@@ -175,7 +198,7 @@ const Dashboard = ({ isOnline, setIsOnline }) => {
         pickupText = typeof ride.pickup === 'string' ? ride.pickup : "Selected Pickup Target Location";
         destinationText = typeof ride.destination === 'string' ? ride.destination : "Selected Destination Target Location";
       }
-            setIncomingRide({
+      setIncomingRide({
         ...ride,
         pickupAddressText: pickupText,
         destinationAddressText: destinationText
@@ -332,84 +355,130 @@ const Dashboard = ({ isOnline, setIsOnline }) => {
   };
 
   return (
-    <>
-      <h1 className="text-2xl font-semibold mb-1">Dashboard Overview</h1>
-
-      <p className="text-gray-600 mb-6">
-        Current Location:{" "}
-        <span className="font-medium text-gray-800">
-          {address || "Fetching matching location address telemetry..."}
-        </span>
-      </p>
-
-      {incomingRide && !activeTrip && (
-        <div className="bg-white border border-gray-200 rounded-2xl p-5 mb-6 shadow-lg transition-all animate-fadeIn">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <span className="flex h-3 w-3 relative">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
-              </span>
-              <h3 className="font-bold text-gray-900 text-lg tracking-tight">New Ride Offer</h3>
-            </div>
-            <span className="text-xl font-black text-gray-900 bg-gray-50 border border-gray-200 px-4 py-1.5 rounded-full shadow-sm">
-              ₹{incomingRide.fare}
+    <div className="space-y-6">
+      {/* Top HUD Banner */}
+      <div className="bg-slate-900/90 backdrop-blur-2xl border border-white/15 rounded-3xl p-5 shadow-2xl flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white font-display">
+              Driver Command Console
+            </h1>
+            <span className="text-[10px] font-black uppercase tracking-wider bg-blue-500/15 text-blue-400 border border-blue-500/30 px-2.5 py-0.5 rounded-full">
+              Live HUD
             </span>
           </div>
+          <p className="text-slate-400 text-xs mt-1 font-medium flex items-center gap-1.5">
+            <FiMapPin className="text-emerald-400 text-sm shrink-0" />
+            <span>{address || "Precision coordinates synchronized"}</span>
+          </p>
+        </div>
+
+        {/* Daily Goal Meter */}
+        <div className="flex items-center gap-4 bg-slate-950/70 border border-white/10 px-4 py-2.5 rounded-2xl">
+          <div className="text-right">
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Today's Target</p>
+            <p className="text-xs font-black text-emerald-400">₹1,450 / ₹2,000 (72%)</p>
+          </div>
+          <div className="w-20 bg-slate-800 h-2 rounded-full overflow-hidden">
+            <div className="bg-emerald-400 h-full rounded-full w-[72%]" />
+          </div>
+        </div>
+      </div>
+
+      {/* Surge Heat Map Notification */}
+      <div className="bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-transparent border border-amber-500/25 rounded-2xl px-4 py-3 flex items-center justify-between text-xs">
+        <div className="flex items-center gap-2.5 text-amber-300 font-semibold">
+          <span className="text-base">🔥</span>
+          <span>High Demand Surge in Sector 42 & Tech District — <strong>1.25x Earning Multiplier</strong> active!</span>
+        </div>
+        <span className="hidden sm:inline-flex text-[10px] font-bold text-amber-400 bg-amber-500/20 px-2.5 py-1 rounded-full uppercase tracking-wider">
+          Surge Active
+        </span>
+      </div>
+
+      {/* Incoming Ride Alert Box with Countdown */}
+      {incomingRide && !activeTrip && (
+        <div className="bg-gradient-to-r from-blue-950/90 via-slate-900 to-indigo-950/90 border-2 border-blue-500/60 rounded-3xl p-6 shadow-2xl shadow-blue-950/90 animate-[toast-in_0.25s_ease-out] relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="flex items-center justify-between mb-4 relative z-10">
+            <div className="flex items-center gap-3">
+              <span className="flex h-4 w-4 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-4 w-4 bg-blue-500"></span>
+              </span>
+              <div>
+                <h3 className="font-black text-white text-xl font-display">New Ride Request</h3>
+                <p className="text-xs text-slate-400">Incoming dispatch broadcast</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              {/* Radial countdown indicator */}
+              <div className="flex items-center gap-1.5 bg-rose-500/15 border border-rose-500/30 px-3 py-1.5 rounded-xl text-xs font-bold text-rose-300">
+                <FiClock className="text-sm" />
+                <span>{countdown}s</span>
+              </div>
+              <span className="text-2xl font-black text-emerald-400 bg-slate-950/80 border border-emerald-500/30 px-5 py-1.5 rounded-2xl shadow-inner font-display">
+                ₹{incomingRide.fare}
+              </span>
+            </div>
+          </div>
           
-          <div className="space-y-3 text-sm text-gray-600 mb-5 font-medium bg-gray-50 p-4 rounded-xl border border-gray-100">
-            <p className="flex items-start gap-3">
-              <span className="text-green-600 font-bold flex-shrink-0 mt-0.5">●</span>
-              <span className="font-semibold text-gray-900">{incomingRide.pickupAddressText}</span>
+          <div className="space-y-2.5 text-xs text-slate-300 mb-5 font-medium bg-slate-950/60 p-4 rounded-2xl border border-white/10 relative z-10">
+            <p className="flex items-start gap-2.5">
+              <span className="text-emerald-400 font-bold text-sm">●</span>
+              <span className="font-semibold text-slate-200">{incomingRide.pickupAddressText}</span>
             </p>
-            <div className="border-l-2 border-dashed border-gray-300 ml-1.5 h-4 -my-2"></div>
-            <p className="flex items-start gap-3">
-              <span className="text-red-500 font-bold flex-shrink-0 mt-0.5">■</span>
-              <span className="font-semibold text-gray-900">{incomingRide.destinationAddressText}</span>
+            <div className="border-l border-dashed border-slate-700 ml-1.5 h-3 -my-1" />
+            <p className="flex items-start gap-2.5">
+              <span className="text-rose-400 font-bold text-sm">■</span>
+              <span className="font-semibold text-slate-200">{incomingRide.destinationAddressText}</span>
             </p>
 
-            <div className="pt-3 mt-1 border-t border-gray-200 flex items-center justify-between text-gray-500 font-semibold text-xs uppercase tracking-wider">
-              <span>{incomingRide.distanceKm || "0"} km</span>
-              <span>{incomingRide.durationMin || "0"} mins</span>
+            <div className="pt-3 mt-2 border-t border-white/10 flex items-center justify-between text-slate-400 font-bold text-xs uppercase tracking-wider">
+              <span>{incomingRide.distanceKm || "0"} km Estimated</span>
+              <span>~{incomingRide.durationMin || "0"} mins Route</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 relative z-10">
             <button 
               onClick={acceptRide} 
-              className="w-full bg-gray-900 hover:bg-black text-white font-bold py-3.5 rounded-xl shadow-md transition-all active:scale-[0.98]"
+              className="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 hover:opacity-95 text-white font-black py-4 rounded-2xl shadow-xl shadow-blue-600/30 transition-all active:scale-[0.98] cursor-pointer text-sm tracking-wide uppercase"
             >
-              Accept Ride
+              Accept Ride & Lock Allocation
             </button>
           </div>
         </div>
       )}
 
+      {/* Active Trip Banner */}
       {activeTrip && (
-        <div className="bg-white rounded-2xl p-5 mb-6 shadow-xl border border-gray-200 animate-fadeIn">
+        <div className="bg-slate-900/90 backdrop-blur-2xl rounded-3xl p-6 shadow-2xl border border-white/15 animate-[toast-in_0.25s_ease-out]">
           <div className="flex items-center justify-between mb-4">
-            <span className={`text-xs uppercase font-bold px-3 py-1.5 rounded-full border tracking-wider ${activeTrip.status === "ONGOING" ? "bg-blue-50 text-blue-700 border-blue-200" : "bg-gray-100 text-gray-700 border-gray-200"}`}>
-              {activeTrip.status === "ONGOING" ? "En Route to Dropoff" : "Heading to Pickup"}
+            <span className={`text-xs uppercase font-black px-4 py-1.5 rounded-full border tracking-wider ${activeTrip.status === "ONGOING" ? "bg-purple-500/15 text-purple-400 border-purple-500/30" : "bg-blue-500/15 text-blue-400 border-blue-500/30"}`}>
+              {activeTrip.status === "ONGOING" ? "En Route to Destination" : "Heading to Pickup Point"}
             </span>
             <div className="text-right">
-              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Fare</p>
-              <p className="text-xl font-black text-gray-900">₹{activeTrip.fare}</p>
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Guaranteed Fare</p>
+              <p className="text-2xl font-black text-emerald-400 font-display">₹{activeTrip.fare}</p>
             </div>
           </div>
 
-          <div className="space-y-4 text-sm border-t border-gray-100 pt-5 mb-5 font-medium bg-gray-50 rounded-xl p-4">
-            <p className="flex items-start gap-3">
-              <span className="text-green-600 font-bold flex-shrink-0 mt-0.5">●</span>
-              <span className="text-gray-900">
+          <div className="space-y-3 text-xs border-t border-white/10 pt-4 mb-5 font-medium bg-slate-950/50 rounded-2xl p-4 border border-white/5">
+            <p className="flex items-start gap-2.5">
+              <span className="text-emerald-400 font-bold text-sm">●</span>
+              <span className="text-slate-200 font-semibold">
                 {typeof activeTrip.pickup === "string" 
                   ? activeTrip.pickup 
                   : activeTrip.pickup?.address || `GPS: [${activeTrip.pickup?.lat?.toFixed(4)}, ${activeTrip.pickup?.lng?.toFixed(4)}]`}
               </span>
             </p>
-            <div className="border-l-2 border-dashed border-gray-300 ml-1.5 h-4 -my-3"></div>
-            <p className="flex items-start gap-3">
-              <span className="text-red-500 font-bold flex-shrink-0 mt-0.5">■</span>
-              <span className="text-gray-700">
+            <div className="border-l border-dashed border-slate-700 ml-1.5 h-3 -my-1" />
+            <p className="flex items-start gap-2.5">
+              <span className="text-rose-400 font-bold text-sm">■</span>
+              <span className="text-slate-200 font-semibold">
                 {typeof activeTrip.destination === "string" 
                   ? activeTrip.destination 
                   : activeTrip.destination?.address || `GPS: [${activeTrip.destination?.lat?.toFixed(4)}, ${activeTrip.destination?.lng?.toFixed(4)}]`}
@@ -420,15 +489,15 @@ const Dashboard = ({ isOnline, setIsOnline }) => {
           {activeTrip.status !== "ARRIVED" && activeTrip.status !== "ONGOING" && (
             <button 
               onClick={handleArrived}
-              className="w-full bg-gray-900 hover:bg-black text-white font-bold py-3.5 rounded-xl shadow-md transition-all active:scale-[0.98]"
+              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl shadow-xl shadow-blue-600/30 transition-all active:scale-[0.98] cursor-pointer"
             >
-              Arrived at Pickup
+              Mark Arrived at Pickup
             </button>
           )}
 
           {activeTrip.status === "ARRIVED" && (
-            <div className="mt-2">
-              <p className="text-sm text-gray-600 mb-3 font-medium text-center">Ask passenger for OTP to start ride</p>
+            <div className="mt-2 space-y-3">
+              <p className="text-xs text-slate-300 font-medium text-center">Ask passenger for their 4-digit secret OTP to begin trip</p>
               <div className="flex gap-3">
                 <input 
                   type="text"
@@ -436,12 +505,12 @@ const Dashboard = ({ isOnline, setIsOnline }) => {
                   placeholder="ENTER OTP"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
-                  className="flex-1 bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-center text-2xl font-black tracking-[0.2em] text-gray-900 placeholder:text-gray-400 placeholder:tracking-normal placeholder:font-medium placeholder:text-base focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all uppercase"
+                  className="flex-1 bg-slate-950 border border-white/15 rounded-2xl px-4 py-3 text-center text-2xl font-black tracking-[0.25em] text-white placeholder:text-slate-600 placeholder:tracking-normal placeholder:font-medium placeholder:text-sm focus:outline-none focus:border-blue-500 transition-all font-mono"
                 />
                 <button 
                   onClick={handleStartRide}
-                  disabled={otp.length !== 6}
-                  className="bg-gray-900 hover:bg-black disabled:bg-gray-200 disabled:text-gray-400 text-white font-bold px-8 rounded-xl shadow-md transition-all active:scale-[0.98]"
+                  disabled={!otp || otp.length < 4}
+                  className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white font-bold px-8 rounded-2xl shadow-xl shadow-emerald-600/30 transition-all active:scale-[0.98] cursor-pointer"
                 >
                   Start Ride
                 </button>
@@ -452,15 +521,16 @@ const Dashboard = ({ isOnline, setIsOnline }) => {
           {activeTrip.status === "ONGOING" && (
             <button 
               onClick={handleCompleteRide}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all active:scale-[0.98]"
+              className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-4 rounded-2xl shadow-xl shadow-emerald-600/30 transition-all active:scale-[0.98] cursor-pointer"
             >
-              Complete Ride
+              Complete Trip & Collect Fare
             </button>
           )}
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+      {/* Metrics Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
         {stats.map((item, i) => (
           <StatsCard key={i} {...item} />
         ))}
@@ -471,17 +541,26 @@ const Dashboard = ({ isOnline, setIsOnline }) => {
         />
       </div>
 
-      <div className="bg-white rounded-2xl shadow border border-slate-100 p-4 h-[400px] mb-8">
+      {/* Map telemetry widget */}
+      <div className="bg-slate-900/80 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/15 p-4 h-[440px] relative overflow-hidden">
         <CaptainMap coords={coords} activeTrip={activeTrip} userLiveLocation={userLiveLocation} />
       </div>
 
-      <div className="bg-white rounded-2xl shadow border border-slate-100 p-6">
-        <h3 className="text-lg font-semibold mb-2 text-slate-800">Performance Metric</h3>
-        <p className="text-gray-500 font-medium text-sm">
-          You are performing better than 82% of captains in your active city sector grid.
-        </p>
+      {/* Performance Benchmark Card */}
+      <div className="bg-slate-900/60 backdrop-blur-xl rounded-3xl border border-white/10 p-6 flex items-center justify-between">
+        <div>
+          <h3 className="text-base font-bold text-white font-display mb-1 flex items-center gap-2">
+            <FiTrendingUp className="text-emerald-400" /> Sector Performance Benchmark
+          </h3>
+          <p className="text-slate-400 text-xs font-medium">
+            Your acceptance response and completion reliability is higher than 82% of active captains in this metro zone.
+          </p>
+        </div>
+        <span className="hidden md:inline-flex text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full">
+          Tier 1 Gold Partner
+        </span>
       </div>
-    </>
+    </div>
   );
 };
 

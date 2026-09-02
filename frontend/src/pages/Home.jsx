@@ -7,9 +7,8 @@ const Home = () => {
   const { isAuth } = useAuth();
 
   return (
-    <div className='bg-[#F2F4F5] w-full h-full'>
+    <div className='bg-[#060a12] text-white w-full min-h-screen'>
       {!isAuth && <CaptainCTASection />}
-
       <HomeHeroSection />
     </div>
   );

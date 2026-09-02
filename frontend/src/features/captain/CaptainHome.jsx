@@ -17,14 +17,14 @@ const CaptainHome = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="min-h-screen flex bg-[#060a12] text-white">
       <Sidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onLogout={handleLogout}
       />
 
-      <main className="flex-1 p-8">
+      <main className="flex-1 p-6 md:p-8 overflow-y-auto max-h-screen">
         {activeTab === "dashboard" && (
           <Dashboard isOnline={isOnline} setIsOnline={setIsOnline} />
         )}
