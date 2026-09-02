@@ -4,24 +4,30 @@ let ioInstance = null;
 
 function initsocket(server) {
 
+  const frontendUrls = (process.env.FRONTEND_URL || "")
+    .split(",")
+    .map(url => url.trim().replace(/\/$/, ""))
+    .filter(Boolean);
+
   const allowedOrigins = [
     "http://localhost:5173",
-    process.env.FRONTEND_URL
+    "http://localhost:3000",
+    ...frontendUrls
   ];
 
   ioInstance = socketIO(server, {
     cors: {
       origin: function (origin, callback) {
-
         if (!origin) {
           return callback(null, true);
         }
 
-        if (allowedOrigins.includes(origin)) {
+        const normalizedOrigin = origin.replace(/\/$/, "");
+        if (allowedOrigins.includes(normalizedOrigin) || allowedOrigins.includes(origin)) {
           return callback(null, true);
         }
 
-        return callback(new Error("Socket.IO CORS blocked"));
+        return callback(new Error(`Socket.IO CORS blocked: ${origin}`));
       },
 
       methods: ["GET", "POST"],
